@@ -2008,18 +2008,12 @@
 
   authGoogleBtn.addEventListener("click", function () { doGoogleLogin(); });
 
-  /* ---------- Tela de boas-vindas (splash, só na 1a abertura) ---------- */
-  var SPLASH_KEY = "rotina_tdah_splash_seen_v1";
+  /* ---------- Tela de boas-vindas (splash, exibida sempre ao abrir o app) ---------- */
   var splashScreen = document.getElementById("splashScreen");
   var splashGoogleBtn = document.getElementById("splashGoogleBtn");
   var splashSkipBtn = document.getElementById("splashSkipBtn");
 
   function dismissSplash() {
-    localStorage.setItem(SPLASH_KEY, "1");
-    splashScreen.setAttribute("hidden", "");
-  }
-
-  if (localStorage.getItem(SPLASH_KEY) || Api.isLoggedIn()) {
     splashScreen.setAttribute("hidden", "");
   }
 
