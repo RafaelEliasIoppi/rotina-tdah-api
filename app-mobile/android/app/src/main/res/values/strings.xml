@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Rotina TDAH</string>
+    <string name="title_activity_main">Rotina TDAH</string>
+    <string name="package_name">com.rotinatdah.app</string>
+    <string name="custom_url_scheme">com.rotinatdah.app</string>
+</resources>

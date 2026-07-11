@@ -1,0 +1,633 @@
+A) PSICOLOGIA GERAL
+AUTORA RAQUEL ALMEIDA DE CASTRO
+
+PSICOLOGIA GERAL
+Introdução Você tem em suas mãos um material que servirá como referência
+para a disciplina de Psicologia Geral, para o curso de graduação em Administração a Distância.
+Buscamos com os textos explicitar os conteúdos que fazem parte da ementa da disciplina de maneira clara e objetiva, com uma linguagem coloquial; entendendo, no entanto, que, estamos tratando de uma ciência que possui suas especificidades e, por isso, pode ser complexa, e exigirá uma leitura mais atenta.
+Não temos a pretensão de esgotar o assunto com os conteúdos neste caderno, eles funcionarão como uma iniciação a sua investigação. E, para tanto, além dos conteúdos que vamos fornecer, estaremos indicando para uma bibliografia além de sites da web.
+Na maior parte das unidades você encontrará, em primeiro lugar, uma exposição mais geral da teoria, em seguida os teóricos relacionados a ela e seus principais pressupostos. Na parte final, haverá uma correlação com aspectos práticos relacionados à disciplina.
+Os conteúdos que compõem cada unidade foram elaborados levando em conta os conceitos e características epistemológicas mais importantes para a ciência da Psicologia.
+Como se trata da disciplina de Psicologia Geral, este caderno é uma introdução ao estudo de Psicologia. Por isso, aborda aspectos relevantes para um conhecimento básico dessa ciência, sem privilegiar essa ou aquela teoria.
+Em cada unidade, você encontrará atividades que foram elaboradas para que você reflita, tanto sobre o conteúdo exposto, quanto sobre aspectos do seu cotidiano.
+Aqui, você encontrará cinco unidades. A primeira expõe a disciplina e seus objetivos, caracteriza a Psicologia enquanto ciência, tratando do seu conceito, origem, objeto de estudo e divisões; a segunda unidade retrata a evolução histórica e as influências teóricas que a Psicologia recebeu; a terceira apresenta três grandes movimentos da Psicologia científica, o Behaviorismo, a Psicanálise e a Fenomenologia, consideradas fundamentais para o pensamento contemporâneo; a quarta expõe a relação existente entre a Fisiologia e o comportamento, demonstrando não haver dissociação entre o psíquico e o físico; a quinta e última unidade apresenta alguns fenômenos psicológicos que podem enriquecer o conteúdo das primeiras unidades.
+Estes procedimentos foram pensados para que você venha aprender Psicologia Geral e empregue o conhecimento na sua vida cotidiana e na sua formação profissional.
+8
+
+PSICOLOGIA GERAL
+Palavras da autora Em primeiro lugar, gostaria de dar a vocês boas vindas a àqueles
+que escolheram o curso de Administração. Você optou por uma graduação que tem como proposta o ensino a
+distância, modalidade atual que a torna diferente da maioria dos cursos de graduação. Estamos diante do novo, que inicialmente pode causar certa ansiedade, mas pode trazer também uma série de possibilidades e novas elaborações.
+Com a disciplina Psicologia Geral, proponho a você um desafio: o de conhecer alguns aspectos que constituem a subjetividade humana, que é extremamente rica e complexa. O estudo da Psicologia, em minha opinião, é sempre desafiador, pois é uma ciência que procura investigar a subjetividade humana, tornando o estudioso também objeto de investigação. Assim é possível que durante o desenvolvimento do conteúdo da disciplina você compare aspectos das teorias estudadas com questões do seu dia a dia, do seu comportamento ou da sua personalidade.
+Antes de iniciarmos, sugiro que analise as propostas e objetivos da disciplina e reflita sobre os seus próprios objetivos e expectativas pessoais em relação à disciplina. Assim, poderemos iniciar um diálogo, uma troca de experiências, idéias e posicionamentos, através da web, a partir dos conceitos e teorias expressos neste caderno.
+Desejo a você muito sucesso tanto no curso de graduação, quanto na disciplina de Psicologia Geral. Espero também que, entre nós, haja interação, apropriação, crescimento e muitas trocas.
+Um abraço! Raquel Almeida de Castro
+Orientações para o estudo do caderno O nosso objetivo maior, enquanto professora de Psicologia,
+dentro do curso de Administração, é contribuir para que conteúdos desta disciplina sejam compreendidos como necessários para o bom desenvolvimento do profissional em que você deseja se tornar. Para tanto, elaboramos um caderno com cinco unidades, mostrando não só como a Psicologia foi construída através da história, mas também apontando e descrevendo as diversas áreas em que essa ciência se desenvolveu; sendo que cada unidade é composta de três partes: a síntese da unidade, os objetivos de aprendizagem (esperamos que vocês os realizem) e o conteúdo propriamente dito.
+Como os conteúdos deverão ser estudados? Primeiramente observe os objetivos. Esses revelam os comportamentos que nós desejamos que você, aluno, alcance ao final da unidade. Ainda: para
+9
+
+PSICOLOGIA GERAL
+que os objetivos sejam alcançados, você deve ler o conteúdo de cada unidade e tentar entendê-lo. Se por acaso isto não acontecer, reúnase primeiro com seus colegas e discutam a unidade. Se as dúvidas continuarem, solicite ajuda aos seus tutores e por último visite a nossa página e solicite ajuda ao professor, colocando as suas inquietações. Dirimidas as dúvidas, tente, então, realizar as atividades propostas em cada unidade.
+Bom trabalho.
+Ementa Introdução à Psicologia. Conceito, objeto, origem e divisões da Psicologia. Evolução histórica da Psicologia. Principais aspectos das escolas psicológicas. Bases fisiológicas do comportamento e adaptação. Reações e fenômenos psicológicos: motivo, emoção e personalidade.
+Objetivos de ensino-aprendizagem 1. Relacionar os aspectos que definem a Psicologia, através de sua
+conceituação, definição de objeto de estudo e métodos de abordagem e investigação ao contexto filosófico, científico e histórico que os motivaram.
+2.Observar, nas práticas do dia-a-dia, os fenômenos psíquicos e sua importância no cotidiano do indivíduo, concebido como uma totalidade .
+3. Verificar dentre áreas da Psicologia quais as mais importantes a serem consideradas na área de Administração.
+4. Mostrar conhecimento em relação aos principais pressupostos teóricos e defensores das escolas behaviorista, psicanalítica e fenomenológica.
+5. Apontar conceitos que permitam perceber os fenômenos psíquicos como componentes do psiquismo e comportamento humanos.
+10
+
+1
+Psicologia: conceito, objeto, origem e divisões
+Síntese:
+Nesta unidade veremos o conceito e objeto de estudo da Psicologia. A origem histórica da Psicologia. As divisões e as áreas de atuação dessa ciência.
+
+PSICOLOGIA GERAL
+
+Subjetividade - É entendida como o espaço de encontro do indivíduo
+com o mundo social, resultando tanto em marcas
+singulares na formação do indivíduo quanto na construção de crenças e valores compartilhados na dimensão cultural que vão constituir a experiência histórica e coletiva dos
+grupos e populações.
+
+1.1 Psicologia: conceito, objeto, origem e divisões É provável que em algum momento de sua vida você tenha
+levantado questionamentos sobre si mesmo, sua natureza humana, seu comportamento, emoções, entre tantas outras questões. Essa não é uma preocupação somente sua, pois a necessidade de conhecer o homem, ou melhor, a subjetividade humana, tem sido constante desde os primórdios da humanidade. As pessoas vêm tentando dar respostas às suas dúvidas de diferentes maneiras e a partir de diferentes cosmovisões.
+Com muita freqüência ouvimos as pessoas dando opiniões e versões próprias sobre o comportamento ou sobre a atitude de outras pessoas. Por exemplo, ouvimos que fulano é inteligente, pois herdou essa característica de seus pais. Esta afirmação, simples, traz a crença de que a hereditariedade é um fator determinante na inteligência das pessoas.
+Na maioria das vezes não conseguimos precisar a maneira pela qual crenças como essas são construídas, porém sabemos que vão sendo transmitidas social e historicamente, chegando, em determinado momento, a fazer parte da sabedoria popular ou daquilo que chamamos de senso comum. A sabedoria popular é, então, uma maneira de explicar os fenômenos que compõem o universo das pessoas ou, como neste caso, os conteúdos da subjetividade humana. Sabemos, no entanto, que existem outros meios de compreender e explicar os fenômenos como, por exemplo, através da religião, da Filosofia bem como da ciência.
+A ciência, na tentativa de explicar os fenômenos, de modo geral, e de maneira mais específica os fenômenos humanos, procura pautar as suas explicações sobre a observação do real, com métodos de pesquisa específicos, partindo de teorias e conhecimentos já existentes, e se expressando com linguagem científica rigorosa.
+No caso da Psicologia, esta se constitui em uma ciência. E é através de suas diversas áreas e linhas de atuação que ela tem procurado compreender a complexidade humana. Para tanto, os psicólogos investigativos partem dos aspectos subjetivos como as emoções e dos pensamentos dos seres humanos como também dos seus comportamentos. Mas, o que será Psicologia?
+A palavra Psicologia tem sua origem em duas palavras gregas: psyché (alma) e logos (estudo, razão, discurso), significando originalmente o estudo da alma. Assim:
+
+psyché + logos = Psicologia
+
+Segundo Platão, filósofo grego, a psique é a vida mental, interna do ser humano. Antes da palavra “psicologia” existir, foi usado o termo 12
+
+Unidade 1 - Psicologia: conceito, objeto, origem e divisões
+“pneumanton”, do grego pneumato-logia (vapor, respiração, espírito), para designar a parte da Filosofia que tratava da essência da alma.
+A origem da Psicologia, ainda ligada aos estudos da Filosofia, pode ser localizada no quinto e quarto séculos A.C., principalmente com as ideias de filósofos gregos como Sócrates, Platão e Aristóteles, que levantaram hipóteses (e idéias) sobre o funcionamento da alma ou mente humana.
+Essas e outras reflexões sobre a mente humana foram reformuladas e complementadas por uma nova ciência, surgida muitos séculos depois, no século XIX, a Psicologia. A Psicologia Científica foi construída a partir de métodos e princípios teóricos que podiam ser aplicáveis ao estudo e tratamento de diversos aspectos da vida humana. Nesse momento, a Psicologia apareceu atrelada, principalmente, à Biologia.
+Embora tendo nascido dentro da Filosofia, desenvolveu-se para se constituir em uma ciência, com objeto de conhecimento e métodos próprios. Enquanto tal, de início passou a se relacionar intimamente com a Biologia, sob caráter interdisciplinar que se expandiu através de uma relação muito próxima também com as ciências sociais e exatas. Exemplo maior disso é que a Psicologia buscou apoio na Estatística e na Matemática. Mais recentemente cresceu a interação da Psicologia com outras ciências, principalmente com a Neurociência, a Linguística e a Informática, aumentando sua interdisciplinaridade e atuação em campos como a Psicobiologia, a Psicofarmacologia, a Inteligência Artificial e a Psiconeurolinguística.
+Outra característica bastante marcante da Psicologia é sua multiplicidade de enfoques, correntes teóricas, paradigmas e metodologias específicas, que apresentam, muitas vezes, grandes divergências entre si.
+Atualmente a Psicologia é considerada uma ciência da área social ou humana que tem como objeto de estudo a subjetividade humana, através dos processos mentais, sentimentos, pensamentos, razão, inconsciente e o comportamento humano e animal. Essa diversidade de objetos exige, também, abordagens e métodos de pesquisa específicos, tanto quantitativos quanto qualitativos.
+Assim, a Psicologia é a ciência dos fenômenos psíquicos e do comportamento. Entende-se por comportamento uma estrutura vivencial interna que se manifesta na conduta.
+1.2 Divisões da Psicologia segundo áreas de atuação do psicólogo As divisões do trabalho psicológico se dão, em primeiro lugar, por
+sua abordagem teórica (que apresentaremos na unidade III), assim como por suas áreas de atuação. Mais tradicionalmente o psicólogo participa
+13
+
+PSICOLOGIA GERAL
+do diagnóstico (testes, entrevistas, jogos terapêuticos), tratamento (atendimento, consultas, intervenções) e do desenvolvimento da pessoa (conselhos, apoio, psicoterapia). Frequentemente, também, tem atividades de prevenção, informação, formação e pesquisa.
+Como vimos, a Psicologia dos nossos dias trabalha com diversos conteúdos como: as bases fisiológicas do comportamento; o desenvolvimento psicológico; a aprendizagem; a percepção; a memória; a motivação; a emoção; a inteligência; a linguagem e o pensamento; a personalidade; a psicopatologia; as influências sociais, consideradas como fenômenos psicológicos, o que demanda formas de atuação bastante específicas por parte do psicólogo.
+De acordo com Davidoff (1980), podemos descrever as principais especialidades ou áreas de atuação do psicólogo como:
+• Psicólogo clínico – seu trabalho é o de avaliar e tratar de pacientes com problemas psicológicos. Pode atuar como uma pessoa que promove o autoconhecimento ou a ampliação da consciência de seus pacientes. O trabalho clínico implica na pesquisa, num processo de ação / reflexão / ação;
+• Psicólogo orientador – atua no aconselhamento de pacientes com problemas ligeiros de ajustamento e promove o aperfeiçoamento nos meios educacionais e de trabalho. Combina pesquisa, consulta e tratamento;
+• Psicólogo experimental – planeja e realiza pesquisas em áreas específicas, tais como aprendizagem, sensação, motivação, linguagem, stress, entre outras. Atuação geralmente ligada à abordagem comportamental;
+• Psicólogo escolar – atua junto a equipes multiprofissionais promovendo o desenvolvimento intelectual, social e educacional de crianças nas escolas. Trabalha com alunos e a escola, visando, entre outras questões, o ensino-aprendizagem. Estabelece programas e consultas, efetua pesquisas, treina professores e faz análise crítica do sistema educacional como um todo;
+• Psicólogo do trabalho – desenvolve pesquisas e programas para aprimorar a eficiência, a satisfação e a ética no trabalho. Visa a saúde mental do trabalhador e a humanização da organização. Mais recentemente o foco deste profissional é, principalmente, o ser humano dentro do contexto organizacional (relacionamentos interpessoais, programas de desenvolvimento e planejamento de carreira);
+• Psicólogo social – aplica a psicologia visando estabelecer uma ponte com as ciências sociais. Trata de pessoas com problemas psicológicos no seio da comunidade. Promove a ação comunitária e desenvolve programas para melhorar a saúde mental;
+14
+
+Unidade 1 - Psicologia: conceito, objeto, origem e divisões
+
+• Psicometrista ou Psicodiagnosticador – desenvolve e avalia testes, planeja pesquisas para estudar e compreender o comportamento e as funções mentais.
+Essas não são as únicas áreas de atuação do psicólogo, mas foram aqui privilegiadas por serem as mais comuns. Outras áreas de atuação estão aparecendo com o surgimento de novas Psicologias: a do consumidor; a do esporte; a relacionada à propaganda; a do turismo; a jurídica entre tantas outras. entre tantas outras.
+
+www
+Vá ao ambiente virtual e realize as atividades relacionadas a esta unidade.
+
+15
+
+2
+A evolução histórica da Psicologia
+Síntese:
+Nesta unidade veremos a evolução histórica da Psicologia. Começaremos mostrando a origem do pensamento psicológico. Depois, esboçaremos de forma muito breve o desenvolvimento do pensamento psicológico.
+
+PSICOLOGIA GERAL
+2.1 A evolução histórica No meio científico diz-se que a Psicologia é uma ciência com
+um longo passado, mas com uma história curta. Esta afirmação faz sentido quando consideramos dois grandes momentos na sua história: o momento filosófico-especulativo e o científico. O primeiro tem sua origem no pensamento grego e se estende até o final do século XIX ou princípio do XX, período considerado como marco do surgimento da Psicologia Científica, o segundo momento.
+A preocupação humana a respeito de sua subjetividade é muito antiga, isto determinou que o pensamento psicológico fosse construído na medida em que o homem construiu a si e o mundo que o rodeava. Desta maneira, entendemos que o homem é o personagem central no processo de criação de ideias e, dentre essas, as ideias psicológicas.
+Diante disso, é de fundamental importância o estudo da história da Psicologia como uma forma de apreensão da criação humana quanto a esse tema, entendendo como e por que ela foi criada, o que traz consigo a possibilidade de contextualização do advento da ciência psicológica e, assim, a compreensão das linhas teóricas que permeiam as investigações e produções teóricas atuais.
+2.2 Os primórdios do pensamento psicológico Como já mencionamos, as primeiras idéias, no Ocidente, relacio-
+nadas à Psicologia, surgiram com o pensamento filosófico, quando os gregos se propunham indagar, investigar, organizar e compreender o mundo. Nas palavras de Marilena Chauí:
+[...] a filosofia surgiu quando se descobriu que a verdade do mundo e dos humanos não era algo secreto e misterioso, que precisava ser revelado por divindades a alguns escolhidos, mas que, ao contrário, podia ser conhecida por todos, através da razão que é a mesma em todos; quando se descobriu que tal conhecimento dependia do uso correto da razão ou do pensamento e que, além da verdade poder ser conhecida por todos, podia pelo mesmo motivo, ser ensinada ou transmitida a todos (CHAUÍ, 1995, p.23).
+É neste sentido que a Filosofia enquanto conhecimento sistemático e racional oportunizou o surgimento das primeiras indagações sobre a subjetividade do homem.
+A origem da Psicologia, considerada inicialmente como parte da Filosofia, ou Filosofia Mental, pode ser localizada no quarto e quinto séculos A.C. com os filósofos gregos Sócrates, Platão e Aristóteles, que levantaram questionamentos e reflexões sobre o funcionamento da mente. 18
+
+Unidade 2 - A evolução histórica da Psicologia
+Mas, antes de nos referirmos a esses estudiosos com mais atenção, é preciso colocar que a Filosofia Pré-Socrática (conjunto de teorias que antecederam o filósofo Sócrates) tinha como foco o estudo a relação do homem com o mundo, por intermédio da percepção. Isso permitiu a Sócrates (469-399 a.C.) dar maior consistência ao que viria ser a Psicologia, principalmente por defender a noção de que o homem diferia dos animais, pois era dotado de razão, ou inteligência.
+Ainda sobre a Filosofia Pré-Socrática. Ela se ocupou em entender o que era a physis, noção complexa que envolvia o mundo, os deuses e o homem, bem como a compreensão da natureza como algo dinâmico, vivo. Essa filosofia natural, explicitada no raciocínio demonstrativo, era um trabalho racional, sim, mas não se pode excluir do processo de compreensão do mundo, a percepção. Com Sócrates, um novo objeto passou a ser estudado, aquilo que ele chamou de alma, de unidade do ser individual.
+Passemos agora a Platão (427-347 a.C.). Ele foi discípulo de Sócrates, defendia a existência de três tipos de alma: com sede na cabeça (alma racional); com sede no peito (alma irascível); e com sede no ventre (alma concupiscível). As pessoas se diferenciariam pela predominância de uma das três almas. No momento da morte, o corpo, que era matéria, desapareceria e a alma se desprendia do corpo, estando livre para ocupar um novo corpo.
+Quanto a Aristóteles (384-322 A.C), esse filósofo foi discípulo de Platão, porém, com uma compreensão diferente de seu mestre; defendeu que alma e corpo não podem ser dissociados e que tudo aquilo que cresce, se reproduz e se alimenta, tem uma alma ou psique. Assim, além do homem, animais e vegetais também teriam alma, como um princípio vital, animador. O estudo que realizou sobre as diferenças entre a razão, a percepção e as sensações, foi sistematizado no livro De Anima, considerado como um dos primeiros tratados em Psicologia.
+De acordo com Ana Bock (1999), desde a Antiguidade e muito antes do advento da Psicologia Científica, os gregos já haviam postulado duas grandes teorias: a platônica, que defendia a imortalidade da alma e a concebia como separada do corpo; e a aristotélica, que afirmava, na Ética, a mortalidade da alma e sua relação de pertencimento ao corpo.
+2.3 Do Império Romano ao Século XVIII Durante o período áureo do Império Romano surgiu o
+Cristianismo. Este se constitui em uma força religiosa que com o seu desenvolvimento se tornou, também, mais tarde, força política.
+As idéias cristãs, embora no princípio não tenham tido o peso
+19
+
+PSICOLOGIA GERAL
+político, foram de importância para o desenvolvimento da Psicologia. À população romana sem esperança, faminta não só de pão, mas de paz de espírito, as ideias acenaram com a vida eterna, paz de espírito em outro mundo. O Cristianismo se desenvolveu, tornando-se mais presente na vida dos romanos como nos países que esses dominavam. Tudo isso aconteceu paralelamente ao declínio de Roma, oportunizando acontecer o surgimento de uma nova estrutura sócio-política na Europa: o Feudalismo.
+Com esta nova estrutura, um novo período histórico se estabeleceu: a Idade Média. E, foi durante esse período que dois grandes filósofos surgiram: Santo Agostinho (354-430) e São Tomás de Aquino (12251274), estruturando ideias que ajudaram no desenvolvimento para o surgimento da Psicologia.
+Inspirado em Platão, Santo Agostinho defendia a ideia de que a alma era a sede da razão, era imortal e o elemento de ligação entre o homem e Deus. Já São Tomás de Aquino, influenciado pelo pensamento aristotélico, considerava que o homem, na sua essência, buscava a perfeição através de sua existência, mas somente Deus seria capaz de reunir essência e existência.
+Por volta do ano 1300 profundas transformações no cenário econômico e social ocorreram na Europa, foi a transição do Feudalismo para o Capitalismo. Essa transição fez surgir o movimento Renascentista. Com ele, aconteceram mudanças em todos os setores da produção humana (literatura, artes e ciências). O homem aí passou, com maior intensidade, a ser objeto de estudo dos filósofos. Isso, mais tarde, oportunizou o aparecimento de filósofos que contribuíram muito para ocorrer, no século XIX o surgimento da Psicologia. Mas, antes de passarmos ao século XIX, é preciso que destaquemos alguns pensadores que contribuíram para o desenvolvimento da Psicologia.
+Um desses pensadores foi René Descartes (1596-1659), que defendeu a separação entre mente e corpo, afirmando que o homem possui uma substância material e uma substância pensante e, o corpo, sem o espírito, é apenas uma máquina. Isso oportunizou, mais tarde, o surgimento de uma Psicologia calcada na idéia do estudo dos processos mentais.
+Outro filósofo foi John Locke (1632-1704) que destacou o papel das impressões sensoriais sobre o desenvolvimento da nossa experiência. Descreveu o espírito da criança como uma folha de papel em branco (tabula rasa) na qual são registradas as experiências. Por sua vez, as ideias de Locke favoreceram o surgimento de uma psicologia para a qual os males dos seres humanos eram determinados pelo meio ambiente.
+20
+
+2.4 O surgimento da Psicologia Científica
+Figura 1 - Charles Darwin (1809-1882)
+
+Unidade 2 - A evolução histórica da Psicologia
+
+FONTE: Sakall, 2003.
+Agora, passemos ao século XIX. Esse foi um século marcado pelo advento de muitas ciências e pelo recuo da Filosofia, enquanto teoria do conhecimento. Foi nesse contexto que surgiu a Psicologia Científica. Com a crise econômica e social causada pela emergência do modo de produção capitalista, o indivíduo também entrava em crise, questionando vários aspectos da sua existência. Surgiu, então, a necessidade de uma ciência que explicasse os aspectos individuais e subjetivos do ser humano.
+O conhecimento produzido pela Psicologia, até então, era predominantemente especulativo. Foi Charles Darwin (1809-1882), fundador da moderna doutrina genética e da hereditariedade, quem contribuiu com o método de observação e experiência. Com sua obra “A Origem das Espécies” (1859), Darwin influenciou de modo revolucionário quase todos os domínios da ciência.
+As ideias de Darwin deram um novo impulso à pesquisa psicológica e permitiram a construção do fundamento para muitos campos da moderna Psicologia, como a Psicologia do Desenvolvimento e a Psicologia Animal, o estudo da expressão dos movimentos afetivos, a investigação das diferenças entre os diversos indivíduos, o problema da influência da hereditariedade em comparação com a influência do meio ambiente, o problema do papel da consciência, entre outros.
+Outra contribuição veio do filósofo e físico Gustav Fechner (18011887) que mostrou como os métodos científicos podiam ser aplicados ao estudo dos processos mentais. O principal trabalho de Fechner, “Elementos de Psicofísica”, foi publicado em 1860, mostrando como podiam ser utilizados procedimentos experimentais e matemáticos para estudar a mente humana. Cerca de vinte anos mais tarde, o psicólogo alemão Wilhelm Wundt fundou uma disciplina a que chamou de Psicologia.
+21
+
+PSICOLOGIA GERAL
+
+Figura 2 - Wilhelm Wundt (1832 – 1920)
+
+Introspecção - Exame que alguém faz dos
+próprios pensamentos e sentimentos; observação
+do interior.
+
+FONTE: Pereira, 2007.
+Wilhelm Wundt (1832 – 1920) é considerado o idealizador da Psicologia como ciência, pois fundou em 1879, o primeiro laboratório experimental de Psicologia, na universidade de Leipzig, na Alemanha, sendo este o marco histórico da Psicologia como ciência. Dedicouse a investigar os processos elementares da consciência (experiência imediata), além das experiências sensoriais, através do método da introspecção analítica. O método propunha que o psicólogo se concentrasse em seus próprios movimentos psíquicos internos tentando descobrir e relacionar as estruturas que revelassem a consciência.
+Este método transformou-se num movimento conhecido como Estruturalismo, que apresentava limitações claras, pois a introspecção é um processo obscuro e exclui automaticamente do estudo as experiências de crianças e animais, pois estes não podem ser treinados convenientemente.
+Outra ciência que contribuiu para o desenvolvimento da Psicologia Científica foi a Psiquiatria, surgida a partir da medicina e, com sua origem moderna, datada em 1793 com o médico Filipe Pinel. A Psiquiatria trouxe uma série de ideias e metodologias para o campo da Psicologia, principalmente à Psicologia Clínica e Psicopatologia, por estas tratarem e lidarem com doenças mentais.
+
+2.5 As primeiras escolas psicológicas Como mencionamos anteriormente, a Psicologia nasceu na Ale-
+manha, no final do século XIX, porém, estudiosos de outros países se empenharam em desenvolver novas construções teóricas que a consolidaram no status de ciência.
+Segundo Bock (1999), esse status de ciência foi obtido na medida em que se distanciou da Filosofia e atraiu novos estudiosos e pesquisadores que, orientados por novos padrões de produção de conhecimento, passaram a definir seu objeto de estudo; delimitar seu campo de estudo, diferenciando-o de outras áreas do conhecimento, como a Filosofia e a Fisiologia; formular métodos de estudo desse objeto; formular teorias enquanto corpos consistentes de conhecimentos na área. 22
+
+Unidade 2 - A evolução histórica da Psicologia
+Esta sistematização foi determinante para a formulação de novas teorias, ou escolas, que inicialmente caracterizavam-se como posturas metodológicas de investigação e pesquisa.
+As primeiras escolas foram: o Funcionalismo, de William James (1842-1910); o Estruturalismo, de Edward Titchner (1867-1927); e o Associacionismo, de Edward L. Thorndike (1874-1949).
+O Funcionalismo teve em William James o seu maior expoente. James foi um dos mais influentes psicólogos norte-americanos, ensinou Filosofia e Psicologia na Universidade de Harvard. Sua proposta conceitual foi construída a partir de rigorosas observações de si mesmo e dos outros. Ele se opunha ao Estruturalismo porque o via como artificial, limitado. Na visão dele, a consciência era um dado pessoal que está em contínua mudança, evoluindo com o tempo e sendo seletiva na escolha dos estímulos que incidem sobre ela, o que torna o homem capaz de se adaptar ao seu ambiente.
+Por estudar o funcionamento dos processos mentais para auxiliar o ser humano, esse movimento ficou conhecido como Funcionalismo e foi considerado a primeira sistematização genuinamente americana. Os postulados do Funcionalismo chegaram até os nossos dias através da abordagem da Psicologia Cognitiva.
+O Estruturalismo foi defendido pelos pioneiros da Psicologia Científica (Wundt e Edward B. Titchner) que entendiam que o importante seria determinar os dados imediatos da consciência: as características principais e específicas dos processos de consciência, e seus elementos fundamentais. Apesar de investigar a consciência, como os funcionalistas, os estruturalistas focaram o seu estudo nos estados elementares da consciência: as estruturas do sistema nervoso.
+O Associacionismo teve como seu principal representante Edward L. Thorndike que defendia uma produção de conhecimento pautada na utilidade do mesmo. Sua teoria, considerada como a primeira teoria sobre a aprendizagem na Psicologia, concebia a aprendizagem como um processo de associação de idéias, as quais acontecem sempre das mais simples para as mais complexas.
+2.6 As teorias do século XX A característica mais marcante da Psicologia do século XX é a sua
+divisão em quatro grandes movimentos ou forças que diferem por sua visão de mundo e homem e, consequentemente, por sua metodologia de investigação.
+A primeira força da Psicologia desse século é o Movimento Behaviorista, que tem como premissa a determinação do meio ambiente sobre o comportamento. Esta Escola parte de uma visão objetiva do
+23
+
+PSICOLOGIA GERAL
+
+www
+Vá ao ambiente virtual e realize as atividades relacionadas a esta unidade.
+
+homem, percebendo-o como um organismo passivo, manipulado pelos estímulos do meio. Seu objeto de estudo é o comportamento que é sempre um produto do meio ambiente. Entre os principais representantes deste movimento temos: John Watson; B. F. Skinner; e Ivan Pavlov.
+A segunda força da Psicologia é o Movimento Psicanalítico. Organizado a partir do pensamento de Sigmund Freud, enfatiza o estudo no inconsciente, que influenciaria fortemente as ações conscientes do indivíduo. Sua visão de homem é a de um organismo irracional, podendo ser governado, manipulado por forças ocultas, instintivas, que ele desconhece. Entre os principais representantes deste movimento temos: S. Freud; Melanie Klein; e J. Lacan.
+A terceira força é o Movimento Fenomenológico Existencial/ Humanista que tem como objeto de estudo a consciência e nega qualquer determinismo, acreditando na liberdade de escolha. O homem é a fonte de todos os seus atos, ele é essencialmente livre para fazer suas escolhas e o ponto central é a sua consciência. Entre os principais representantes deste movimento temos: Husserl; Maslow; e Rogers.
+A quarta força da Psicologia é o Movimento Transpessoal, que representa a primeira corrente da Psicologia contemporânea que dedica atenção privilegiada à dimensão espiritual da experiência humana. Seu objeto de estudo são os estados alterados de consciência, obtidos através de uma ampliação da consciência. O termo transpessoal significa ultrapassar ou transcender a personalidade. Entre os principais representantes deste movimento temos: W. James; C.G. Jung; e S. Grof.
+Na próxima unidade desenvolveremos os três primeiros movimentos, ou forças da psicologia. Justificamos a escolha por estes movimentos em função da importância deles para o estudo do comportamento organizacional. Na apresentação das escolas, elucidaremos os principais conceitos e teóricos, além de uma breve aplicação dos seus conceitos teóricos ao trabalho nas organizações.
+
+24
+
+3
+As escolas psicológicas
+Síntese:
+Nesta unidade veremos a escola Behaviorista; a escola Psicanalítica; e a escola Fenomenológica.
+
+PSICOLOGIA GERAL
+3.1 As escolas psicológicas Na sua relação com o meio ambiente, o homem foi criando
+mecanismos para solucionar seus problemas de ordem prática, construindo ciências para dominar a natureza que o cercava. Desta maneira, as ciências da natureza e as ciências humanas foram tecidas na medida em que o homem desenvolveu os seus modos de produção. Como a vida humana e suas formas de produzir a sua existência não são estanques, a ciência precisa acompanhar e explicar os aspectos individuais e subjetivos do homem.
+Diante da diversidade do mundo industrial e da possibilidade de potencialização da produção e eficiência, a ciência foi chamada a desenvolver métodos de análise e compreensão do comportamento humano que pudessem dar respostas a essas demandas.
+Ao final do século XIX e início do século XX estavam dadas as condições para elaboração de novas teorias e escolas psicológicas com a possibilidade de aplicação às questões práticas da vida humana.
+Os conhecimentos em Psicologia passaram a visar explicações sobre o comportamento humano. Esses conhecimentos, por sua vez, foram reunidos em um corpo sistematicamente ordenado e unificado de pressupostos, denominados de escolas ou teorias psicológicas. A Psicologia como ciência não foi caracterizada por uma única forma de explicação. Os estudiosos desta ciência dificilmente seguiam pressupostos específicos, discordavam em alguns pontos filosóficos fundamentais e abordavam a Psicologia de modos claramente distintos.
+Estas novas teorias, surgidas ou desenvolvidas no século XX, podem ser organizadas em quatro grandes escolas ou movimentos, que passaremos a explicitá-los.
+3.2 A Escola Behaviorista O Behaviorismo pode ser compreendido como uma tendência
+teórica também conhecida como comportamentalismo, teoria do comportamento ou análise experimental do comportamento humano e suas manifestações em diferentes condições e diferentes sujeitos.
+O primeiro a empregar o termo behaviorismo foi o americano John B. Watson (1878-1958) num artigo de 1913, intitulado “Psicologia como os behavioristas a vêem”, onde defendia a idéia de que a Psicologia era como um ramo objetivo e experimental das ciências naturais, tendo como finalidade prever e controlar o comportamento de qualquer indivíduo. Para ele, o objeto de estudo da Psicologia deveria ser o comportamento que pudesse ser observável, mensurável e que pudesse ser reproduzido em diferentes condições e com diferentes sujeitos. Para ele, estas características eram importantes para que a Psicologia alcançasse o status de ciência. 26
+
+Unidade 3 - As escolas psicológicas
+Os estudos de Watson tiveram como base o conceito de condicionamento clássico, desenvolvidos por Ivan Pavlov (1849-1936), quando de sua pesquisa realizada com cães.
+Segundo Bock (1999), o Behaviorismo dedicou-se ao estudo do comportamento na relação que este mantém com o meio onde ocorre. Como o conceito de meio e de comportamento são bastante amplos, os psicólogos, defensores da teoria, chegaram aos conceitos de estímulo e resposta (S – R, que são abreviaturas dos termos latinos Stimŭlus  e Rēspōnsiō. Estímulo e resposta seriam, desta maneira as unidades básicas da descrição e o ponto de partida para uma ciência do comportamento.
+Alguns teóricos que se destacaram no Behaviorismo foram: Ivan P. Pavlov (1849-1936): fez notáveis experimentos de aprendizagem com animais; Edward Thorndike: elaborou as “leis da aprendizagem”, que derivaram da interpretação do comportamento; Marshall Hall (1790-1857): fez um trabalho pioneiro sobre a base neurológica do comportamento-reflexo; Pierre Flourens (1794-1867): propôs que conclusões tiradas da experimentação animal deveriam igualmente ser aplicadas ao homem; John B. Watson (1878-1958): baseou a Psicologia na Química e na Física e descreveu a aprendizagem como processo de construção de reflexos condicionados; B. F. Skinner (1904-1990): considerado o mais importante dos behavioristas, construiu uma teoria baseada na análise experimental do comportamento.
+3.2.1 O Behaviorismo de B.F. Skinner
+Figura 3 - Burrhus Frederic Skinner (1904-1990).
+FONTE:Cunha e Verneque, 2004.
+Burrhus Frederic Skinner (1904-1990) foi um importante estudioso do comportamento, nasceu em 20 de março de 1904, em Susquehanna na Pensilvânia – EUA. Graduou-se em Psicologia em 1930 e terminou seu doutorado em 1931. Lecionou nas Universidades de Harvard, Indiana e Minnesota. Entre outros trabalhos publicou
+27
+
+PSICOLOGIA GERAL
+os seguintes livros: Behavior of Organisms (O comportamento dos organismos); Verbal Behavior (Comportamento Verbal); e Science and Human Behavior (Ciência e Comportamento Humano). Morreu em 1990, vítima de leucemia.
+Em 1932, B. F. Skinner, na Universidade de Harvard, relatou uma de suas observações sobre o comportamento de pombos e ratos brancos. Para seus experimentos, Skinner inventou um aparelho que depois de passar por modificações é hoje muito conhecido e utilizado nos laboratórios de Psicologia, chamado de Caixa de Skinner.
+Foi influenciado pelos trabalhos de Pavlov e Watson, e passou a estudar o comportamento operante, desenvolvendo intensa atividade no estudo da Psicologia Animal.
+Skinner centralizou seu trabalho nos comportamentos observáveis das pessoas e dos animais por não considerar como científicas as explicações mentais subjetivas e intervenientes, por isso, propôs formas distintas de entendimento e compreensão da personalidade. Para ele, o comportamento, embora muito complexo, podia ser investigado como qualquer fenômeno observável. Isso o levou a uma posição extrema, afirmando que apenas o comportamento pode ser estudado, podendo ser totalmente descrito, visto que este é mensurável, observável e perceptível através de instrumentos de medida.
+O estudo da análise científica do comportamento deveria partir do isolamento das partes simples de um evento complexo, de modo que esta parte pudesse ser mais bem compreendida, sendo o estímulo e a resposta as unidades mais simples do comportamento. Por exemplo, para entender algumas regras do complexo comportamento humano, Skinner estudou como agia um animal para obter uma determinada recompensa. A pesquisa experimental dele seguiu um procedimento analítico, restringindo-se à situações suscetíveis de uma análise científica rigorosa.
+No Behaviorismo de Skinner, as descrições precisas do comportamento favoreciam as previsões exatas de comportamentos futuros e melhoravam a análise dos reforçamentos anteriores que levaram a tal comportamento. Ainda: os indivíduos podiam ser compreendidos, tomando como ponto de partida que o comportamento não é casual nem arbitrário, mas é um contínuo que pode ser descrito considerando o ambiente no qual o comportamento está inserido.
+Dentro desta visão, as mudanças no comportamento resultam de uma resposta individual a eventos ou estímulos que ocorrem no meio. Quando um padrão particular Estímulo-Resposta (S-R) é reforçado (recompensado) o indivíduo é condicionado a reagir. Exemplificando: se uma pessoa é elogiada por realizar uma gentileza, é provável que este comportamento aconteça outras vezes e em situações diferentes.
+A partir da compreensão dessas unidades básicas do comportamento, Skinner construiu uma teoria sobre as formas de 28
+
+Unidade 3 - As escolas psicológicas
+condicionamento, que passaremos a expor. Consideraremos a sua teoria com ajuda de outros teóricos.
+3.2.2 Os principais conceitos da Escola Behaviorista O estudo dos comportamentos observáveis levou os estudiosos
+behavioristas à distinção de duas classes de comportamento: o comportamento respondente e o comportamento operante.
+O comportamento respondente é aquele que acontece como resposta a um estímulo específico. As respostas estão diretamente ligadas ao sistema nervoso autônomo, sendo, desta maneira, involuntárias ou automáticas. Podemos citar como exemplo o comportamento de salivação ao comer ou a dilatação das pupilas dos olhos em resposta a alterações na iluminação do ambiente.
+O comportamento operante, por sua vez, é o de reação do indivíduo ao meio externo para que possa receber um novo estímulo, que reforce a sua ação. Através dos comportamentos operantes, o indivíduo opera, ou atua no meio. São operantes todos os comportamentos do repertório humano como andar, falar, conversar, comer e estudar.
+A partir da compreensão desses dois tipos de comportamento, foi possível aos behavioristas elaborar a teoria do condicionamento que seria uma forma de aprendizado que envolvia uma resposta simples ou uma série complexa de respostas a determinados estímulos. Assim como os comportamentos, os condicionamentos são divididos em dois grandes tipos: o condicionamento respondente ou clássico; e o condicionamento operante ou instrumental.
+3.2.3 Condicionamento respondente O condicionamento respondente ou condicionamento clássico
+foi pesquisado inicialmente por Ivan P. Pavlov e trata-se de um tipo de aprendizagem em que o organismo aprende a responder a um estímulo neutro que antes não produzia essa resposta. Esse condicionamento explica o comportamento involuntário e as reações emocionais condicionadas, como por exemplo, a taquicardia provocada por um susto ou a sensação prazerosa que sentimos quando encontramos alguém que gostamos.
+Figura 4 - Experimento de Pavlov com cães
+FONTE: http://www.psicologiacomanda.hpg.ig.com.br/pavlov.htm.
+29
+
+PSICOLOGIA GERAL
+Pavlov mostrou que um estímulo incondicionado provoca uma resposta incondicionada; um estímulo condicionado, uma resposta condicionada; e um estímulo incondicionado associado a um estímulo neutro passa a ser condicionado. Esta conclusão foi obtida através da experiência que realizou com cães. Estudando a secreção salivar nos cães, constatou que os animais salivavam sempre que o alimento lhes era colocado na boca. A salivação era uma resposta incondicionada para um estímulo incondicionado, a comida.
+Ao repetir a experiência com os mesmos cães observou que os cães salivavam também ao ver alimento, ao ver a pessoa que frequentemente trazia o alimento, e até mesmo, ao ouvir os passos da pessoa. A estas reações, Pavlov chamou reflexos inatos.
+Mais tarde, ele passou a acionar uma campainha (estímulo neutro) no momento em que apresentava a carne ao cão e este salivava. Depois de muitas repetições, o cão passou a salivar (resposta condicionada) ao ouvir o toque da campainha (estímulo condicionado). Assim, um comportamento inato transformou-se em um condicionamento.
+Este tipo de condicionamento faz parte do cotidiano das pessoas, em situações bastante simples e corriqueiras, como: salivar quando se espreme um limão; voltar a atenção quando o nosso nome é chamado; sentir o coração acelerado quando se vê alguém especial.
+3.2.4 Condicionamento operante A noção de condicionamento operante é um conceito chave do
+pensamento de B. F. Skinner (1904-1990), e foi construído tendo como uma de suas referências a noção de reflexo condicionado, formulada pelo cientista russo Ivan Pavlov.
+Todos os atos que praticamos (os operantes) causam algum tipo de reação do meio, assim, recebemos algum tipo de recompensa ou reforço. Quando o reforço obtido é positivo, o comportamento terá uma probabilidade maior de voltar a acontecer. O condicionamento operante é um mecanismo que premia uma determinada resposta de um indivíduo, fazendo com que ele associe a necessidade de um estímulo positivo (S) a uma ação (R). É o caso do rato faminto que, numa experiência, percebe que o acionar de uma alavanca levará ao recebimento de comida. Ele tenderá a repetir o movimento cada vez que quiser saciar sua fome. Outro exemplo é o aluno que descobre que conseguirá uma boa nota cada vez que estudar zelosamente.
+Uma das preocupações de Skinner era praticar uma ciência que pudesse ser experimentada e comprovada com provas observáveis. Para isto, realizou a maioria de suas experiências com animais inferiores, principalmente com ratos brancos e pombos. Desenvolveu um instru-
+30
+
+Unidade 3 - As escolas psicológicas
+mento, conhecido por “Caixa de Skinner” como aparelho adequado para estudo animal.
+Figura 4 - Experimento de Pavlov com cães
+FONTE: http://www.psicologiacomanda.hpg.ig.com.br/pavlov.htm.
+Nos experimentos com a caixa, o rato era colocado dentro de uma caixa fechada que continha apenas uma alavanca e um fornecedor de alimento. Quando o rato apertava a alavanca sob as condições estabelecidas pelo experimentador, uma bolinha de alimento caia na tigela de comida, recompensando, assim, o rato. Após o rato ter fornecido essa resposta, o experimentador pode colocar o comportamento do rato sob controle em relação a uma variedade de condições de estímulos. Além disso, o comportamento pode ser verificado como gradualmente modificável ou modelado até aparecerem novas repostas que ordinariamente não façam parte do repertório comportamental do rato.
+Assim como o rato condicionado na caixa, quando o comportamento humano produz um efeito desejado, o indivíduo fica condicionado a repeti-lo nas situações de necessidade. Muitos comportamentos na situação de trabalho são operantes e passíveis de condicionamento.
+Os reforços positivos são estímulos ou consequências agradáveis que, associados à determinados comportamentos, fazem com que estes tenham uma maior probabilidade de se repetir. Da mesma maneira, quando um comportamento produz efeitos desagradáveis, tende a ser evitado.
+A punição ou castigo é a consequência desagradável que ocorre após algum comportamento. Enquanto a recompensa aumenta a probabilidade de repetição do comportamento, nem sempre o castigo aumenta a probabilidade de evitá-la.
+Skinner chamou de extinção quando o comportamento não é reforçado e tende a desaparecer. Um comportamento condicionado a uma recompensa enfraquece e pode desaparecer quando a recompensa não é fornecida.
+31
+
+PSICOLOGIA GERAL
+3.2.5 Condicionamento humano nas organizações Se, como afirmam os behavioristas, os comportamentos humanos
+são passíveis de condicionamento, então, nas situações de trabalho, na tentativa de manter ou modificar repertórios comportamentais, as possibilidades de aplicação de técnicas de reforçamento e condicionamento encontram grande número de defensores. Segundo Aguiar:
+Cientistas da organização têm definido três tipos de comportamento que consideram fundamentais à vida de uma organização: a) o comportamento de pertencer; b) os comportamentos de permanecer na organização; e c) os comportamentos inovadores, que envolvem contribuição criativa dos membros organizacionais. A organização procura meios para fazer com que os indivíduos permaneçam dentro dela, comportando-se adequadamente, de acordo com os padrões por ela definidos (AGUIAR, 2005, p.209).
+Um meio, que tem sido utilizado pelas organizações para atingir estes e outros objetivos, é a aplicação de incentivos, que na teoria são chamados de punições.
+São dois os tipos de punição que têm sido mais utilizados nas organizações como forma de condicionar os indivíduos a adotar comportamentos adequados ou desejáveis. O primeiro é o desligamento ou demissão, considerado o mais drástico tipo de punição. O segundo é a retirada de incentivos ou reforçadores, como a perda de funções de liderança ou benefício salarial. Os teóricos do condicionamento consideram a manipulação de punições como mecanismos pouco eficientes para se alcançar comportamentos esperados. Podem gerar sentimentos de instabilidade e insegurança, afetando a criatividade e bem estar dos indivíduos, além de ferir a ética organizacional.
+O sistema de recompensas ou reforços positivos, apesar de ser considerado mais adequado que a aplicação de punições, deve ser visto com reservas, já que, em primeiro lugar, é necessária uma observação rigorosa de cada um dos indivíduos para que se possa detectar o tipo de reforçador que teria algum significado psicológico para ele. Uma recompensa extremamente desejada por uma pessoa pode ser pouco atrativa para outra.
+Além disso, a criatividade e a inovação são comportamentos que requerem liberdade de ação para acontecer, o que não é compatível com as regras do condicionamento.
+32
+
+3.3 A Escola Psicanalítica
+Figura 6 - Sigmund Freud (1856 – 1939)
+
+Unidade 3 - As escolas psicológicas
+
+FONTE: www.bu.edu/mih/images/Freud.jpg.
+É possível que mesmo aqueles que pouco ouviram falar sobre a Psicologia já tenham ouvido falar de Freud e da Psicanálise em virtude da popularização de determinados conceitos da teoria. A teoria psicanalítica teve a sua origem com Sigmund Freud (1856 – 1939), médico austríaco, a partir de seu trabalho clínico com pacientes que sofriam de doenças mentais.
+Freud, considerado o pai da Psicanálise, nasceu no dia 06 de maio de 1856 em Freiberg, Morávia (hoje Pribor, República Tcheca). Seu pai era um comerciante que, em função de negócios malsucedidos, mudou-se para Viena quando Freud tinha 4 anos. Freud lá permaneceu, estudou medicina e elaborou a sua teoria. Além dele, alguns de seus seguidores também tiveram um papel importante para a ampliação e popularização da teoria. Foram eles:
+Anna Freud (1895 – 1982); Melanie Klein (1882 – 1960); Henry Murray (1893 – 1988). O termo Psicanálise é usado para referir-se a uma teoria, a um método de investigação e a uma prática profissional. A teoria psicanalítica caracteriza-se por um conjunto de conhecimentos sistematizados sobre o funcionamento da vida psíquica. Como método de investigação, a Psicanálise não se fundamenta em dados observáveis e quantificáveis e sim sobre a realidade psíquica, ou a subjetividade, que constitui o seu objeto de pesquisa. Enquanto prática profissional, ela é uma forma de tratamento psicológico (a análise), que visa à cura pela palavra ou o autoconhecimento. A teoria psicanalítica pode ser considerada como um conjunto de hipóteses a respeito do funcionamento e desenvolvimento do psiquismo humano, revelando tanto o funcionamento mental normal como o funcionamento patológico. A Psicanálise tem sido criticada pela ênfase
+33
+
+PSICOLOGIA GERAL
+que dá às patologias, porém é importante que se diga que também os seus seguidores teorizam sobre a normalidade, apesar de basear seus estudos no tratamento das doenças psíquicas.
+Um dos principais pressupostos da Psicanálise é o princípio do determinismo psíquico que preconiza que cada evento psíquico é determinado por aqueles que o precederam. Assim, o que somos na vida adulta, nossa maneira de nos relacionarmos afetivamente, tratarmos os amigos, filhos ou pessoas significativas, a profissão que escolhemos, tudo depende da nossa história e dos conteúdos infantis, em especial. Ainda que os fenômenos mentais adultos não pareçam ter conexão com o passado, a conexão existe.
+Outros conceitos fundamentam a teoria psicanalítica, que passaremos a expor.
+
+Libido – Nome dado pela Psicanálise ao instinto
+sexual e sua força psíquica.
+34
+
+3.3.1 Principais conceitos da Escola Psicanalítica Em suas primeiras obras, Freud exprimiu a crença de que a vida
+psíquica consiste em três partes: a consciente, a pré-consciente e a inconsciente. A parte consciente, segundo ele, é pequena e insignificante e representa um aspecto superficial da personalidade total, é aquilo em que pensamos no momento atual. A inconsciente, por sua vez, é vasta e poderosa e contém os instintos que são a força propulsora de todo o comportamento humano, além de armazenar todas aquelas lembranças que não suportaríamos no consciente. Ali, elas estariam inacessíveis. Haveria ainda a estrutura pré-consciente que, ao contrário do inconsciente, guarda lembranças que podem ser traduzidas com facilidade à consciência.
+Mais tarde, Freud reviu essa distinção simples (consciente/ préconsciente/inconsciente) e introduziu as noções de id, ego e superego, considerando a divisão como a sua segunda teoria do aparelho psíquico. Na teoria freudiana, o id corresponde à parte mais primitiva, pois está presente desde o nascimento e menos acessível da personalidade, incluindo os instintos sexuais e agressivos. O id deseja a satisfação imediata sem levar em conta as circunstâncias da realidade objetiva; dessa forma, age de acordo com o que Freud denominou de princípio do prazer, que tem relação com a redução da tensão por meio da busca do prazer e do afastamento da dor. Esta estrutura contém ainda a energia psíquica básica, ou libido, que é a nossa energia de vida.
+Para satisfazer as necessidades do id, o ser humano interage com o meio, o seu mundo real. Essa interação não ocorre por intermédio do id, mas por meio de outra estrutura, o ego.
+O ego representa aquilo que pode ser chamado de razão em contraste com as paixões cegas existentes do id. O ego é parte mais consci-
+
+Unidade 3 - As escolas psicológicas
+ente da realidade, percebendo-a, manipulando-a e regulando os desejos do id, tomando-a como referência. Opera de acordo com o que Freud denominou de princípio da realidade. Segundo Bock (1995), as funções do ego são: perceber, lembrar, sentir e pensar.
+O terceiro componente da estrutura da personalidade freudiana é o superego, o qual se desenvolve bem cedo na infância, quando são assimiladas as regras de conduta ensinadas pelos pais, mediante um sistema de recompensas e punições. Os comportamentos errados (que produzem punição) se tornam parte da consciência da criança e formam uma parte do superego; a outra parte é formada pela internalização dos comportamentos considerados corretos (que são recompensados) e que podem ser chamados de ego ideal.parei aqui
+O superego representa todas as restrições morais e é o defensor de um impulso rumo àquilo que a sociedade entende como perfeito. Ao contrário do ego, o superego não tenta apenas adiar a satisfação do id, ele tenta inibi-la por completo. Em conseqüência, há um conflito intermediável no interior da personalidade humana. O ego, no entender de Schultz e Schultz,
+[...] está numa posição difícil, pressionado por todos os lados por forças insistentes e opostas. Ele tem de (1) adiar os anseios incessantes do id, (2) perceber e manipular a realidade para aliviar as tensões do id, e (3) lidar com o anseio da perfeição do superego (SCHULTZ E SCHULTZ, 1992, p. 345).
+Segundo a teoria freudiana, o ego deveria ser a estrutura mais fortalecida da personalidade, tendo em vista suas atribuições. Caso isto não aconteça, o ego poderá ficar exposto a tensões tão elevadas que psicopatologias como a neurose ou psicose podem se desenvolver.
+Neurose – engloba sintomas, que podem se expressar através de distúrbios do comportamento, das idéias ou dos sentimentos, sendo uma expressão simbólica de um conflito psíquico e que têm origem na infância.
+Psicose – termo usado pela Psicanálise para referir-se a uma perturbação intensa do indivíduo na sua relação com a realidade. É a mais grave das doenças mentais.
+Em se tratando do desenvolvimento humano, Freud descobriu em suas investigações clínicas sobre as neuroses que as doenças emocionais adultas estão ligadas a pensamentos e desejos que estão escondidos no nosso inconsciente e referem-se à situações sexuais, pelas quais passamos na infância. E a partir dessas investigações ele construiu a sua teoria do desenvolvimento psicossexual da personalidade.
+35
+
+PSICOLOGIA GERAL
+
+Fixação - Interesse ou ligação emocional de
+origem psicossexual cujo estabelecimento remonta
+à infância.
+Amnésia - Perda parcial ou total da memória.
+
+3.3.2 A teoria da sexualidade infantil À medida que o bebê se transforma em criança, esta em
+adolescente, e este em adulto, ocorrem mudanças marcantes no que é desejado e em como esses desejos são satisfeitos. Tais modificações são elementos básicos na descrição de Freud das fases de desenvolvimento. Quando uma pessoa não progride normalmente de uma fase para outra mas permanece envolvida numa fase particular, prefere satisfazer suas necessidades de forma mais infantil. Freud a denomina fixação.
+A compreensão de Freud sobre a sexualidade infantil partiu dos relatos de suas pacientes histéricas. Essas revelavam a infância delas, suas fantasias de natureza sexual, normalmente envolvendo uma experiência de sedução por parte de um adulto. Esses relatos denunciavam, também, que a sexualidade se iniciava muito antes da puberdade, período em que o organismo se torna apto para procriar.
+A teoria da sexualidade infantil desenvolvida por Freud provocou intensa reação, até mesmo na sociedade científica de sua época. Entretanto, hoje se compreende que ela não poderia ser negada no século XIX e nem em nossos dias, pois é passível de ser observada no comportamento infantil, causando incômodo entre os adultos. Esse incômodo pode ser percebido por meio das formas de controle e vigilância exercidas sobre a criança e através das práticas exercidas pelo meio sociais, no sentido de evidenciar a ameaça que a exploração da sexualidade representa. Por exemplo, quando um adulto percebe a criança tocando os seus órgãos genitais, interrompe-a imediatamente por meio de ameaças, punições ou ainda “brincadeiras”, como: “Não mexa, se não vai cair”.
+Para Freud, essas são maneiras de negar a existência da sexualidade infantil, que já é negada pela nossa amnésia, ou seja, por nos lembrarmos pouco do que aconteceu em nossas vidas antes do período escolar. Quando recusamos o reconhecimento da sexualidade da criança estamos negando o reconhecimento dos nossos próprios impulsos sexuais infantis, ou seja, mantendo o tabu lançado sobre eles em nossa infância.
+Com a teoria da sexualidade infantil, Freud dedicou-se a reconstruir a história da sexualidade humana.
+Passemos agora a rever alguns dos principais conceitos dessa teoria.
+
+3.3.3 Etapas do desenvolvimento psicossexual Fase oral (do nascimento até 2 anos)
+Ao nascer, a região oral (cavidade oral, lábios, língua e mais tarde os dentes) é a região corporal mais neurologicamente desenvolvida, além de representar a satisfação das necessidades. O desejo básico do bebê é dirigido apenas para receber alimento e atenuar as tensões de fome
+36
+
+Unidade 3 - As escolas psicológicas
+e sede. Ao ser alimentada, a criança também é confortada, acalentada, acariciada, e desse modo, no início, ela associa prazer e redução de tensão ao processo de alimentação.
+Figura 7 – Fase oral.
+
+FONTE: wikimedia.org/wikipedia.
+A boca é a primeira área do corpo que o bebê pode controlar; a maior parte da energia libidinal é aí focalizada. À medida que a criança cresce outras áreas tornam-se importantes regiões de gratificação, mas alguma energia é permanentemente dirigida para a gratificação oral.
+A fase oral tardia, depois do aparecimento dos dentes, inclui a gratificação de instintos agressivos, que se manifestam através do comportamento de cerrar os dentes e lábios, e morder. No adulto, a agressividade oral se manifesta através do sarcasmo, da fofoca, do arrancar o alimento de alguém.
+Fase anal (de 2 a 3 anos)
+Figura 8 – Fase anal
+
+FONTE: caderninho.files.wordpress.com.
+
+Entre dois e três anos, as crianças estão em pleno desenvolvimento motor, sendo a organização psicomotora a base das novas conquistas. É o período em que começa a andar, falar e a aprender a controlar os esfíncteres, que são os músculos da saída do ânus e uretra, através do treino de toalete (aprender a fazer o xixi e o cocô no lugar e na hora apropriados).
+O controle da expulsão das fezes e da urina é socialmente necessário, além de despertar um interesse natural pela autodescoberta, pois a obtenção do controle esfincteriano é ligada à percepção de que esse controle é uma nova fonte de prazer. Percebem rapidamente que a aquisição do controle lhes traz atenção e elogios. O interesse dos pais permite à criança exigir atenção tanto pelo controle bem sucedido quanto pelas falhas.
+
+Esfíncter - Músculo circular contrátil, que serve para apertar ou alargar vários ductos naturais do corpo.
+37
+
+PSICOLOGIA GERAL
+A região anal, em virtude de tudo isto, é investida de energia, e erotizada. O controle da evacuação é o conflito central desse período. Apesar de sentir prazer em evacuar, a criança deve aprender a controlar; porém, ela se utiliza desse controle para presentear ou punir os pais quando evacua no momento em que os pais querem ou ainda em momentos inoportunos.
+Parte da confusão que pode acompanhar a fase anal é a aparente contradição entre o elogio e o reconhecimento por um lado e, por outro, a idéia de que ir ao banheiro é algo “sujo” e deveria ser guardado em segredo.
+Fezes e urina são os primeiros produtos da criança e parece-lhe estranho que elas não sejam apreciadas. A criança se confunde, por exemplo, quando ao oferecer suas fezes em presente aos pais percebe que reagem com repugnância. Nenhuma área é tão carregada de proibições e tabus como a área que lida com o treinamento da higiene na vida contemporânea.
+Os reflexos dessa fase sobre a personalidade se mostram na maneira como as pessoas se organizam (ordem ou desordem), como lidam com dinheiro (gasto compulsivo ou mesquinhez).
+Fase fálica (de 3 a 5 anos)
+Figura 9 – Fase fálica
+
+FONTE: abluvers.smugmug.com/photos/79565052-S.jpg.
+
+Erotização - Ato ou efeito de erotizar (-se), provocar amor sexual.
+
+Já aos três anos a criança entra na fase fálica (do grego phalus = pênis). Essa fase é marcada pela percepção das diferenças sexuais, ou ainda, como o próprio nome sugere, a criança se dá conta do pênis ou da falta de um, já que, como a maior parte do órgão genital feminino é interna, a criança percebe como se as mulheres houvessem sido castradas.
+Como nessa fase a erotização é dirigida para os genitais, é comum a estimulação dos mesmos (masturbação), que é acompanhada de fantasias de penetrar (para os meninos) ou ser penetrada (para as meninas).
+Sobre a teoria do complexo de castração: tanto meninos, quanto meninas passam por esse complexo de diferentes maneiras, o menino teme perder o pênis, ser castrado, em função da superioridade que a sociedade atribui ao homem. A menina, que ainda não tem consciência da vulva (parte externa do órgão genital feminino), experimenta o sentimento de ter sido castrada, o que justificaria, na visão freudiana,
+
+38
+
+Unidade 3 - As escolas psicológicas
+a postura de fragilidade, incapacidade e desvalor atribuído à mulher. Assim, a sexualidade feminina se organizaria em torno da inveja que a mulher tem do pênis, da busca do que não possui.
+Esse complexo dá origem a outro, o complexo de Édipo, termo emprestado da tragédia grega “Édipo Rei”, de Sófocles. Com a erotização dos genitais, há um acúmulo de tensão que deve ser descarregado através de uma sensação prazerosa, obtida pelo contato com um objeto sexual ou objeto de amor. Tanto para o menino, quanto para a menina, o primeiro objeto de amor é a mãe, pelo tipo e pela intensidade da relação que estabeleceu com ela desde o nascimento. Segundo Rappaport (1981), a maior parte dos vínculos de prazer da infância está ligada à mãe (amamentação, por exemplo), o que torna natural que, na fantasia infantil, o menino a perceba como seu objeto de atração sexual. Inconscientemente, o menino deseja a mãe e rivaliza com o pai, que se coloca entre ele e o seu objeto de amor.
+Com o estabelecimento do triângulo edípico, o pai, maior, mais forte e dono da mãe, é sentido pelo filho como um adversário contra o qual não poderá lutar. Se o elemento mais valorizado pela criança é o pênis, se o ponto de competição com o pai é sua erotizaçao, parece decorrência lógica que, na fantasia infantil, o pai puna, atacando-o no ponto fundamental do conflito, ou seja, o pai o castrará. Configura-se então, na relação com o pai, o temor de castração, que o obrigará a reprimir a atração sentida pela mãe. Com esta repressão fica encerrada a etapa fálica infantil. Mas o modelo de busca de um amor heterossexual foi estabelecido e será retomado com a adolescência (RAPPAPORT, 1981, p.44).
+
+O complexo de Édipo também ocorre com a menina, que inicialmente também tem a mãe como seu objeto de amor, mas, se afasta dela por perceber que ela não tem o pênis. Então essa se aproxima do pai que pode lhe dar aquilo que a mãe não tem. O restante da elaboração acontece de maneira análoga ao processo masculino, com os genitores invertidos.
+Ao final dessa fase e do conflito edipiano, a criança internaliza o tabu do incesto, presente nos mais diferentes tipos de organização social.
+
+Incesto - União ilícita (de cunho sexual) entre parentes próximos.
+
+Fase de latência (de 5 a 12 anos)
+
+Figura 10 – Fase de latência
+
+FONTE: www.guianikei.com/eps/img/sala_aula_3.jpg.
+39
+
+PSICOLOGIA GERAL
+Nessa fase não há nenhuma reorganização de libido, a energia de vida, como aconteceu nas fases anteriores. As características de personalidade, desenvolvidas até então, não se alteram até a adolescência.
+A resolução do complexo de Édipo faz com que a energia seja deslocada de seus objetivos sexuais. É canalizada para os objetivos escolares e sociais. A energia sexual não desaparece totalmente, mostrase de maneira bastante discreta. No ambiente escolar é comum que meninos e meninas se organizem em grupos bastante distintos, “clube do Bolinha” e “clube da Luluzinha”, evidenciando o adormecimento dos desejos sexuais.
+A latência é um período intermediário e bastante importante, entre a genitalidade infantil (fase fálica) e a adulta (fase genital), pois, permitirá o desenvolvimento físico e emocional necessários para o exercício da sexualidade adulta.
+Fase genital (de 12 anos em diante)
+Figura 11 – Fase genital
+FONTE:www.myband.ro/.../uploads/a_walk_to_remember.jpg.
+Com a chegada da puberdade os interesses sexuais são novamente despertados e o indivíduo, que já se desenvolveu física, intelectual e socialmente, está pronto para o exercício pleno da sua sexualidade.De acordo com Rappaport (1981), alcançar a fase genital constitui, para a Psicanálise, atingir o pleno desenvolvimento adulto com a possibilidade de amar e trabalhar.
+Para Freud, a heterossexualidade adulta é a marca registrada da maturidade, pois permitirá ao indivíduo tanto a procriação quanto o exercício genital mais amplo.
+3.3.4 A teoria psicanalítica e o comportamento organizacional O trabalhar é fundamental para a preservação da saúde mental
+das pessoas, pois, como já mencionado anteriormente, a teoria psicanalítica considera que a subjetividade adulta é uma representação dos conteúdos pessoais construídos durante a história dos indivíduos. Desta maneira, quando chega ao mundo do trabalho, cada um traz uma história e uma maneira bastante peculiar de lidar com os conflitos internos e externos. A organização, na sua tentativa de padronização e tratamento massificado, pode tornar os conflitos pessoais mais intensos, favorecendo, assim, o sofrimento psíquico. 40
+
+Unidade 3 - As escolas psicológicas
+Dejours (1949) propôs a teoria da psicodinâmica do trabalho, sugerindo que a relação do homem com o trabalho é uma relação de sofrimento, apesar de ser fonte de prazer e saúde. Definindo o pensamento de Dejours, Aguiar sugere:
+A grande contribuição de Dejours foi introduzir a dimensão psicológica no estudo das relações do ser humano com a organização do trabalho e identificar a presença do homem concreto, vivo, sensível, reativo e sofredor, animado por uma subjetividade, no contexto da organização (AGUIAR, 2005, p.166).
+O cotidiano das organizações, com suas regras, procedimentos e padronizações pode funcionar como um espaço de sofrimento psíquico para o trabalhador, que pode, no desejo de diminuir o seu sofrimento, desenvolver estratégias defensivas para preservar a sua saúde mental.
+Existem dois grandes tipos de defesas: aquelas construídas coletivamente a partir das pressões organizacionais, caracterizadas pelos comportamentos estereotipados ou alienados; e as defesas individuais, através das quais o indivíduo produz sintomas físicos ou emocionais, gerando doenças psicossomáticas ou stress, para se defender dos conflitos organizacionais.
+De acordo com Aguiar (2005), é imprescindível que a relação conflituosa entre a organização e o aparelho mental seja resolvida no sentido de proteger a saúde mental do indivíduo, mantendo também a produtividade e motivação para o trabalho. Essa resolução envolverá, entre outras coisas, mudanças estruturais e de processos organizacionais, como a criação de espaço público e uma relação dialógica entre a direção e os membros da organização.
+3.4 A Escola Fenomenológica Dentre as escolas da Psicologia a Fenomenológica é, sem dúvida,
+a mais filosófica, pois surgiu do debate sobre a relação do homem com o mundo. Sua origem data da segunda metade do século XIX, a partir das análises de Franz Brentano sobre a intencionalidade da consciência humana. Ele procurava descrever, compreender e interpretar os fenômenos que se apresentavam à percepção. Esta escola se opôs ao pensamento positivista do século XIX, propondo a extinção da separação sujeito e objeto.
+A palavra fenomenologia vem do grego Phainesthai = aquilo que se apresenta ou que se mostra e Logos = estudo, explicação.
+A fenomenologia defende a importância do estudo dos fenômenos da consciência, que devem ser compreendidos a partir de si mesmos, pois resumem os fenômenos do mundo que nos cerca. Toda consciência é consciência de alguma coisa e não é uma substância, mas uma atividade
+41
+
+PSICOLOGIA GERAL
+constituída por atos como a percepção, imaginação, especulação, entre outros.
+O seu objeto de estudo são os dados absolutos apreendidos através da intuição pura, que possibilitam descobrir estruturas essenciais dos atos e das entidades objetivas que correspondem a elas, em outras palavras, o conteúdo inteligível e ideal dos fenômenos.
+O filósofo Edmund Husserl (1859 – 1938) é considerado o fundador da Fenomenologia, pois, enfrentando o psicologismo e o historicismo, tendências filosóficas da época, escreve “Die Idee der Phänomenologie” (A Idéia da Fenomenologia - 1906), propondo uma filosofia que tivesse como base uma ciência rigorosa, que valorizasse a experiência da consciência. As experiências conscientes, por sua vez, deveriam ser estudadas em suas essências, em seus verdadeiros significados, de maneira livre de teorias e pressuposições.
+Para tornar possível uma investigação voltada apenas para as operações realizadas pela consciência, os fenomenólogos propõem que se faça a redução fenomenológica, que é o processo pelo qual tudo que é informado pelos sentidos é mudado em uma experiência de consciência. Fariam parte da consciência: imagens; fantasias; atos; pensamentos; memórias; sentimentos; entre outras coisas.
+A proposta de Husserl é que, no estudo das vivências dos objetos ideais, dos estados da consciência, do fenômeno que é estar consciente de algo, não deveria haver a preocupação de estabelecer correspondências entre estes fenômenos e os objetos externos à mente, pois, não importa o que existe no mundo e sim o modo como o conhecimento do mundo se dá para cada pessoa.
+De acordo com o pensamento fenomenológico a intencionalidade é a essência da consciência, pois, estar consciente é dirigir o pensamento para algo, com um nome, com um significado.
+A Fenomenologia influenciou não apenas muitos filósofos, como também psicólogos e sociólogos. Entre os filósofos que se intitularam fenomenólogos, temos: Martin Heidegger (1889 – 1976); Jean-Paul Sartre (1905 – 1980); Maurice Merleau-Ponty (1908 – 1961).
+A Psicologia também foi fortemente influenciada pelo pensamento fenomenológico, principalmente através de autores como Karl Theodor Jaspers (1883 – 1969), Ronald David Laing (1927-1989), Viktor Frankl (1905-1997) e Halley Bessa (1915-1994) no Brasil.
+3.4.1 A Psicologia Humanista A Escola Humanista, constituída a partir da Fenomenologia, foi
+aquela que mais se destacou dentre as teorias psicológicas. Fundamentada sobre os pressupostos da Fenomenologia, a
+42
+
+Unidade 3 - As escolas psicológicas
+
+Psicologia Humanista é centrada na pessoa e não no comportamento, enfatizando a condição de liberdade contra a pretensão determinista e controladora do indivíduo.
+O termo “Psicologia Humanista” foi utilizado pela primeira vez em 1930 por Gordon Allport, que, juntamente com Henry Murray, são considerados os precursores da abordagem humanista. Mais tarde, entre 1960 e1970, a abordagem humanista fez parte de um movimento que propunha uma mudança nos métodos e temas da Psicologia, opondose, principalmente, contra a Psicanálise e aos comportamentalistas, que, segundo o movimento, ofereciam uma imagem da natureza humana que era restrita e aviltante.
+Para o Humanismo, os interesses e valores humanos são primordialmente importantes, pois se acredita nas responsabilidades do indivíduo e na sua capacidade de realizar um confronto mais decisivo com sua realidade. Desta maneira, o indivíduo é o único que tem potencialidade de saber a totalidade da dinâmica de seu comportamento e das suas percepções da realidade e de descobrir os comportamentos mais adequados para si próprio. Os principais defensores deste movimento foram: Carl Rogers (1902 – 1987) e Abraham Maslow (1908 – 1970).
+Carl Rogers, considerado um dos mais influentes pensadores dos EUA, desenvolveu uma teoria conhecida como Abordagem Centrada na Pessoa, através da qual defendia que as pessoas se definem por suas experiências e vivem num mundo particular denominado de campo fenomenal ou experiencial, que contém tudo que passa no organismo em qualquer momento, e que está potencialmente disponível à consciência. Nesse mundo estariam os eventos, percepções, sensações e impactos, dos quais a pessoa não está consciente, mas poderiam ser acessados caso focalizasse sua atenção. É um mundo particular e pessoal que pode ou não estar de acordo com a realidade objetiva.
+
+Figura 12 – Carl Rogers (1902 – 1987)
+
+3.4.2 Principais conceitos propostos por Carl Rogers Um dos principais conceitos propostos por Carl Rogers é o
+conceito de self, que seria uma configuração organizada de percepções, acessíveis à consciência, formada por elementos como as percepções das características e capacidades próprias, os conteúdos perceptivos e os conceitos de si em relação aos outros e ao ambiente. Como se trata de um conjunto de significações vividas, é suscetível à mudanças ocorridas em seu meio. Assim, o self seria esse conjunto organizado e consistente de experiências num processo constante de transformação.
+A partir dessa concepção, a importância ou intensidade dada a um evento é sempre determinada pela maneira que a pessoa percebe
+
+FONTE:Pinel, 2007.
+43
+
+PSICOLOGIA GERAL
+o mundo, e não pelo evento em si. A percepção da pessoa é a sua realidade, e é determinada por sua necessidade pessoal.
+Outro conceito, derivado desse, é o conceito de self ideal, que de acordo com Fadiman (1986) seria um conjunto de características que o indivíduo gostaria de poder reclamar como descritivas de si mesmo. A diferença entre o self e o self ideal seria um indicador de desconforto, insatisfação e dificuldades neuróticas. Cada pessoa viveria, então, de modo mais completo se conseguisse caminhar no processo de aceitação pessoal, estando mais próximo da realidade e avançando no crescimento individual.
+No processo de desenvolvimento do self, é característica comum um tipo de necessidade que Rogers chamou de consideração positiva, que, segundo Shultz (2006), é uma necessidade universal e duradoura que compreende aceitação, amor e aprovação das outras pessoas, e principalmente da figura materna, na infância.
+A consideração positiva é crucial para o desenvolvimento da personalidade, pois, o comportamento do bebê é direcionado pela quantidade de afeto e amor que lhe são concedidos. Se essa quantidade é insuficiente, a tendência inata ao desenvolvimento e sua atualização estaria comprometida.
+O processo de desenvolvimento, segundo a teoria rogeriana, seria marcado pelo impulso de expandir-se, estender-se, tornar-se autônomo, desenvolver-se, amadurecer-se. Desta maneira, de acordo com Fadiman (1986), cada indivíduo possuiria impulso inerente em direção a ser competente e capaz, uma tendência à auto-atualização.
+Esta tendência auto-atualizadora ou realizadora possibilitaria a realização plena das potencialidades individuais, e pode ser percebida através de diferentes tipos de comportamentos em resposta a uma gama variada de necessidades.
+Contrariando a crença psicanalítica, baseada na compreensão da conduta adulta como uma consequência das experiências passadas, Rogers acreditava que o comportamento não se dá em face da realidade, mas da realidade como é percebida pelo indivíduo. Dessa maneira, a conduta não seria, então, causada por algo que aconteceu no passado, mas por tensões e necessidades presentes que o organismo se esforça por reduzir ou satisfazer. A experiência passada contribui para modificar o sentido dado às experiências atuais, porém, só há conduta para enfrentar uma necessidade presente. Somente é possível compreender a conduta humana a partir do quadro de referências internas do próprio indivíduo.
+O conceito de auto-atualização ou realização é defendido também por Abraham Maslow (1908 – 1970) que começou por estudar a questão 44
+
+Unidade 3 - As escolas psicológicas
+
+da auto-realização mais profundamente através da análise das vidas, valores e atitudes das pessoas que considerava mais saudáveis e criativas. Eram objetos do seu estudo pessoas que ele julgava que eram mais auto-realizadas, os que haviam alcançado um nível de funcionamento melhor, mais eficiente e saudável.
+Suas primeiras investigações sobre auto-realização foram inicialmente estimuladas por sua vontade de entender de uma forma mais completa os dois professores que mais o influenciaram: Ruth Benedict e Max Wertheimer, que na sua visão não eram apenas cientistas brilhantes e extraordinários, mas seres humanos profundamente realizados e criativos. Assim, iniciou seu próprio estudo para procurar tentar descobrir o que os fazia tão especiais.
+
+3.4.3 Principais conceitos propostos por Abraham Maslow Para Abraham Maslow, a auto-realização era uma necessidade
+humana das mais complexas e difíceis de ser atingida, pois, ela estaria no último degrau de uma hierarquia de cinco necessidades inatas, que ativam e direcionam o comportamento humano. Iniciando da mais inferior, são elas: as necessidades fisiológicas; de segurança; de afiliação e amor; de estima; e de auto-realização.
+
+Figura 13 - Abraham Maslow (1908 – 1970)
+
+Figura 14 –Pirâmide de Maslow.
+Necessidade de auto-realização
+
+Necessidade de auto-estima
+
+Necessidades sociais Necessidade de segurança Necessidades fisiológicas
+
+FONTE: http://www.historiadaadministracao.com.br/ jl/gurus/73-abraham-harold-
+maslow
+
+Para Maslow, as necessidades seriam instintóides, termo que usou para definir as necessidades inatas, e possuíam um caráter hereditário, mas influenciáveis ou anuladas pelo aprendizado, pelas expectativas sociais e pelo medo de desaprovação. Segundo Schultz (2006), embora tenhamos necessidades ao nascer, os comportamentos realizados para satisfazê-las são aprendidos, o que determinaria uma variação de pessoa para pessoa.
+As necessidades fisiológicas seriam as mais básicas, tais como a fome, a sede, o sexo; as necessidades de segurança vão da simples necessidade de estar seguro dentro de uma casa à formas mais elaboradas de segurança, como um emprego, uma religião, a ciência, entre outras;
+45
+
+PSICOLOGIA GERAL
+
+www
+Vá ao ambiente virtual e realize as atividades relacionadas a esta unidade.
+
+a necessidade de amor envolve sentimentos de afeição e pertencimento,
+como o afeto e carinho dos outros; a necessidade de estima passa por
+duas vertentes, o reconhecimento das nossas capacidades pessoais e o reconhecimento dos outros diante da nossa capacidade de adequação às funções que desempenhamos; com a necessidade de auto-realização o indivíduo procura tornar-se aquilo que pode ser.
+De acordo com a visão de Maslow, a busca de auto-realização não é iniciada até que o indivíduo esteja livre da dominação de necessidades inferiores, tais como fisiológicas e segurança. A privação das necessidades básicas levaria a um desajustamento psicológico, ou à doenças de carência.
+O processo de auto-realização representa um compromisso em longo prazo com o crescimento e o desenvolvimento máximo das capacidades, envolvendo a escolha de problemas criativos e valiosos, pois os indivíduos auto-realizados são atraídos por problemas mais desafiantes e intrigantes, por questões que exigem os maiores e mais criativos esforços.
+Segundo Schultz (2006), o que Maslow descreve como características de pessoas auto-realizadoras seriam:
+• Percepção clara da realidade; • Aceitação de si, dos outros e da natureza; • Espontaneidade, simplicidade e naturalidade; • Dedicação a uma causa; • Independência e necessidade de privacidade; • Vigor de apreço; • Experiências culminantes; • Interesse social; • Relações interpessoais profundas; • Tolerância e aceitação dos outros; • Criatividade e originalidade; • Resistência a pressões sociais.
+3.4.4 A teoria humanista e o comportamento organizacional A teoria humanista tem contribuído para a compreensão do espa-
+ço organizacional principalmente no que se refere ao comportamento motivado dos indivíduos. A teoria de Maslow é conhecida como uma das mais importantes teorias de motivação.
+Através dos conceitos da teoria é possível compreenderos motivos ligados aos comportamentos manifestos em relação à organização, aos vínculos interpessoais desenvolvidos no seu interior, a necessidade de cada indivíduo para o desenvolvimento de atividades criativas e inovadoras e suas características no processo de busca de auto-realização.
+Se a questão da auto-realização for entendida como o uso e a exploração plena de talentos, capacidades, potencialidades, o trabalho terá um importante papel na sua busca, tornando a organização um
+eçode crescimento ou de obstáculo a ele.
+
+46
+
+4
+As bases fisiológicas do comportamento
+Síntese:
+Nesta unidade veremos as bases fisiológicas e os mecanismos cerebrais do comportamento, e falaremos sobre emoção e adaptação.
+
+PSICOLOGIA GERAL
+4.1 As bases fisiológicas do comportamento Desde os primórdios da história da humanidade se levantava
+a questão da relação entre mente e corpo. Neste mesmo caderno, na segunda e terceira unidades já mencionávamos a posição de alguns teóricos em relação a isto.
+Mais recentemente, com o avanço de ciências como a Psicobiologia, a Neurociência, a Genética Comportamental e a abordagem biocomportamental, questionamentos sobre a relação dos aspectos fisiológicos como o comportamento, emoções e personalidade humanas passaram a ser explorados a partir de investigações mais amplas e rigorosas.
+O conhecimento sobre a relação entre a fisiologia e o comportamento tem avançado muito nos últimos anos, o que tem promovido também a compreensão sobre os processos adaptativos das pessoas, sobre as diferenças individuais, sobre os processos cerebrais presentes na aprendizagem, no uso de drogas, nos estados de alteração da consciência, nas emoções, nas doenças mentais, além de outros.
+As ciências que se dedicam ao estudo destes fenômenos têm se aliado tanto à Psicologia, quanto à Biologia, construindo uma área comum que se inscreve nas Neurociências.
+Um dos primeiros registros sobre estudos nessa área foi encontrado num trabalho de Wilhelm Wundt (1832 – 1920), datado de 1874, num livro intitulado Princípios da Psicologia Fisiológica, mas foi através da ciência comportamental que a Psicobiologia ganhou força e adeptos.
+Na primeira metade do século XX, a Psicobiologia avançou principalmente através da pesquisa comportamental e do movimento da Escola Psicanalítica. E, nos anos 60, os estudos da Psicobiologia começaram a deixar um importante legado para as demais ciências: as discussões éticas, através da bioética.
+Na segunda metade do século XX, a partir das interações de diferentes escolas e o avanço das pesquisas da Psicobiologia, surgiu a mais importante contribuição da Psicologia: a Neurocognição, que envolve os conhecimentos da anatomia do cérebro e os conhecimentos da Psicologia Cognitiva.
+4.2 Os mecanismos cerebrais do comportamento De acordo com Del Nero (1997), a natureza selecionou, ao
+longo de milhões de anos, um determinado tipo de estrutura capaz de controlar uma série de funções internas e externas do organismo humano, o sistema nervoso que tem maior ou menor complexidade de acordo com a escala animal.
+48
+
+Unidade  4 - As bases fisiológicas do comportamento
+Nos seres humanos, é possível distinguir um sistema nervoso central, constituído basicamente pela medula e pelo cérebro e outro, o periférico, constituído por nervos espalhados pelo corpo.
+No sistema nervoso central, o tecido cerebral, que é constituído por neurônios, tem três grandes funções: receber o estímulo que vem do ambiente e do corpo; agir sobre o corpo e o ambiente; e entre estas duas funções, a de integrar a informação.
+Figura 15 – Sistema nervoso central.
+1 Um diagrama mostrando o SNC:
+1. Cérebro 2 2. Sistema nervoso central (cérebro e medula espinhal)
+3. Medula espinhal 3
+FONTE:www.colegiosaofrancisco.com.br/alfa/corpo-humano-sistema-nervoso/ sistema-nervoso-central.php
+No periférico, as áreas de recepção, ou sensoriais, são encarregadas de processar as informações que chegam através dos sentidos (visão, audição, olfato, tato, paladar, dor, calor). As áreas motoras são encarregadas por gerar movimentos externos (como a locomoção e força) e internos (como o controle dos órgãos internos). As áreas de integração, que são mais complexas que as outras, como o próprio nome sugere, integra as duas outras funções, dando uma resposta possível para a situação vivida.
+Exemplificando, tomemos uma situação em que o indivíduo se depara com um animal que lhe causa medo. A visão capta a cena, que é processada pela área receptora, identificada e avaliada por meio da comparação com outras situações vividas através da área de integração, que sugere para a área motora um comportamento de fuga que deverá ser instantâneo.
+Del Nero (1997) defende que o conjunto de ponderações intermediárias entre o perceber e o fazer permitem à mente humana criar e produzir.
+4.3 A fisiologia das emoções O estudo da fisiologia das emoções tem estado presente nas
+pesquisas da Psicobiologia, principalmente por contribuir para a compreensão e tratamento dos distúrbios emocionais, além de comprovar mais amplamente a participação do cérebro numa área que não era vinculada à atividade cerebral.
+49
+
+PSICOLOGIA GERAL
+Os primeiros estudos foram baseados em dados da pesquisa com animais que apontavam determinadas estruturas cerebrais como participantes dos processos cerebrais.
+Um dos primeiros teóricos a se dedicar a esse tipo de pesquisa foi Willian James (1842-1910), que concebeu em 1884 uma teoria de grande impacto. Para ele, a emoção consciente era constituída por uma seqüência de acontecimentos provocados por um estímulo. Na teoria de James ficou famosa a pergunta: Fugimos porque sentimos medo ou sentimos medo porque fugimos? Ele defendia a idéia de que: “sentimos medo porque fugimos”, pois, na sua visão, seriam as reações fisiológicas que provocam sentimentos.
+Numa situação de fuga, por exemplo, a pressão sanguínea aumenta, o número dos batimentos cardíacos dispara, as pupilas dilatam-se, os músculos sofrem contrações. Assim, estas respostas fisiológicas voltam ao cérebro na forma de sensação física, gerando uma emoção bastante peculiar. As áreas cerebrais utilizadas, neste caso, seriam as áreas sensoriais e motoras do córtex, onde as sensoriais detectam e processam o estímulo, e as áreas motoras são ativadas em seguida, produzindo a resposta de fuga.
+Outro teórico que contribuiu com suas idéias para esta escola foi James Papez (1883 – 1958) que propôs em 1937, uma das teorias mais abrangentes sobre os circuitos das emoções no cérebro. A partir de uma pesquisa em que observava as consequências de danos no córtex humano e o papel do hipotálamo no controle das emoções nos animais, construiu uma teoria que admitia que as experiências emocionais estivessem associadas à ativação de um circuito de conexões entre o hipotálamo e o córtex medial. Esse circuito foi chamado mais tarde de Circuito de Papez. O circuito estaria, então, relacionado com o comportamento afetivo, emocional e também com a memória recente, já que a sua lesão produz uma incapacidade para repetir ordens verbais por meio da linguagem, num tipo de amnésia.
+O médico Paul MacLean (1913 – 1993) avançou em relação aos conceitos propostos por Papez, quando defendeu a importância do hipotálamo na expressão emocional e do córtex na experiência emocional. Em 1952, MacLean introduziu a expressão ‘sistema límbico’, estrutura descrita como um circuito de estruturas corticais e subcorticais responsável pela gênese e controle das emoções.
+Sabe-se hoje que as áreas relacionadas com os processos emocionais ocupam distintos territórios do cérebro, destacando-se entre elas o hipotálamo, a área pré-frontal e o sistema límbico.
+As emoções e sentimentos como ira, pavor, paixão, amor, ódio, alegria e tristeza são criações mamíferas originadas no sistema límbico.
+50
+
+Unidade  4 - As bases fisiológicas do comportamento
+
+Este sistema é também responsável por alguns aspectos da identidade pessoal e por importantes funções ligadas à memória. A parte do sistema límbico, relacionada às emoções e seus estereótipos comportamentais, foi denominada de Circuito de Papez.
+Já o hipotálamo contém muitos circuitos neuronais que regulam funções vitais que variam com os estados emocionais, como por exemplo, a temperatura, os batimentos cardíacos, a pressão sanguínea, a sensação de sede e de fome, etc. Controla também todo sistema endócrino através de uma glândula localizada em seu assoalho, a hipófise. Desse modo, o hipotálamo é um dos responsáveis pelo equilíbrio orgânico interno.
+O lobo frontal do córtex cerebral é a estrutura cerebral onde se concentra uma grande variedade de importantes funções, incluindo o controle de movimentos e de comportamentos vinculados à capacidade de se adaptar socialmente, como a compreensão dos padrões éticos e morais e a possibilidade de prever as consequências de uma atitude. Além disso, é considerado também como sede da personalidade e da vida intelectiva. Um distúrbio nesta parte do Córtex pode provocar emoções fora de controle, exageradas e persistentes, mesmo após cessar o estímulo que as provocou.
+
+4.4 A adaptação Segundo a Wikipédia (Enciclopédia virtual) a adaptaçao é definida
+como uma característica ou comportamento que torna um organismo capacitado a sobreviver em seu habitat, mesmo que para isto, sejam necessárias mudanças anatômicas, fisiológicas ou comportamentais. Esta compreensão está ligada à teoria de Charles Darwin, que em sua obra “A Origem das Espécies”, defendeu que as adaptações são resultados do processo de seleção natural ao longo de muitas gerações.
+Darwin utilizou o método comparativo para compreender o processo adaptativo, correlacionando as diferenças entre as espécies e os diferentes fatores ecológicos aos quais eram submetidas.
+Segundo Bock (1999), existem adaptações de natureza morfológica: o desaparecimento dos dentes do siso, no homem, em função das mudanças nos hábitos alimentares; de natureza fisiológica, como a contração das pupilas dos olhos, quando nos expomos à luz; e de natureza comportamental, como as atividades de construção de ninhos pelos pássaros, ou a vida em grupo para garantir a sobrevivência, sendo que, cada tipo de adaptação estenderia a capacidade do animal de sobreviver, reproduzir-se e manter a sua espécie.
+
+www
+Vá ao ambiente virtual e realize as atividades relacionadas a esta unidade.
+
+51
+
+5
+Reações ou fenômenos psicológicos
+Síntese:
+Nesta unidade veremos as reações ou fenômenos psicológicos. Falaremos também sobre motivação, emoção e personalidade.
+
+PSICOLOGIA GERAL
+5.1 Reações ou fenômenos psicológicos As reações ou fenômenos psicológicos podem ser definidos
+como processos que acontecem no mundo interior dos indivíduos, que constituem a subjetividade e que são construídos de maneira contínua ao longo do desenvolvimento humano. É através deles que se torna possível pensar e sentir o mundo, construir comportamentos diferenciados diante das demandas do meio, adaptando-se à realidade e, até mesmo, transformando-a.
+Neste capítulo, a nossa proposta é que possamos ampliar a compreensão sobre os fenômenos psíquicos e sua importância no cotidiano do indivíduo. Para isto apresentaremos três fenômenos psicológicos que podem nos fornecer possibilidades de entender um pouco mais sobre a subjetividade humana. Os fenômenos psicológicos que destacamos em três subunidades são: a motivação; a emoção; e a personalidade.
+5.2 Motivação O estudo da motivação é de importância central na compreensão
+do comportamento humano, pois, a maneira pela qual uma pessoa desenvolve suas capacidades humanas depende da sua motivação.
+Podemos definir motivação como um conjunto de forças internas (impulsos) que orientam o comportamento de um indivíduo para determinado objetivo na tentativa de suprir uma necessidade. Os diferentes motivos explicam a diferença de desempenho e atitude de cada pessoa.
+Os motivos humanos são razões que explicam os modos de se comportar de cada indivíduo, ou como é impulsionado a realizar algo. O processo motivacional é cíclico e apresenta três etapas: necessidade; impulso; e resposta. A necessidade é a manifestação de um estado de carência orgânica (estado de falta fisiológica ou psicológica), o que desencadeia um impulso. O impulso é a força que conduz o comportamento em direção a um objetivo. A resposta é formada pelas ações desenvolvidas que possibilitam suprir a necessidade.
+Assim, quando o objetivo é atingido, o organismo atinge um estado de saciedade que restabelece o equilíbrio orgânico.
+Podemos agrupar os motivos humanos em: fisiológicos; sociais; e combinados.
+Os motivos fisiológicos fazem parte da estrutura biológica do organismo e têm como função a manutenção do equilíbrio orgânico e a sobrevivência do indivíduo. Podemos citar como exemplo o sono, a fome, a sede, que, se não forem supridos podem levar o indivíduo à morte.
+54
+
+Unidade 5 - Reações ou fenômenos psicológicos
+Já os motivos sociais não são inatos e sim adquiridos através do processo de socialização, que determina a sua intensidade e importância. Citamos como exemplos de motivos sociais, a necessidade de afiliação, de poder, de realização.
+Os motivos combinados têm características dos dois anteriores. Apesar de depender dos fatores orgânicos não são essenciais à sobrevivência. São aprendidos através dos padrões culturais vigentes. São exemplos de motivos combinados, o comportamento sexual e o comportamento maternal.
+Cada teoria psicológica tem uma maneira bastante peculiar de perceber os processos motivacionais. Destacamos aqui duas delas, a teoria humanista de Maslow e a teoria psicanalítica de Freud sobre a motivação.
+Na visão humanista de Abraham Maslow, as necessidades humanas estariam organizadas numa hierarquia. Representadas num desenho piramidal, as necessidades fisiológicas estariam na sua base e as necessidades de realização no ápice. Quanto mais se sobe na pirâmide mais as motivações são específicas do homem e menor é o número de pessoas que as sentem. Para ele, as necessidades estariam dispostas, partindo da base: necessidades fisiológicas; necessidades de segurança; necessidades de afeto e pertencimento; necessidades de estima; e necessidades de realização (veja figura14 na unidade 3).
+Para a psicanálise de Sigmund Freud, o comportamento humano é fundamentalmente motivado por razões inconscientes na busca pelo prazer e afastamento da dor, pela canalização da libido, a energia inata que nos motiva e possibilita sobreviver, aquela que podemos buscar no meio à satisfação das nossas necessidades inconscientes.
+5.3 Emoção A emoção pode ser definida como um impulso de origem
+nervosa que leva o indivíduo a uma determinada ação. A palavra vem do latim emotionem, que significa movimento, comoção, ato de mover, o que expressa a característica de agitação que provoca nas pessoas. São consideradas como emoções fundamentais: a alegria; a tristeza; o medo; e a raiva.
+Para alguns teóricos, emoção e sentimento são expressões bastante distintas, enquanto outros acreditam que sejam estados muito semelhantes. Os que defendem a diferença definem a emoção como um estado psico-fisiológico, e o sentimento como uma emoção que foi interpretada no sistema nervoso central e produz uma mudança fisiológica. Para os teóricos que defendem a semelhança, a diferença entre emoção e sentimento diz respeito apenas ao grau de intensidade.
+55
+
+PSICOLOGIA GERAL
+Neste caso, os sentimentos seriam estados afetivos mais suaves, relacionados com as características do objeto em questão, já a emoção seria um sentimento mais intenso.
+Em termos fisiológicos, podemos dizer que a emoção é uma experiência de cunho afetivo desencadeada por um objeto ou situação excitante, provocando reações motoras e glandulares.
+Segundo Fernando González Rey (apud GIORA, 1999), em cada um dos diferentes momentos de expressão social do homem é produzido um número infinito de emoções que representam uma síntese complexa de necessidades já constituídas da personalidade e das condições específicas em que o sujeito atua.
+Todos os objetos e situações que nos cercam provocam um desejo de afastamento ou de aproximação e são constituintes da experiência afetiva de cada indivíduo. As características e intensidade das emoções vividas dependem diretamente do objeto que as provocam. É possível, também, desencadear emoções artificialmente por intermédio de substâncias químicas como drogas ou hormônios.
+As emoções são geralmente acompanhadas por reações motoras ou glandulares, por exemplo, a taquicardia, provocada pelo medo ou o choro, que pode aparecer junto com emoções diferenciadas. Essas e outras reações orgânicas são desencadeadas a partir da interpretação sobre natureza do objeto e suas consequências.
+As emoções estão associadas também à funções de adaptação e sobrevivência para o indivíduo como a proteção contra o perigo, alimentação, reprodução e cuidados com a prole.
+Como já mencionamos na unidade anterior, o sistema límbico é percebido como o sistema responsável pela regulação dos processos emocionais. As emoções possuem uma importante base fisiológica, mas manifestam-se também no campo social mobilizando as atividades humanas, fazendo parte da comunicação interpessoal e atuando como motivadoras do comportamento humano.
+Além disso, as emoções têm um importante papel no bem-estar psicológico ou nos estados doentios, pois podem conduzir à condutas saudáveis ou à condutas não saudáveis, como por exemplo, os estados depressivos que podem acarretar o abuso de álcool e drogas.
+Do ponto de vista profissional, as emoções atuam diretamente sobre nossas relações inter-pessoais determinando, muitas vezes, a qualidade dos relacionamentos e as oportunidades de alcançar objetivos, pois interferem na tomada de decisão e na comunicação.
+56
+
+Unidade 5 - Reações ou fenômenos psicológicos
+
+5.4 Personalidade O termo personalidade vem do latim persona, que significa
+máscara. Para a Psicologia, no entanto, personalidade refere-se a uma organização de vários aspectos constitutivos, como o aspecto físico, psíquico, moral, social, que interagem e determinam o ajustamento do indivíduo ao seu meio ambiente.
+Segundo Bock (1999), a personalidade pode ser entendida como um modo relativamente constante e peculiar de perceber, pensar, sentir e agir do indivíduo, como estes aspectos se integram e organizam, o que confere singularidade de peculiaridade a cada um.
+O estudo da personalidade permite compreender, de acordo com Aguiar (2005), que: as pessoas são únicas e possuem características psicológicas peculiares; existem traços de personalidade que são estáveis, o que permite certa regularidade de atitudes e comportamentos; para entender a personalidade, aspectos genéticos e ambientais deverão ser considerados.
+As características pessoais, que um indivíduo apresenta num determinado momento, devem ser entendidas como uma associação entre a sua herança genética e a influência ambiental a que foi submetido. Desta forma, consideramos que a personalidade é composta por elementos constitucionais e de elemento ambientais. Existem controvérsias sobre o predomínio de elementos ambientais ou constitucionais na origem da personalidade.
+Cada teoria psicológica concebe a personalidade e o seu desenvolvimento de maneira específica. A Psicanálise, que é considerada uma das teorias mais importantes sobre a personalidade, entende que a construção da personalidade ocorre a partir de um processo que é psicossexual. Para a teoria behaviorista a personalidade do indivíduo é determinada pela relação que este estabelece com o meio ambiente. Para saber mais sobre estas teorias e a maneira como compreendem a personalidade e o seu desenvolvimento, consulte a unidade 4.
+Segundo a Enciclopédia Virtual Wikipédia, a personalidade pode ter certos distúrbios que se caracterizam fundamentalmente por vários sintomas que podem ser detectados em conjunto ou individualmente. Alguns exemplos de sintomas de distúrbios de personalidade: falta de socialização; deformidade de caráter; o indivíduo não observa as suas obrigações em relação aos outros, aos grupos, a convenções sociais; apresenta intensas manifestações de intolerância, frustração, impulsividade, egoísmo, falta de autocensura, incapacidade de aprender com base em seus próprios erros, irresponsabilidade, instabilidade de humor, de auto-estima e de relações interpessoais.
+
+www
+Vá ao ambiente virtual e realize as atividades relacionadas a esta unidade.
+
+57
+
+PSICOLOGIA GERAL - Referências
+Referências
+AGUIAR, Maria Aparecida Ferreira. Psicologia aplicada à administração: uma abordagem multidisciplinar. São Paulo: Saraiva, 2005.
+BOCK, Ana M. B.; FURTADO, Odair. Psicologias: uma introdução ao estudo da psicologia. São Paulo: Saraiva, 1999.
+BOCK, Ana M. B.; FURTADO, Odair; TEIXEIRA, Mª de Lourdes T. Psicologias: uma introdução ao estudo de Psicologia. 6.ed. São Paulo: Ed. Saraiva, 1999.
+CESAROTTO, Oscar; LEITE, Marcio P. de S. O que é psicanálise. São Paulo: Brasiliense, 1984. (Coleção Primeiros Passos).
+CHAUÍ, M. Convite à filosofia 3.ed. São Paulo: Ática, 1995.
+CONDICIONAMENTO pavlovinano. 2007. Disponível em: http:// www.psicologiacomanda.hpg.ig.com.br/pavlov.htm. Acesso em: 22.6.2007.
+CUNHA, Rachel Nunes da; VERNEQUE, Luciana Patrícia Silva. Centenário de B. F. Skinner (1904-1990): uma ciência do comportamento humano para o futuro do mundo e da humanidade. Psicologia: Teoria e Pesquisa, Brasília, v.20 n.1, Jan./Apr. 2004.
+DAVIDOFF, L. Introdução à Psicologia. 3.ed. São Paulo: McgrawHill, 1980.
+____. Introdução à Psicologia. 3. ed. São Paulo: Mcgraw-Hill, 1983.
+DAWKINS, Richard. A caixa de Skinner. Disponível em: www.str. com.br/Str/skinner.htm. Acesso em: 22.6.2007.
+DEJOURS, Christophe. A loucura do trabalho. São Paulo: Cortez, 1992.
+________. Psicodinâmica do trabalho. São Paulo: Atlas, 1994.
+DEL NERO, Henrique S. O sítio da mente: pensamento, emoção, e vontade no cérebro humano. São Paulo: Collegium Cognitivo, 1997. Disponível em: http://pt.wikipedia.org. Acesso em: 30.6.2006.
+FADIMAN, James. Teorias da personalidade. São Paulo: Harbra, 1986.
+FASE de latência. 2007. Disponível em: www.guianikei.com/eps/img/ sala_aula_3.jpg. Acesso em: 22.6.2007.
+FASE anal. 2006. Disponível em: caderninho.files.wordpress.com. Acesso em: 22.6.2007.
+FASE fálica. 2007. Disponível em: abluvers.smugmug.com/ photos/79565052-S.jpg. Acesso em: 22.6.2007.FASE genital. 2007. Disponível em:
+www.myband.ro/.../uploads/a_walk_to_remember.jpg. Acesso em: 22.6.2007.
+FERNANDES, Francisco. Dicionário Brasileiro Globo. 56. ed. São Paulo: Globo, 2003.
+FIGUEIREDO, L. Matrizes do pensamento psicológico. 5.ed. Petrópolis: Vozes, 1997. 58
+
+PSICOLOGIA GERAL - Referências
+FIGUEIREDO, Luis Cláudio. A invenção do psicológico: quatro séculos de subjetivação. 6. ed. São Paulo: Escuta, 2002. FREEDMAN, Anne. Uma sociedade planejada, uma análise das proposições de Skinner. São Paulo: EPU/EDUSP, 1972. FREUD, Sigmund. Conferências introdutórias sobre Psicanálise. Rio de Janeiro: Imago, 1977. (Standard Brasileira das Obras Completas de S. Freud). GIORA, Regina Célia. Arqueologia das emoções. Rio de Janeiro: Vozes, 1999. HALL, C.; LINDZEY, G. Teorias de personalidade. 2.ed. Porto Alegre: Artes Médicas, 2001. JAPIASSU, H. Introdução à epistemologia da Psicologia. Rio de Janeiro: Imago, 1977. LINDEGREN, H. e BYRNE, D. Psicologia: processos comportamentais. Rio de Janeiro: Livros Técnicos e Científicos, 1982. LINDZEY, G., HALL, C.; THOMPSON, R. Psicologia. Rio de Janeiro: Guanabara Koogan, 1997. MASLOW, ABRAHAM. Disponível em: www.humanillnesses.com/ Behavioral-Health-Br-Fe/Families.html. Acesso em: 15.11.2007. MURRAY, E. Motivação e emoção. Rio de Janeiro: Zahar, 1980. MYERS, D. Introdução à Psicologia Geral. São Paulo: Técnicos e Científicos, 2000. NYE, Robert D. Três psicologias: idéias de Freud, Skinner e Rogers. São Paulo: Pioneira Thomson Learning Ltda. 1999. PENNA, A. Introdução à história da Psicologia contemporânea. Rio de Janeiro: Zahar, 1978. PENNA, Antonio G. Introdução à psicologia do século XX. Rio de Janeiro: Imago, 2004. PENNA, Antonio Gomes. Aprendizagem e motivação. Rio de Janeiro: Zahar, 1980. PEREIRA, Marcos Emanoel. História da Psicologia: linha de tempo das idéias psicológicas. 2007. Disponível em: http://www.geocities.com/athens/delphi/6061/linha.htm. Acesso em: 22.9.2006. PERSONALIDADE. 2007. Disponível em: http://pt.wikipedia.org. Acesso em: 30.6.2006. PINEL, Hiran. Psicologia humanista – existencial de Carl Rogers. 2007. Disponível em: http://hiranpinel.blogspot.com. Acesso em: 22.6.2007. PSICOLOGIA humanista. 2007. Disponível em: http://pt.wikipedia.org/wiki/Psicologia_humanista. Acesso em: 30.6.2006. PUENTE, Miguel de Ia. Tendências contemporâneas em Psicologia da motivação. São Paulo: Cortez, 1982.
+59
+
+PSICOLOGIA GERAL - Referências - Currículo
+RAPPAPORT, C.R. Psicologia do desenvolvimento. São Paulo: EPU, 1981. v. 1, 2, 3 e 4. SAKALL, Sérgio Eduardo. Charles Robert Darwin (12/02/1809 19/04/1882). 2003. Disponível em: http://www.sergiosakall.com.br/montagem/5darwin.html. Acesso em: 30.6.2006. SCHULTZ, Duane. Teorias da personalidade. São Paulo: Thomson Learning Edições, 2006. Disponível em: http://pt.wikipedia.org. Acesso em: 30.6.2006. SCHULTZ, Duane; SCHULTZ, S. História da Psicologia moderna. São Paulo: Cultrix, 1995. ______. ______. 5. ed. São Paulo: Cultrix, 2006. SEIOS. 2007. Disponível em: wikimedia.org/wikipedia. Acesso em: 22.6.2007. SISTEMA nervosos central. 2007. Disponível em: www.colegiosaofrancisco.com.br/alfa/corpo-humano-sistema-nervoso/sistema-nervoso-central.php Acesso em: 20.5.2008. SKINNER, B. F. Ciência e comportamento humano. São Paulo: Martins Fontes Editora Ltda, 2000. ______. Sobre o Behaviorismo. São Paulo: Cultrix, 1994. UNIVERSIDADE FEDERAL DO AMAZONAS. Pró-reitoria de Ensino de Graduação. Centro de Educação a Distância. Guia de referência para produção de material didático em educação a distância. Organizado por Zeina Rebouças Corrêa Thomé. Manaus: EDUA, 2007. WERTHEIMER, M. Pequena história da Psicologia. 2.ed. São Paulo: Zahar, 1996.
+Currículo da autora Raquel Almeida de Castro é professora do Departamento de Psicologia da Universidade Federal do Amazonas, em Manaus, Amazonas; psicóloga clínica, graduada na Universidade Estadual de Maringá - Paraná; Mestre em Educação pela Universidade Federal do Amazonas e doutora em Psicologia pela USP – Ribeirão Preto. Atuando na UFAM desde 1994, participou da criação do Curso de Psicologia da instituição e tem se dedicado ao ensino e pesquisa nas áreas de Psicologia Clínica, Psicanálise, Psicologia Institucional e Psicologia do Desenvolvimento. Para contato acesse: raquelpsi@uol.com.br.
+60
+

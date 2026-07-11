@@ -1,0 +1,882 @@
+<title>Triagem TDAH Adulto</title>
+<style>
+  :root {
+    --bg: #f4f6f4;
+    --surface: #ffffff;
+    --surface-2: #e9ede9;
+    --ink: #1a2422;
+    --ink-soft: #4c5b56;
+    --ink-faint: #869088;
+    --border: #d7ded9;
+    --accent: #285a52;
+    --accent-strong: #1c433d;
+    --accent-soft: #dfe9e5;
+    --accent-ink: #ffffff;
+    --good: #2f7a52;
+    --good-bg: #e5f2ea;
+    --warn: #9c6a1e;
+    --warn-bg: #f7eedc;
+    --crit: #a83f30;
+    --crit-bg: #f8e6e1;
+    --focus: #1c433d;
+    --radius: 10px;
+
+    --font-display: Charter, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-ui: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #131817;
+    --surface: #1b211f;
+    --surface-2: #212a27;
+    --ink: #e9efec;
+    --ink-soft: #aebab4;
+    --ink-faint: #71807a;
+    --border: #2c3733;
+    --accent: #7fbfae;
+    --accent-strong: #9fd4c4;
+    --accent-soft: #223330;
+    --accent-ink: #0c1615;
+    --good: #6fc394;
+    --good-bg: #1b3227;
+    --warn: #dba95c;
+    --warn-bg: #3a2f18;
+    --crit: #e2897a;
+    --crit-bg: #3a2320;
+    --focus: #9fd4c4;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131817;
+      --surface: #1b211f;
+      --surface-2: #212a27;
+      --ink: #e9efec;
+      --ink-soft: #aebab4;
+      --ink-faint: #71807a;
+      --border: #2c3733;
+      --accent: #7fbfae;
+      --accent-strong: #9fd4c4;
+      --accent-soft: #223330;
+      --accent-ink: #0c1615;
+      --good: #6fc394;
+      --good-bg: #1b3227;
+      --warn: #dba95c;
+      --warn-bg: #3a2f18;
+      --crit: #e2897a;
+      --crit-bg: #3a2320;
+      --focus: #9fd4c4;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 44px 20px 96px;
+  }
+
+  header.page {
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4.8vw, 38px);
+    font-weight: 600;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .lede {
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .notice {
+    margin-top: 22px;
+    padding: 15px 18px;
+    background: var(--warn-bg);
+    border: 1px solid color-mix(in srgb, var(--warn) 32%, transparent);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .notice strong { color: var(--warn); }
+
+  .progress-rail {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding: 14px 0 10px;
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 5px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .progress-label {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-top: 7px;
+    display: flex;
+    justify-content: space-between;
+    font-variant-numeric: tabular-nums;
+  }
+
+  section.part {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 26px 30px;
+    margin-bottom: 20px;
+  }
+
+  .part-head {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 6px;
+  }
+  .part-num {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    margin: 0;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .part-sub {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 6px 0 22px;
+    max-width: 58ch;
+    line-height: 1.55;
+  }
+
+  .group-label {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--accent);
+    margin: 24px 0 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+  .group-label:first-of-type { margin-top: 0; }
+
+  .item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 13px 0;
+    border-top: 1px solid var(--border);
+  }
+  .group-label + .item { border-top: none; }
+
+  .item-text {
+    font-size: 14.5px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  .freq {
+    display: flex;
+    gap: 3px;
+    background: var(--surface-2);
+    padding: 3px;
+    border-radius: 9px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .freq button {
+    font-family: var(--font-ui);
+    font-size: 11.5px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+    white-space: nowrap;
+  }
+  .freq button:hover { background: var(--surface); color: var(--ink); }
+  .freq button:active { transform: scale(0.96); }
+  .freq button:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .freq button.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .freq button.active:hover { background: var(--accent-strong); color: var(--accent-ink); }
+
+  .yesno { display: flex; gap: 3px; background: var(--surface-2); padding: 3px; border-radius: 9px; flex-shrink: 0; border: 1px solid var(--border); }
+  .yesno button {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    padding: 7px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+  }
+  .yesno button:hover { background: var(--surface); color: var(--ink); }
+  .yesno button:active { transform: scale(0.96); }
+  .yesno button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .yesno button.active.yes { background: var(--good); color: white; }
+  .yesno button.active.no { background: var(--crit); color: white; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 10px;
+    margin: 0 -10px;
+    border-top: 1px solid var(--border);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+  }
+  .check-item:hover { background: var(--surface-2); }
+  .group-label + .check-item { border-top: none; }
+  .check-item input {
+    margin-top: 2px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item input:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .check-item span { font-size: 14.5px; color: var(--ink); line-height: 1.45; }
+
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    margin: 34px 0 10px;
+  }
+  button.submit {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 15px 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.15s ease, transform 0.12s ease, opacity 0.2s ease;
+  }
+  button.submit:hover:not(:disabled) { background: var(--accent-strong); transform: translateY(-1px); }
+  button.submit:active:not(:disabled) { transform: translateY(0); }
+  button.submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  button.submit:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+
+  .hint-missing {
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-top: 12px;
+  }
+
+  /* RESULT */
+  #result { display: none; }
+  #result.show { display: block; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 34px 30px;
+    margin-top: 10px;
+  }
+
+  .verdict-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 13px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+  }
+  .verdict-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  .verdict-badge.low { background: var(--good-bg); color: var(--good); }
+  .verdict-badge.mid { background: var(--warn-bg); color: var(--warn); }
+  .verdict-badge.high { background: var(--crit-bg); color: var(--crit); }
+
+  .verdict-title {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 4vw, 27px);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0 0 12px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .verdict-body {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0 0 28px;
+    line-height: 1.6;
+  }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    margin-bottom: 30px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .metric {
+    background: var(--surface-2);
+    padding: 16px 16px 14px;
+  }
+  .metric-num {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .metric-label {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-top: 9px;
+  }
+
+  .bars-block {
+    padding-top: 4px;
+    margin-bottom: 6px;
+  }
+  .bar-row { margin-bottom: 16px; }
+  .bar-row-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .bar-row-head b { font-variant-numeric: tabular-nums; color: var(--ink-soft); font-weight: 600; }
+  .bar-track {
+    height: 7px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .confirm-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .confirm-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    font-size: 14.5px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--border);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot.good { background: var(--good); }
+  .dot.crit { background: var(--crit); }
+
+  .next-steps {
+    background: var(--accent-soft);
+    border-radius: 10px;
+    border-left: 3px solid var(--accent);
+    padding: 20px 22px;
+    margin-top: 28px;
+  }
+  .next-steps h3 {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 0 0 10px;
+    color: var(--accent);
+  }
+  .next-steps p { font-size: 14.5px; color: var(--ink); margin: 0; line-height: 1.6; }
+
+  .restart {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--ink-soft);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 26px;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .restart:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .restart:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  footer.foot {
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 40px;
+    line-height: 1.6;
+    max-width: 56ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 32px 16px 72px; }
+    section.part { padding: 22px 18px 26px; }
+    .item { grid-template-columns: 1fr; align-items: stretch; gap: 10px; }
+    .freq { flex-wrap: wrap; }
+    .freq button { flex: 1 1 auto; }
+    .result-card { padding: 26px 20px; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="page">
+    <p class="eyebrow">Autoavaliação &middot; TDAH em adultos</p>
+    <h1>Onde você está em relação ao TDAH?</h1>
+    <p class="lede">Um questionário de triagem baseado nos critérios do DSM-5 e no modelo de Russell Barkley para adultos. Responda com sinceridade — o resultado aparece na hora, ao final da página.</p>
+    <div class="notice">
+      <strong>Isto não é um diagnóstico.</strong> É uma ferramenta de reflexão a título de conhecimento. Só um psiquiatra ou psicólogo, com entrevista clínica e histórico de vida, pode diagnosticar TDAH.
+    </div>
+  </header>
+
+  <div class="progress-rail">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label">
+      <span id="progressText">0 de 25 respondidas</span>
+      <span id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <form id="quiz">
+
+    <section class="part">
+      <div class="part-head">
+        <span class="part-num">Parte 1</span>
+        <h2>Sintomas nucleares</h2>
+      </div>
+      <p class="part-sub">Nos últimos 6 meses, com que frequência isso acontece com você?</p>
+
+      <div class="group-label">Desatenção</div>
+      <div class="item" data-group="inatt"><span class="item-text">Não presta atenção em detalhes, comete erros por descuido</span><div class="freq" data-q="i1"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Dificuldade de manter atenção em tarefas ou conversas</span><div class="freq" data-q="i2"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Parece não escutar quando falam diretamente com você</span><div class="freq" data-q="i3"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Começa tarefas mas perde o foco antes de terminar</span><div class="freq" data-q="i4"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Dificuldade de organizar tarefas e atividades</span><div class="freq" data-q="i5"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Evita ou adia tarefas que exigem esforço mental prolongado</span><div class="freq" data-q="i6"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Perde objetos necessários (chaves, celular, documentos)</span><div class="freq" data-q="i7"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Distrai-se facilmente com estímulos externos ou pensamentos</span><div class="freq" data-q="i8"></div></div>
+      <div class="item" data-group="inatt"><span class="item-text">Esquece compromissos, contas ou retornar mensagens/ligações</span><div class="freq" data-q="i9"></div></div>
+
+      <div class="group-label">Hiperatividade e impulsividade</div>
+      <div class="item" data-group="hyp"><span class="item-text">Mexe as mãos/pés ou se remexe quando sentado</span><div class="freq" data-q="h1"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Levanta-se em situações em que deveria ficar sentado</span><div class="freq" data-q="h2"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Sente inquietação interna, como um motor ligado por dentro</span><div class="freq" data-q="h3"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Dificuldade de ter lazer ou ficar em silêncio tranquilamente</span><div class="freq" data-q="h4"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Sente-se incapaz de ficar parado por muito tempo</span><div class="freq" data-q="h5"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Fala em excesso</span><div class="freq" data-q="h6"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Responde ou completa frases antes da pergunta terminar</span><div class="freq" data-q="h7"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Dificuldade de esperar a vez (filas, trânsito, conversas)</span><div class="freq" data-q="h8"></div></div>
+      <div class="item" data-group="hyp"><span class="item-text">Interrompe ou se intromete em conversas e atividades alheias</span><div class="freq" data-q="h9"></div></div>
+    </section>
+
+    <section class="part">
+      <div class="part-head">
+        <span class="part-num">Parte 2</span>
+        <h2>Critérios de confirmação</h2>
+      </div>
+      <p class="part-sub">Segundo as fontes clínicas, sintomas isolados não bastam — estes quatro pontos distinguem TDAH de outras causas (estresse, ansiedade, má qualidade de sono).</p>
+
+      <div class="item"><span class="item-text">Esses sintomas já existiam antes dos 12 anos, mesmo sem diagnóstico na época?</span><div class="yesno" data-q="c1"><button type="button" data-val="1" class="yes">Sim</button><button type="button" data-val="0" class="no">Não</button></div></div>
+      <div class="item"><span class="item-text">Eles aparecem em mais de um ambiente (trabalho, casa, relações — não só um)?</span><div class="yesno" data-q="c2"><button type="button" data-val="1" class="yes">Sim</button><button type="button" data-val="0" class="no">Não</button></div></div>
+      <div class="item"><span class="item-text">Causam prejuízo real e mensurável (emprego, dívidas, brigas, multas)?</span><div class="yesno" data-q="c3"><button type="button" data-val="1" class="yes">Sim</button><button type="button" data-val="0" class="no">Não</button></div></div>
+      <div class="item"><span class="item-text">Persistem há pelo menos 6 meses, sem ligação com um evento pontual recente?</span><div class="yesno" data-q="c4"><button type="button" data-val="1" class="yes">Sim</button><button type="button" data-val="0" class="no">Não</button></div></div>
+    </section>
+
+    <section class="part">
+      <div class="part-head">
+        <span class="part-num">Parte 3</span>
+        <h2>As 5 áreas de Barkley</h2>
+      </div>
+      <p class="part-sub">Marque as afirmações que descrevem bem o seu dia a dia (adaptado de "Vencendo o TDAH Adulto").</p>
+
+      <div class="group-label">Gestão de tempo e metas</div>
+      <label class="check-item"><input type="checkbox" data-q="b1"><span>Procrastino sistematicamente, mesmo em coisas importantes</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b2"><span>Tenho péssima noção de quanto tempo uma tarefa vai levar</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b3"><span>Cumprir prazos é uma luta constante</span></label>
+
+      <div class="group-label">Organização, memória e comunicação</div>
+      <label class="check-item"><input type="checkbox" data-q="b4"><span>Perco o fio da meada ao explicar algo para alguém</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b5"><span>Tenho dificuldade de manter sequência lógica ao falar ou escrever</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b6"><span>Esqueço instruções complexas rapidamente</span></label>
+
+      <div class="group-label">Autodisciplina / impulsividade</div>
+      <label class="check-item"><input type="checkbox" data-q="b7"><span>Tomo decisões por impulso e me arrependo depois</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b8"><span>Interrompo conversas ou falo sem filtrar antes</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b9"><span>Tenho reações emocionais desproporcionais ao que as gerou</span></label>
+
+      <div class="group-label">Automotivação</div>
+      <label class="check-item"><input type="checkbox" data-q="b10"><span>Só consigo fazer algo chato se o prazo está em cima</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b11"><span>Preciso de cobrança externa para manter constância</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b12"><span>Abandono tarefas no meio quando a novidade passa</span></label>
+
+      <div class="group-label">Concentração / prontidão</div>
+      <label class="check-item"><input type="checkbox" data-q="b13"><span>Devaneio com frequência mesmo em conversas importantes</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b14"><span>Entedio-me rápido com tarefas repetitivas ou administrativas</span></label>
+      <label class="check-item"><input type="checkbox" data-q="b15"><span>Tenho dificuldade de manter atenção em leituras longas</span></label>
+    </section>
+
+    <div class="cta-row">
+      <button type="submit" class="submit" id="submitBtn" disabled>Ver meu resultado</button>
+    </div>
+    <p class="hint-missing" id="missingHint">Responda todos os itens das Partes 1 e 2 para liberar o resultado.</p>
+  </form>
+
+  <div id="result">
+    <div class="result-card">
+      <span class="verdict-badge" id="verdictBadge"></span>
+      <h2 class="verdict-title" id="verdictTitle"></h2>
+      <p class="verdict-body" id="verdictBody"></p>
+
+      <div class="metric-grid">
+        <div class="metric"><div class="metric-num" id="mInatt">0/9</div><div class="metric-label">Desatenção</div></div>
+        <div class="metric"><div class="metric-num" id="mHyp">0/9</div><div class="metric-label">Hiperativ./Impuls.</div></div>
+        <div class="metric"><div class="metric-num" id="mConfirm">0/4</div><div class="metric-label">Critérios confirmados</div></div>
+        <div class="metric"><div class="metric-num" id="mBarkley">0/15</div><div class="metric-label">Áreas de Barkley</div></div>
+      </div>
+
+      <div class="bars-block">
+        <div class="group-label">Distribuição por área</div>
+        <div class="bar-row">
+          <div class="bar-row-head"><span>Desatenção</span><b id="barInattLabel">0/9</b></div>
+          <div class="bar-track"><div class="bar-fill" id="barInatt"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-row-head"><span>Hiperatividade / Impulsividade</span><b id="barHypLabel">0/9</b></div>
+          <div class="bar-track"><div class="bar-fill" id="barHyp"></div></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-row-head"><span>Áreas de Barkley marcadas</span><b id="barBarkleyLabel">0/15</b></div>
+          <div class="bar-track"><div class="bar-fill" id="barBarkley"></div></div>
+        </div>
+      </div>
+
+      <div class="group-label">Critérios de confirmação</div>
+      <ul class="confirm-list" id="confirmList"></ul>
+
+      <div class="next-steps">
+        <h3>Próximo passo sugerido</h3>
+        <p id="nextStepsText"></p>
+      </div>
+
+      <button type="button" class="restart" id="restartBtn">Refazer avaliação</button>
+    </div>
+  </div>
+
+  <footer class="foot">
+    Baseado nos critérios do DSM-5 (citados na cartilha ABP/Alexa e no capítulo IACAPAP) e no modelo de 5 áreas de Russell Barkley ("Vencendo o TDAH Adulto"). Ferramenta de estudo — não substitui avaliação profissional.
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  const FREQ_OPTS = [
+    { v: 0, l: 'Nunca' },
+    { v: 1, l: 'Às vezes' },
+    { v: 2, l: 'Frequente' },
+    { v: 3, l: 'Muito freq.' }
+  ];
+
+  const state = {};
+
+  // Build frequency widgets
+  document.querySelectorAll('.freq').forEach(function (el) {
+    const q = el.dataset.q;
+    FREQ_OPTS.forEach(function (opt) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = opt.l;
+      btn.dataset.val = opt.v;
+      btn.addEventListener('click', function () {
+        el.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state[q] = opt.v;
+        updateProgress();
+      });
+      el.appendChild(btn);
+    });
+  });
+
+  // Yes/No widgets
+  document.querySelectorAll('.yesno button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const parent = btn.parentElement;
+      const q = parent.dataset.q;
+      parent.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state[q] = parseInt(btn.dataset.val, 10);
+      updateProgress();
+    });
+  });
+
+  // Checkboxes
+  document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      state[cb.dataset.q] = cb.checked ? 1 : 0;
+      updateProgress();
+    });
+  });
+
+  const REQUIRED_KEYS = [];
+  for (let i = 1; i <= 9; i++) REQUIRED_KEYS.push('i' + i);
+  for (let i = 1; i <= 9; i++) REQUIRED_KEYS.push('h' + i);
+  for (let i = 1; i <= 4; i++) REQUIRED_KEYS.push('c' + i);
+
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const progressPct = document.getElementById('progressPct');
+  const submitBtn = document.getElementById('submitBtn');
+  const missingHint = document.getElementById('missingHint');
+
+  function updateProgress() {
+    const answered = REQUIRED_KEYS.filter(function (k) { return state[k] !== undefined; }).length;
+    const total = REQUIRED_KEYS.length;
+    const pct = Math.round((answered / total) * 100);
+    progressFill.style.width = pct + '%';
+    progressText.textContent = answered + ' de ' + total + ' respondidas';
+    progressPct.textContent = pct + '%';
+    const ready = answered === total;
+    submitBtn.disabled = !ready;
+    missingHint.style.display = ready ? 'none' : 'block';
+  }
+
+  document.getElementById('quiz').addEventListener('submit', function (e) {
+    e.preventDefault();
+    computeResult();
+  });
+
+  document.getElementById('restartBtn').addEventListener('click', function () {
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('quiz').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  function countHighFreq(prefix, n) {
+    let count = 0;
+    for (let i = 1; i <= n; i++) {
+      const v = state[prefix + i];
+      if (v === 2 || v === 3) count++;
+    }
+    return count;
+  }
+  function countAny(prefix, n) {
+    let sum = 0;
+    for (let i = 1; i <= n; i++) sum += (state[prefix + i] || 0);
+    return sum;
+  }
+
+  function computeResult() {
+    const inattHigh = countHighFreq('i', 9);
+    const hypHigh = countHighFreq('h', 9);
+    const confirmCount = ['c1','c2','c3','c4'].filter(function(k){ return state[k] === 1; }).length;
+    const barkleyCount = (function(){
+      let n = 0;
+      for (let i = 1; i <= 15; i++) if (state['b'+i] === 1) n++;
+      return n;
+    })();
+
+    const symptomMax = Math.max(inattHigh, hypHigh);
+    const meetsSymptomThreshold = symptomMax >= 5;
+    const meetsConfirm = confirmCount === 4;
+    const barkleyStrong = barkleyCount >= 8;
+
+    let tier, badgeClass, title, body, nextText;
+
+    if (meetsSymptomThreshold && meetsConfirm) {
+      tier = 'high';
+      badgeClass = 'high';
+      title = 'Perfil consistente com TDAH — vale buscar avaliação';
+      body = 'Você atingiu o número de sintomas frequentes considerado clinicamente relevante (5 ou mais em pelo menos uma lista) e confirmou os quatro critérios que distinguem TDAH de outras causas (início na infância, múltiplos ambientes, prejuízo real, persistência). Isso não é um diagnóstico, mas é um padrão que, segundo as fontes, justifica avaliação formal.';
+      nextText = 'Procure um psiquiatra ou psicólogo com experiência em TDAH adulto. Leve suas respostas desta triagem — elas já organizam boa parte do histórico que a avaliação vai pedir. Se possível, peça para alguém que te conhece bem (parceiro, familiar próximo) descrever também como te vê nesses pontos, já que autorrelato tende a subestimar prejuízos.';
+    } else if (meetsSymptomThreshold && !meetsConfirm) {
+      tier = 'mid';
+      badgeClass = 'mid';
+      title = 'Muitos sintomas presentes, mas critérios de confirmação incompletos';
+      body = 'Você relata bastante desatenção e/ou hiperatividade-impulsividade, mas nem todos os quatro critérios de confirmação bateram (início na infância, múltiplos ambientes, prejuízo real, persistência de 6+ meses). Isso pode indicar outra causa por trás dos sintomas — estresse agudo, ansiedade, sono ruim — ou um TDAH ainda pouco reconhecido no seu histórico.';
+      nextText = 'Vale conversar com um profissional para investigar o que explica esses sintomas — TDAH é uma hipótese, não a única. Reveja com calma os critérios que não confirmou: às vezes memórias da infância exigem conversar com pais/irmãos para reconstituir.';
+    } else if (barkleyStrong) {
+      tier = 'mid';
+      badgeClass = 'mid';
+      title = 'Sintomas nucleares moderados, mas forte impacto funcional';
+      body = 'A contagem de sintomas do DSM-5 não chegou ao limiar clínico, mas você marcou muitas das áreas práticas de dificuldade descritas por Barkley (gestão de tempo, organização, impulsividade, motivação, foco). Isso pode refletir TDAH mais leve, outra condição, ou apenas um período de sobrecarga.';
+      nextText = 'Considere registrar por 1-2 semanas os momentos em que esses padrões mais atrapalham — isso ajuda tanto a te dar clareza quanto a informar uma eventual consulta profissional.';
+    } else {
+      tier = 'low';
+      badgeClass = 'low';
+      title = 'Poucos indícios de TDAH neste momento';
+      body = 'Suas respostas não indicam um padrão forte de sintomas de TDAH segundo os critérios usados aqui. Isso não descarta totalmente a possibilidade, mas sugere que, se você sente dificuldades no dia a dia, outras explicações (estresse, ansiedade, sono, sobrecarga) podem valer investigação primeiro.';
+      nextText = 'Se ainda sentir que algo não bate, vale conversar com um profissional de qualquer forma — só uma avaliação clínica descarta ou confirma com segurança.';
+    }
+
+    document.getElementById('verdictBadge').className = 'verdict-badge ' + badgeClass;
+    document.getElementById('verdictBadge').textContent = tier === 'high' ? 'Padrão relevante' : (tier === 'mid' ? 'Padrão parcial' : 'Padrão baixo');
+    document.getElementById('verdictTitle').textContent = title;
+    document.getElementById('verdictBody').textContent = body;
+    document.getElementById('nextStepsText').textContent = nextText;
+
+    document.getElementById('mInatt').textContent = inattHigh + '/9';
+    document.getElementById('mHyp').textContent = hypHigh + '/9';
+    document.getElementById('mConfirm').textContent = confirmCount + '/4';
+    document.getElementById('mBarkley').textContent = barkleyCount + '/15';
+
+    setBar('barInatt', inattHigh, 9);
+    setBar('barHyp', hypHigh, 9);
+    setBar('barBarkley', barkleyCount, 15);
+
+    const list = document.getElementById('confirmList');
+    list.innerHTML = '';
+    const labels = {
+      c1: 'Sintomas desde antes dos 12 anos',
+      c2: 'Presentes em múltiplos ambientes',
+      c3: 'Causam prejuízo real e mensurável',
+      c4: 'Persistem há 6+ meses'
+    };
+    ['c1','c2','c3','c4'].forEach(function (k) {
+      const li = document.createElement('li');
+      const ok = state[k] === 1;
+      li.innerHTML = '<span class="dot ' + (ok ? 'good' : 'crit') + '"></span><span>' + labels[k] + '</span>';
+      list.appendChild(li);
+    });
+
+    document.getElementById('quiz').style.display = 'none';
+    const resultEl = document.getElementById('result');
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setBar(id, val, max) {
+    const pct = Math.round((val / max) * 100);
+    document.getElementById(id).style.width = pct + '%';
+    document.getElementById(id + 'Label').textContent = val + '/' + max;
+  }
+
+  updateProgress();
+})();
+</script>

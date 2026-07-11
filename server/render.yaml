@@ -1,0 +1,29 @@
+# Blueprint de deploy do Render — Rotina TDAH API.
+# Ao conectar este repositório no Render (New → Blueprint), ele lê este arquivo
+# e provisiona o serviço automaticamente. As variáveis marcadas sync:false
+# devem ser preenchidas por você no painel (nunca ficam no git).
+services:
+  - type: web
+    name: rotina-tdah-api
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_SSL
+        value: "true"
+      # Preencha no painel do Render (Environment) — não versionados:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      # Opcional (Google OAuth). Se ausente, /auth/google responde 501.
+      - key: GOOGLE_CLIENT_ID
+        sync: false

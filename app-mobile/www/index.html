@@ -1,0 +1,2225 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>Rotina Diária — Apoio TDAH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#285a52" />
+<meta name="description" content="Checklist diário de rotina com horários, lembretes e progresso, baseado nas 8 Regras de Barkley." />
+<link rel="manifest" id="manifestLink" />
+<style>
+  :root {
+    --bg: #f4f6f4;
+    --bg-elevated: #ffffff;
+    --bg-sunken: #e9ede9;
+    --ink: #16211d;
+    --ink-soft: #4a5852;
+    --ink-faint: #7c8b84;
+    --border: #d8e0da;
+    --accent: #285a52;
+    --accent-soft: #e3ede9;
+    --accent-ink: #ffffff;
+    --good: #2f8f63;
+    --good-soft: #e2f3e8;
+    --warn: #a3701f;
+    --warn-soft: #f6ecd8;
+    --crit: #a8452f;
+    --crit-soft: #f8e5df;
+    --shadow: 0 1px 2px rgba(20, 30, 26, 0.06), 0 4px 14px rgba(20, 30, 26, 0.06);
+    --radius: 14px;
+    --font-display: Charter, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121715;
+      --bg-elevated: #1b2320;
+      --bg-sunken: #0d1210;
+      --ink: #e7efe9;
+      --ink-soft: #aebdb5;
+      --ink-faint: #71827a;
+      --border: #2a3531;
+      --accent: #7fbfae;
+      --accent-soft: #1f322c;
+      --accent-ink: #0d1815;
+      --good: #6bc496;
+      --good-soft: #16281f;
+      --warn: #d8ab5c;
+      --warn-soft: #2c2417;
+      --crit: #e08469;
+      --crit-soft: #2e1c17;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121715; --bg-elevated: #1b2320; --bg-sunken: #0d1210;
+    --ink: #e7efe9; --ink-soft: #aebdb5; --ink-faint: #71827a;
+    --border: #2a3531; --accent: #7fbfae; --accent-soft: #1f322c; --accent-ink: #0d1815;
+    --good: #6bc496; --good-soft: #16281f; --warn: #d8ab5c; --warn-soft: #2c2417;
+    --crit: #e08469; --crit-soft: #2e1c17;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 18px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f6f4; --bg-elevated: #ffffff; --bg-sunken: #e9ede9;
+    --ink: #16211d; --ink-soft: #4a5852; --ink-faint: #7c8b84;
+    --border: #d8e0da; --accent: #285a52; --accent-soft: #e3ede9; --accent-ink: #ffffff;
+    --good: #2f8f63; --good-soft: #e2f3e8; --warn: #a3701f; --warn-soft: #f6ecd8;
+    --crit: #a8452f; --crit-soft: #f8e5df;
+    --shadow: 0 1px 2px rgba(20,30,26,0.06), 0 4px 14px rgba(20,30,26,0.06);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 88px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a { color: inherit; }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: max(12px, env(safe-area-inset-top)) 16px 0 16px;
+  }
+  .topbar-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; padding-bottom: 10px;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .brand small {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+  .clock {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+
+  .daytabs {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+  }
+  .daytabs::-webkit-scrollbar { display: none; }
+  .daytab {
+    flex: 0 0 auto;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .daytab[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .daytab .dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--good); margin-right: 6px; vertical-align: middle;
+  }
+
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+
+  .progress-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 18px;
+  }
+  .ring-wrap { position: relative; width: 64px; height: 64px; flex: none; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--bg-sunken); stroke-width: 6; }
+  .ring-fill { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+  .ring-label {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.92rem;
+  }
+  .progress-text { flex: 1; }
+  .progress-text .headline { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; }
+  .progress-text .sub { font-size: 0.8rem; color: var(--ink-soft); margin-top: 2px; }
+  .reset-btn {
+    font-size: 0.72rem; font-weight: 600; color: var(--ink-faint);
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .reset-btn:hover { background: var(--bg-sunken); }
+
+  .streak-row {
+    display: flex; gap: 6px; margin-bottom: 18px;
+  }
+  .streak-day {
+    flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg-elevated);
+  }
+  .streak-day .d-label {
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--ink-faint);
+  }
+  .streak-day .d-pct {
+    font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.78rem;
+    margin-top: 3px; color: var(--ink-soft);
+  }
+  .streak-day.full { background: var(--good-soft); border-color: var(--good); }
+  .streak-day.full .d-pct { color: var(--good); }
+  .streak-day.partial { background: var(--warn-soft); border-color: var(--warn); }
+  .streak-day.partial .d-pct { color: var(--warn); }
+  .streak-day.today { box-shadow: 0 0 0 2px var(--accent) inset; }
+
+  .notify-banner {
+    display: none;
+    background: var(--warn-soft); color: var(--warn);
+    border: 1px solid var(--warn);
+    border-radius: 10px; padding: 10px 12px; font-size: 0.8rem;
+    margin-bottom: 16px; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .notify-banner.show { display: flex; }
+  .notify-banner button {
+    font-size: 0.76rem; font-weight: 700; color: var(--accent-ink);
+    background: var(--accent); border: none; border-radius: 7px;
+    padding: 6px 10px; cursor: pointer; flex: none;
+  }
+
+  .block {
+    margin-bottom: 22px;
+  }
+  .block-title {
+    font-family: var(--font-display);
+    font-size: 0.98rem; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+    margin: 0 0 8px 2px; color: var(--ink);
+  }
+  .block-title .tag {
+    font-family: var(--font-body); font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 2px 7px; border-radius: 6px;
+  }
+
+  .task {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .task:active { transform: scale(0.995); }
+  .task.done {
+    background: var(--good-soft);
+    border-color: var(--good);
+  }
+  .task.done .task-label { text-decoration: line-through; color: var(--ink-faint); }
+
+  .check {
+    flex: none; width: 24px; height: 24px; border-radius: 7px;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+    background: var(--bg-elevated);
+  }
+  .task.done .check { background: var(--good); border-color: var(--good); }
+  .check svg { width: 14px; height: 14px; opacity: 0; stroke: white; stroke-width: 3; }
+  .task.done .check svg { opacity: 1; }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .task-time {
+    font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.82rem;
+    color: var(--accent);
+  }
+  .task-label { font-size: 0.92rem; font-weight: 600; line-height: 1.3; }
+  .task-detail { font-size: 0.8rem; color: var(--ink-soft); margin-top: 3px; line-height: 1.4; }
+  .task-rule {
+    display: inline-block; margin-top: 5px;
+    font-size: 0.68rem; font-weight: 600; color: var(--ink-faint);
+    background: var(--bg-sunken); padding: 2px 7px; border-radius: 6px;
+  }
+  .alarm-btn {
+    flex: none; width: 30px; height: 30px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink-faint);
+    margin-top: 1px;
+  }
+  .alarm-btn.armed { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .alarm-btn svg { width: 15px; height: 15px; }
+
+  .principle {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 6px;
+  }
+  .principle .label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+  .principle p { font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; margin: 8px 0 0 0; color: var(--ink); }
+
+  footer {
+    text-align: center; font-size: 0.72rem; color: var(--ink-faint);
+    padding: 24px 16px 8px;
+    line-height: 1.6;
+  }
+
+  .install-btn {
+    position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 30;
+    background: var(--accent); color: var(--accent-ink);
+    border: none; border-radius: 999px;
+    padding: 12px 18px; font-size: 0.82rem; font-weight: 700;
+    box-shadow: var(--shadow); cursor: pointer;
+    display: none; align-items: center; gap: 8px;
+  }
+  .install-btn.show { display: inline-flex; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg);
+    padding: 10px 16px; border-radius: 10px; font-size: 0.82rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 50; max-width: 90vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .edit-fab {
+    position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 30;
+    background: var(--bg-elevated); color: var(--ink-soft);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 12px 16px; font-size: 0.8rem; font-weight: 700;
+    box-shadow: var(--shadow); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .edit-fab svg { width: 15px; height: 15px; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10, 16, 13, 0.5);
+    z-index: 60; display: none; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.show { display: flex; }
+  @media (min-width: 680px) {
+    .modal-overlay { align-items: center; }
+  }
+  .modal {
+    background: var(--bg-elevated);
+    width: 100%; max-width: 640px; max-height: 88vh;
+    border-radius: 18px 18px 0 0;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  @media (min-width: 680px) {
+    .modal { border-radius: 16px; max-height: 82vh; }
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px; border-bottom: 1px solid var(--border);
+    flex: none;
+  }
+  .modal-header h2 { font-family: var(--font-display); font-size: 1.05rem; margin: 0; }
+  .modal-close {
+    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--ink-soft); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .modal-body { overflow-y: auto; padding: 16px; flex: 1; }
+  .modal-footer {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    display: flex; gap: 8px; flex-wrap: wrap; flex: none;
+    background: var(--bg-sunken);
+  }
+
+  .edit-daytabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; }
+  .edit-daytab {
+    flex: 0 0 auto; font-size: 0.76rem; font-weight: 600;
+    padding: 6px 11px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--ink-soft); cursor: pointer;
+  }
+  .edit-daytab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .edit-row {
+    display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; align-items: start;
+    padding: 10px; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px;
+    background: var(--bg);
+  }
+  .edit-row input[type="time"], .edit-row input[type="text"], .edit-row select {
+    font-family: var(--font-body); font-size: 0.82rem; color: var(--ink);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 8px; width: 100%;
+  }
+  .edit-row .fields { display: flex; flex-direction: column; gap: 6px; }
+  .edit-row .fields-row { display: flex; gap: 6px; }
+  .edit-row .del-btn {
+    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--crit); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .edit-row .del-btn svg { width: 15px; height: 15px; }
+  .edit-row textarea {
+    font-family: var(--font-body); font-size: 0.78rem; color: var(--ink-soft);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;
+    padding: 6px 8px; width: 100%; resize: vertical; min-height: 34px;
+  }
+
+  .add-task-btn {
+    width: 100%; padding: 12px; border-radius: 10px; border: 1px dashed var(--border);
+    background: none; color: var(--accent); font-weight: 700; font-size: 0.84rem;
+    cursor: pointer; margin-top: 4px;
+  }
+  .add-task-btn:hover { background: var(--accent-soft); }
+
+  .btn {
+    font-size: 0.78rem; font-weight: 700; border-radius: 8px; padding: 9px 13px;
+    cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--ink-soft);
+  }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn-danger { color: var(--crit); }
+  .btn-file { position: relative; overflow: hidden; }
+  .btn-file input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  /* ---------- Auth (Fase 5): session indicator + login modal ---------- */
+  .session-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    max-width: 60vw;
+  }
+  .sync-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.68rem; font-weight: 700;
+    padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid var(--border); color: var(--ink-faint); background: var(--bg-elevated);
+  }
+  .sync-status[hidden] { display: none; }
+  .sync-status::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ink-faint); flex: none;
+  }
+  .sync-status.synced { color: var(--good); border-color: var(--good); background: var(--good-soft); }
+  .sync-status.synced::before { background: var(--good); }
+  .sync-status.pending { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+  .sync-status.pending::before { background: var(--warn); }
+  .sync-status.offline { color: var(--ink-faint); border-color: var(--border); background: var(--bg-sunken); }
+  .sync-status.offline::before { background: var(--ink-faint); }
+  .sync-status.syncing { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .sync-status.syncing::before { background: var(--accent); }
+  .session-btn {
+    font-size: 0.74rem; font-weight: 700;
+    color: var(--accent); background: var(--accent-soft);
+    border: 1px solid var(--accent); border-radius: 999px;
+    padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  }
+  .session-btn:hover { filter: brightness(0.97); }
+  .session-name {
+    font-size: 0.74rem; font-weight: 600; color: var(--ink-soft);
+    max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .session-logout {
+    font-size: 0.72rem; font-weight: 700; color: var(--ink-faint);
+    background: none; border: 1px solid var(--border); border-radius: 999px;
+    padding: 5px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .session-logout:hover { background: var(--bg-sunken); }
+
+  .auth-field { margin-bottom: 12px; }
+  .auth-field label {
+    display: block; font-size: 0.74rem; font-weight: 700;
+    color: var(--ink-soft); margin-bottom: 5px;
+  }
+  .auth-field input {
+    font-family: var(--font-body); font-size: 0.9rem; color: var(--ink);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 11px; width: 100%;
+  }
+  .auth-field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .auth-error {
+    display: none; background: var(--crit-soft); color: var(--crit);
+    border: 1px solid var(--crit); border-radius: 8px;
+    padding: 9px 11px; font-size: 0.8rem; margin-bottom: 12px; line-height: 1.4;
+  }
+  .auth-error.show { display: block; }
+  .auth-submit {
+    width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--accent);
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; margin-top: 2px;
+  }
+  .auth-submit:disabled { opacity: 0.6; cursor: default; }
+  .auth-toggle {
+    text-align: center; font-size: 0.8rem; color: var(--ink-soft); margin-top: 14px;
+  }
+  .auth-toggle button {
+    background: none; border: none; color: var(--accent); font-weight: 700;
+    font-size: 0.8rem; cursor: pointer; padding: 0; text-decoration: underline;
+  }
+  .auth-sep {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--ink-faint); font-size: 0.72rem; margin: 16px 0;
+  }
+  .auth-sep::before, .auth-sep::after {
+    content: ""; flex: 1; height: 1px; background: var(--border);
+  }
+  .auth-google {
+    width: 100%; padding: 11px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--ink-soft); font-weight: 700; font-size: 0.86rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .auth-google .soon {
+    font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--warn); background: var(--warn-soft); padding: 2px 6px; border-radius: 5px;
+  }
+  .auth-offline-note {
+    font-size: 0.72rem; color: var(--ink-faint); margin-top: 14px; line-height: 1.5; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="brand">Rotina Diária<small>Apoio prático · TDAH</small></div>
+    <div class="session-chip" id="sessionChip">
+      <span class="sync-status" id="syncStatus" title="" hidden></span>
+      <div class="clock" id="clock">--:--</div>
+    </div>
+  </div>
+  <div class="daytabs" id="dayTabs" role="tablist"></div>
+</div>
+
+<main>
+  <div class="notify-banner" id="notifyBanner">
+    <span>Ative notificações para receber lembretes dos horários marcados. Funciona melhor com o app instalado e aberto em segundo plano — se o navegador for fechado totalmente, o alarme pode não disparar.</span>
+    <button id="notifyBtn" type="button">Ativar</button>
+  </div>
+
+  <div class="progress-card">
+    <div class="ring-wrap">
+      <svg width="64" height="64" viewBox="0 0 64 64">
+        <circle class="ring-track" cx="32" cy="32" r="27"></circle>
+        <circle class="ring-fill" id="ringFill" cx="32" cy="32" r="27" stroke-dasharray="169.6" stroke-dashoffset="169.6"></circle>
+      </svg>
+      <div class="ring-label" id="ringLabel">0%</div>
+    </div>
+    <div class="progress-text">
+      <div class="headline" id="progressHeadline">Vamos começar</div>
+      <div class="sub" id="progressSub">0 de 0 concluídas hoje</div>
+    </div>
+    <button class="reset-btn" id="resetBtn" type="button">Reiniciar dia</button>
+  </div>
+
+  <div class="streak-row" id="streakRow"></div>
+
+  <div id="blocksContainer"></div>
+
+  <div class="principle">
+    <div class="label">Princípio do dia</div>
+    <p>O cérebro com TDAH não sustenta bem informação, tempo e motivação internamente — a solução não é "tentar mais", é <strong>externalizar</strong>. Este checklist é isso aplicado à sua rotina real.</p>
+  </div>
+
+  <footer>
+    Baseado nas 8 Regras de Barkley e no plano de rotina semanal construído a partir dos livros deste projeto.<br />
+    Ferramenta educacional de apoio — não substitui acompanhamento clínico.
+  </footer>
+</main>
+
+<button class="edit-fab" id="editFab" type="button">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke-linejoin="round"/></svg>
+  Editar rotina
+</button>
+<button class="install-btn" id="installBtn" type="button">⬇ Instalar no celular</button>
+<div class="toast" id="toast"></div>
+
+<div class="modal-overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Editar rotina</h2>
+      <button class="modal-close" id="editCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="edit-daytabs" id="editDayTabs"></div>
+      <div id="editRows"></div>
+      <button class="add-task-btn" id="addTaskBtn" type="button">+ Adicionar tarefa</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" id="exportBtn" type="button">Exportar JSON</button>
+      <label class="btn btn-file">Importar JSON<input type="file" id="importFile" accept="application/json" /></label>
+      <button class="btn btn-danger" id="restoreDefaultBtn" type="button">Restaurar padrão</button>
+      <button class="btn btn-primary" id="editDoneBtn" type="button" style="margin-left:auto;">Concluído</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="authOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal-header">
+      <h2 id="authTitle">Entrar</h2>
+      <button class="modal-close" id="authCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-error" id="authError" role="alert"></div>
+      <form id="authForm" novalidate>
+        <div class="auth-field" id="authNameField" style="display:none;">
+          <label for="authName">Nome</label>
+          <input type="text" id="authName" autocomplete="name" placeholder="Como quer ser chamado(a)" />
+        </div>
+        <div class="auth-field">
+          <label for="authEmail">Email</label>
+          <input type="email" id="authEmail" autocomplete="email" placeholder="voce@exemplo.com" required />
+        </div>
+        <div class="auth-field">
+          <label for="authPassword">Senha</label>
+          <input type="password" id="authPassword" autocomplete="current-password" placeholder="Mínimo 8 caracteres" required />
+        </div>
+        <button class="auth-submit" id="authSubmit" type="submit">Entrar</button>
+      </form>
+
+      <div class="auth-sep">ou</div>
+      <button class="auth-google" id="authGoogleBtn" type="button">
+        <span>Entrar com Google</span><span class="soon">em breve</span>
+      </button>
+
+      <div class="auth-toggle" id="authToggleWrap">
+        <span id="authToggleText">Não tem conta?</span>
+        <button type="button" id="authToggleBtn">Criar conta</button>
+      </div>
+
+      <div class="auth-offline-note">
+        O login é opcional. O app funciona normalmente sem conta e offline — sincronização entre dispositivos chega em breve.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- API layer (Fase 5) ----------
+   * Base da API. Em produção troque por sua URL HTTPS pública, ex:
+   *   var API_BASE = "https://api.seu-dominio.com";
+   * (uma linha só). Mantém-se 100% offline-first: se a rede/servidor
+   * estiver indisponível, o app continua funcionando com localStorage. */
+  var API_BASE = "http://localhost:3000";
+  var AUTH_KEY = "rotina_tdah_auth_v1";
+
+  // Erro identificável de rede (backend offline / sem conexão).
+  function NetworkError(message) {
+    this.name = "NetworkError";
+    this.message = message || "Sem conexão com o servidor";
+    this.isNetworkError = true;
+  }
+  NetworkError.prototype = Object.create(Error.prototype);
+
+  // Erro de API com mensagem amigável e código vindos do backend.
+  function ApiError(message, status, code) {
+    this.name = "ApiError";
+    this.message = message || "Erro inesperado";
+    this.status = status || 0;
+    this.code = code || null;
+  }
+  ApiError.prototype = Object.create(Error.prototype);
+
+  var Api = (function () {
+    var session = loadSession(); // { user, accessToken, refreshToken } | null
+    var listeners = [];
+
+    function loadSession() {
+      try {
+        var raw = localStorage.getItem(AUTH_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    }
+    function persist() {
+      try {
+        if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+        else localStorage.removeItem(AUTH_KEY);
+      } catch (e) {}
+    }
+    function setSession(user, tokens) {
+      session = { user: user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+      persist();
+      emit();
+    }
+    function clearSession() {
+      session = null;
+      persist();
+      emit();
+    }
+    function emit() {
+      listeners.forEach(function (fn) { try { fn(session); } catch (e) {} });
+    }
+
+    // fetch com JSON, mapeando falha de rede -> NetworkError e erro HTTP -> ApiError.
+    function rawJson(path, opts) {
+      opts = opts || {};
+      var headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+      var init = { method: opts.method || "GET", headers: headers };
+      if (opts.body !== undefined) init.body = JSON.stringify(opts.body);
+
+      return fetch(API_BASE + path, init).then(function (res) {
+        if (res.status === 204) return { status: 204, data: null };
+        return res.text().then(function (txt) {
+          var data = null;
+          if (txt) { try { data = JSON.parse(txt); } catch (e) { data = null; } }
+          return { status: res.status, data: data, ok: res.ok };
+        });
+      }, function () {
+        // Falha de rede (servidor offline, DNS, CORS de conexão): não trava a UI.
+        throw new NetworkError();
+      });
+    }
+
+    function toApiError(result) {
+      var msg = result.data && result.data.error && result.data.error.message;
+      var code = result.data && result.data.error && result.data.error.code;
+      return new ApiError(msg || ("Erro " + result.status), result.status, code);
+    }
+
+    // Wrapper autenticado: injeta Bearer; em 401 tenta UM refresh e repete.
+    function authedFetch(path, opts, _retried) {
+      opts = opts || {};
+      if (!session) return Promise.reject(new ApiError("Não autenticado", 401, "NO_SESSION"));
+      var headers = Object.assign({}, opts.headers || {}, { Authorization: "Bearer " + session.accessToken });
+      return rawJson(path, Object.assign({}, opts, { headers: headers })).then(function (result) {
+        if (result.status === 401 && !_retried) {
+          return refresh().then(function () {
+            return authedFetch(path, opts, true);
+          }, function () {
+            // Refresh falhou: limpa a sessão e dispara logout local.
+            clearSession();
+            throw new ApiError("Sessão expirada", 401, "SESSION_EXPIRED");
+          });
+        }
+        if (!result.ok) throw toApiError(result);
+        return result.data;
+      });
+    }
+
+    function refresh() {
+      if (!session || !session.refreshToken) return Promise.reject(new ApiError("Sem refresh token", 401));
+      return rawJson("/auth/refresh", { method: "POST", body: { refreshToken: session.refreshToken } }).then(function (result) {
+        if (!result.ok || !result.data || !result.data.tokens) throw toApiError(result);
+        session.accessToken = result.data.tokens.accessToken;
+        session.refreshToken = result.data.tokens.refreshToken;
+        persist();
+        return session;
+      });
+    }
+
+    return {
+      NetworkError: NetworkError,
+      ApiError: ApiError,
+      getSession: function () { return session; },
+      isLoggedIn: function () { return !!session; },
+      onChange: function (fn) { listeners.push(fn); },
+      fetch: authedFetch,
+
+      register: function (email, password, displayName) {
+        return rawJson("/auth/register", { method: "POST", body: { email: email, password: password, displayName: displayName } })
+          .then(function (result) {
+            if (!result.ok || !result.data) throw toApiError(result);
+            setSession(result.data.user, result.data.tokens);
+            return result.data.user;
+          });
+      },
+      login: function (email, password) {
+        return rawJson("/auth/login", { method: "POST", body: { email: email, password: password } })
+          .then(function (result) {
+            if (!result.ok || !result.data) throw toApiError(result);
+            setSession(result.data.user, result.data.tokens);
+            return result.data.user;
+          });
+      },
+      logout: function () {
+        var token = session && session.refreshToken;
+        // Best-effort no servidor; local sempre limpa.
+        var done = token
+          ? rawJson("/auth/logout", { method: "POST", body: { refreshToken: token } }).catch(function () {})
+          : Promise.resolve();
+        return done.then(function () { clearSession(); });
+      },
+      me: function () {
+        return authedFetch("/me", { method: "GET" }).then(function (data) {
+          if (data && data.user && session) { session.user = data.user; persist(); emit(); }
+          return data && data.user;
+        });
+      }
+    };
+  })();
+
+  /* ---------- Theme sync (host toggles data-theme on root) ---------- */
+
+  /* ---------- Data model ---------- */
+  // Days: seg..sex share the same weekday template; each has its own emphasis line.
+  var DAYS = [
+    { key: "seg", label: "Segunda" },
+    { key: "ter", label: "Terça" },
+    { key: "qua", label: "Quarta" },
+    { key: "qui", label: "Quinta" },
+    { key: "sex", label: "Sexta" }
+  ];
+
+  var EMPHASIS = {
+    seg: "Planejamento da semana inteira nos primeiros 10 min de trabalho — metas grandes fragmentadas em passos diários.",
+    ter: "Rotina padrão dos blocos de foco.",
+    qua: "Rotina padrão dos blocos de foco.",
+    qui: "Rotina padrão dos blocos de foco.",
+    sex: "Revisão da semana: o que funcionou, o que não funcionou nas estratégias. Ajuste é parte do processo, não fracasso."
+  };
+
+  var BLOCK_ORDER = ["Manhã", "Trabalho", "Meio-dia", "Tarde", "Noite"];
+
+  // Default plan (from plano_rotina_semanal.md), used to seed local storage on first visit
+  // and to restore when the user hits "Restaurar padrão".
+  function defaultTasksByDay() {
+    var base = [
+      { id: "acordar", time: "05:45", label: "Acordar", block: "Manhã", detail: "Alarme físico, não celular na mão. Levante imediatamente.", rule: "Regra 1 — Pare a ação" },
+      { id: "espiritual-manha", time: "05:50", label: "Momento espiritual (15 min)", block: "Manhã", detail: "Oração + leitura bíblica breve, antes de qualquer tela. \"Buscai primeiro o Reino de Deus\" (Mt 6:33).", rule: "Regra 5 — Considere o futuro" },
+      { id: "preparo-saida", time: "06:05", label: "Preparação para sair (10 min)", block: "Manhã", detail: "Lista fixa perto da porta: carteira, chave, celular, carregador. Não confie na memória.", rule: "Exteriorizar" },
+      { id: "sair-casa", time: "06:15", label: "Sair de casa", block: "Manhã", detail: "", rule: "" },
+      { id: "comer-trajeto", time: "06:20", label: "Comer algo leve no trajeto/chegada", block: "Manhã", detail: "Sem café em casa — hipoglicemia piora desatenção e irritabilidade. Não é opcional.", rule: "Manejo de energia" },
+
+      { id: "prioridades", time: "07:30", label: "Escrever as 3 prioridades do dia", block: "Trabalho", detail: "Papel ou app, antes de mergulhar em tarefas. A lista existe fora da sua cabeça, não dentro dela.", rule: "Regra 4 — Exteriorize" },
+      { id: "bloco-foco-1", time: "08:00", label: "Bloco de foco 1 (25–45 min + timer visível)", block: "Trabalho", detail: "Pausa de 5 min ao final, com pequena recompensa (café, alongamento).", rule: "Regra 6 — Recompensa imediata" },
+      { id: "janela-livre-1", time: "09:30", label: "Janela livre: leitura/estudo (20–30 min)", block: "Trabalho", detail: "Não ultrapasse 30 min sem pausa. Pode alternar entre 2 atividades se uma ficar entediante.", rule: "" },
+      { id: "revisar-lista-manha", time: "10:15", label: "Revisar lista de prioridades e riscar o que já foi feito", block: "Trabalho", detail: "Reforço visual de progresso.", rule: "" },
+      { id: "bloco-foco-2", time: "10:30", label: "Bloco de foco 2 (25–45 min + timer visível)", block: "Trabalho", detail: "Tarefas mais exigentes de concentração, se essa costuma ser sua janela de mais energia.", rule: "" },
+
+      { id: "almoco", time: "12:00", label: "Almoço — pausa real, sem tela se possível", block: "Meio-dia", detail: "30 segundos de gratidão antes de comer já contam.", rule: "" },
+
+      { id: "janela-livre-2", time: "13:30", label: "Janela livre: leitura/estudo ou outra atividade", block: "Tarde", detail: "Tarefas administrativas/repetitivas nos períodos de menor energia.", rule: "" },
+      { id: "bloco-foco-3", time: "14:00", label: "Bloco de foco 3 (25–45 min + timer visível)", block: "Tarde", detail: "", rule: "" },
+      { id: "antes-reuniao", time: "15:00", label: "Antes de reunião/conversa importante: anotar 2–3 pontos-chave", block: "Tarde", detail: "Se perceber que está divagando, pause e repita mentalmente o ponto principal.", rule: "Comunicação" },
+      { id: "bloco-foco-4", time: "16:00", label: "Bloco de foco 4 (25–45 min + timer visível)", block: "Tarde", detail: "", rule: "" },
+      { id: "revisar-fim-dia", time: "17:30", label: "Revisar prioridades: pendências viram 1ª prioridade de amanhã", block: "Tarde", detail: "Evita começar o dia seguinte sem rumo.", rule: "" },
+
+      { id: "transicao", time: "18:00", label: "Transição mental no trajeto de volta (5 min sem celular)", block: "Noite", detail: "Ajuda a \"desligar\" do trabalho antes de entrar em outro contexto.", rule: "Regulação emocional" },
+      { id: "espiritual-noite", time: "20:30", label: "Momento espiritual de encerramento (10 min)", block: "Noite", detail: "Oração de gratidão e entrega do dia. Reconhecer o erro sem se punir.", rule: "Regra 8 — Senso de humor" },
+      { id: "preparar-amanha", time: "21:30", label: "Preparar o dia seguinte (10 min)", block: "Noite", detail: "Separar roupa, mochila. Definir 1–2 prioridades para amanhã.", rule: "" },
+      { id: "dormir", time: "22:30", label: "Horário fixo para dormir", block: "Noite", detail: "Sono ruim piora desatenção e impulsividade no dia seguinte.", rule: "" }
+    ];
+    var out = {};
+    DAYS.forEach(function (d) {
+      var list = base.map(function (t) { return Object.assign({}, t); });
+      if (d.key === "seg") {
+        list.splice(5, 0, { id: "planejar-semana", time: "07:35", label: "Planejar a semana inteira (10 min)", block: "Trabalho", detail: "Fragmente metas grandes em passos diários.", rule: "Regra 6 — Decomponha o futuro" });
+      }
+      if (d.key === "sex") {
+        list.push({ id: "revisao-semana", time: "17:45", label: "Revisão da semana: o que funcionou, o que não", block: "Tarde", detail: "Ajuste de estratégia é parte do processo.", rule: "" });
+      }
+      out[d.key] = list;
+    });
+    return out;
+  }
+
+  var TASKS_KEY = "rotina_tdah_tasks_v1";
+
+  function loadTasksByDay() {
+    try {
+      var raw = localStorage.getItem(TASKS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    var def = defaultTasksByDay();
+    saveTasksByDay(def);
+    return def;
+  }
+  function saveTasksByDay(obj) {
+    localStorage.setItem(TASKS_KEY, JSON.stringify(obj));
+    // Sync (Fase 6): qualquer edição de rotina (add/edit/excluir/duplicar/import/restaurar)
+    // marca a rotina como "suja" para reenvio ao servidor. Debounced e best-effort.
+    if (typeof Sync !== "undefined") Sync.onRoutineChanged();
+  }
+
+  var tasksByDay = loadTasksByDay();
+
+  function buildTasks(dayKey) {
+    return (tasksByDay[dayKey] || []).slice().sort(function (a, b) {
+      return a.time.localeCompare(b.time);
+    });
+  }
+
+  function slugify(s) {
+    return (s || "tarefa").toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "tarefa";
+  }
+  function uniqueId(dayKey, base) {
+    var list = tasksByDay[dayKey] || [];
+    var id = base, n = 2;
+    while (list.some(function (t) { return t.id === id; })) { id = base + "-" + n; n++; }
+    return id;
+  }
+
+  /* ---------- State (localStorage) ---------- */
+  var STORAGE_KEY = "rotina_tdah_v1";
+  var ALARM_KEY = "rotina_tdah_alarms_v1";
+
+  function todayKeyBR() {
+    var idx = new Date().getDay(); // 0 sun .. 6 sat
+    var map = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex" };
+    return map[idx] || "seg";
+  }
+  function isoDate(d) {
+    d = d || new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveState(state) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function loadAlarms() {
+    try {
+      var raw = localStorage.getItem(ALARM_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveAlarms(a) {
+    localStorage.setItem(ALARM_KEY, JSON.stringify(a));
+  }
+
+  var state = loadState();     // { "2026-07-11": { "acordar": true, ... } }
+  var alarms = loadAlarms();   // { "seg:acordar": true, ... } armed reminders (per weekday+task)
+
+  var currentDay = todayKeyBR();
+  var currentDateISO = isoDate();
+
+  function dayState(dateISO) {
+    if (!state[dateISO]) state[dateISO] = {};
+    return state[dateISO];
+  }
+
+  /* ---------- Rendering ---------- */
+  var dayTabsEl = document.getElementById("dayTabs");
+  var blocksEl = document.getElementById("blocksContainer");
+  var clockEl = document.getElementById("clock");
+  var ringFill = document.getElementById("ringFill");
+  var ringLabel = document.getElementById("ringLabel");
+  var progressHeadline = document.getElementById("progressHeadline");
+  var progressSub = document.getElementById("progressSub");
+  var toastEl = document.getElementById("toast");
+
+  var RING_CIRC = 169.6;
+
+  function renderDayTabs() {
+    dayTabsEl.innerHTML = "";
+    DAYS.forEach(function (d) {
+      var btn = document.createElement("button");
+      btn.className = "daytab";
+      btn.type = "button";
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", String(d.key === currentDay));
+      var isReal = d.key === todayKeyBR();
+      btn.innerHTML = (isReal ? '<span class="dot"></span>' : "") + d.label;
+      btn.addEventListener("click", function () {
+        currentDay = d.key;
+        renderDayTabs();
+        renderBlocks();
+      });
+      dayTabsEl.appendChild(btn);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function checkIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function bellIcon(filled) {
+    return '<svg viewBox="0 0 24 24" fill="' + (filled ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2"><path d="M12 3a5 5 0 00-5 5v3.3c0 .5-.2 1-.5 1.4L5 15h14l-1.5-2.3c-.3-.4-.5-.9-.5-1.4V8a5 5 0 00-5-5z" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 005 0" stroke-linecap="round"/></svg>';
+  }
+
+  function renderBlocks() {
+    var tasks = buildTasks(currentDay);
+    var ds = dayState(effectiveDateForDay(currentDay));
+
+    blocksEl.innerHTML = "";
+    var byBlock = {};
+    tasks.forEach(function (t) {
+      if (!byBlock[t.block]) byBlock[t.block] = [];
+      byBlock[t.block].push(t);
+    });
+
+    BLOCK_ORDER.forEach(function (blockName) {
+      var items = byBlock[blockName];
+      if (!items || !items.length) return;
+      var section = document.createElement("div");
+      section.className = "block";
+      var title = document.createElement("div");
+      title.className = "block-title";
+      title.innerHTML = escapeHtml(blockName) + '<span class="tag">' + items.length + " itens</span>";
+      section.appendChild(title);
+
+      items.forEach(function (t) {
+        var alarmKey = currentDay + ":" + t.id;
+        var card = document.createElement("div");
+        card.className = "task" + (ds[t.id] ? " done" : "");
+        card.setAttribute("role", "checkbox");
+        card.setAttribute("aria-checked", String(!!ds[t.id]));
+        card.tabIndex = 0;
+
+        var detailHtml = t.detail ? '<div class="task-detail">' + escapeHtml(t.detail) + "</div>" : "";
+        var ruleHtml = t.rule ? '<span class="task-rule">' + escapeHtml(t.rule) + "</span>" : "";
+
+        card.innerHTML =
+          '<div class="check">' + checkIcon() + '</div>' +
+          '<div class="task-body">' +
+            '<div class="task-top"><span class="task-time">' + escapeHtml(t.time) + '</span><span class="task-label">' + escapeHtml(t.label) + '</span></div>' +
+            detailHtml + ruleHtml +
+          '</div>' +
+          '<button class="alarm-btn' + (alarms[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms[alarmKey]) + '</button>';
+
+        card.addEventListener("click", function (ev) {
+          if (ev.target.closest(".alarm-btn")) return;
+          toggleTask(t.id);
+        });
+        card.addEventListener("keydown", function (ev) {
+          if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggleTask(t.id); }
+        });
+
+        section.appendChild(card);
+      });
+      blocksEl.appendChild(section);
+    });
+
+    blocksEl.querySelectorAll(".alarm-btn").forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        toggleAlarm(btn.dataset.alarm, btn.dataset.time, btn.dataset.label);
+      });
+    });
+
+    updateProgress();
+  }
+
+  function effectiveDateForDay(dayKey) {
+    // If viewing today's weekday, use real date so persistence is daily.
+    // If viewing a different weekday tab, use a stable pseudo-date key per weekday
+    // (lets user preview/check other days without corrupting today's real log).
+    if (dayKey === todayKeyBR()) return currentDateISO;
+    return "template-" + dayKey;
+  }
+
+  function toggleTask(id) {
+    var dateISO = effectiveDateForDay(currentDay);
+    var ds = dayState(dateISO);
+    ds[id] = !ds[id];
+    saveState(state);
+    // Sync (Fase 6): só sincroniza datas reais (não os pseudo-dias "template-*").
+    if (typeof Sync !== "undefined" && dateISO.indexOf("template-") !== 0) {
+      Sync.onCompletionChanged(id, dateISO, !!ds[id]);
+    }
+    renderBlocks();
+  }
+
+  function updateProgress() {
+    var tasks = buildTasks(currentDay);
+    var ds = dayState(effectiveDateForDay(currentDay));
+    var total = tasks.length;
+    var done = tasks.filter(function (t) { return ds[t.id]; }).length;
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    var offset = RING_CIRC - (RING_CIRC * pct) / 100;
+    ringFill.style.strokeDashoffset = String(offset);
+    ringLabel.textContent = pct + "%";
+    progressSub.textContent = done + " de " + total + " concluídas";
+    progressSub.textContent += currentDay === todayKeyBR() ? " hoje" : " (" + DAYS.find(function(d){return d.key===currentDay;}).label + ")";
+
+    var headline;
+    if (pct === 0) headline = "Vamos começar";
+    else if (pct < 50) headline = "Em andamento";
+    else if (pct < 100) headline = "Bom progresso";
+    else headline = "Dia concluído";
+    progressHeadline.textContent = headline;
+
+    renderStreak();
+  }
+
+  var streakRowEl = document.getElementById("streakRow");
+  function renderStreak() {
+    streakRowEl.innerHTML = "";
+    var now = new Date();
+    var todayIdx = now.getDay();
+    // Build last 5 weekdays (mon..fri) ending today or the most recent business day.
+    var cursor = new Date(now);
+    var weekdays = [];
+    while (weekdays.length < 5) {
+      var wd = cursor.getDay();
+      if (wd >= 1 && wd <= 5) weekdays.unshift(new Date(cursor));
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    var map = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex" };
+    weekdays.forEach(function (d) {
+      var dayKey = map[d.getDay()];
+      var dateISO = isoDate(d);
+      var ds = state[dateISO] || {};
+      var tasks = buildTasks(dayKey);
+      var total = tasks.length;
+      var done = tasks.filter(function (t) { return ds[t.id]; }).length;
+      var pct = total ? Math.round((done / total) * 100) : 0;
+      var cell = document.createElement("div");
+      cell.className = "streak-day" + (pct === 100 ? " full" : pct > 0 ? " partial" : "") + (dateISO === currentDateISO ? " today" : "");
+      cell.innerHTML = '<div class="d-label">' + DAYS.find(function (x) { return x.key === dayKey; }).label.slice(0, 3) + '</div><div class="d-pct">' + pct + '%</div>';
+      streakRowEl.appendChild(cell);
+    });
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    var dateISO = effectiveDateForDay(currentDay);
+    if (!confirm("Reiniciar o checklist de " + (currentDay === todayKeyBR() ? "hoje" : DAYS.find(function(d){return d.key===currentDay;}).label) + "?")) return;
+    state[dateISO] = {};
+    saveState(state);
+    renderBlocks();
+  });
+
+  /* ---------- Clock ---------- */
+  function tickClock() {
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var mm = String(now.getMinutes()).padStart(2, "0");
+    clockEl.textContent = hh + ":" + mm;
+
+    // Detect day rollover
+    var iso = isoDate();
+    if (iso !== currentDateISO) {
+      currentDateISO = iso;
+      currentDay = todayKeyBR();
+      renderDayTabs();
+      renderBlocks();
+    }
+    checkDueAlarms(now);
+  }
+  setInterval(tickClock, 15000);
+  tickClock();
+
+  /* ---------- Notifications / Alarms ---------- */
+  var notifyBanner = document.getElementById("notifyBanner");
+  var notifyBtn = document.getElementById("notifyBtn");
+  var firedToday = {}; // avoid repeat fires within same minute window (web fallback only)
+
+  var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var LocalNotifications = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+
+  function notifSupported() {
+    if (isNative) return !!LocalNotifications;
+    return "Notification" in window;
+  }
+
+  function updateNotifyBanner() {
+    if (!notifSupported()) { notifyBanner.classList.remove("show"); return; }
+    if (isNative) {
+      LocalNotifications.checkPermissions().then(function (res) {
+        notifyBanner.classList.toggle("show", res.display !== "granted");
+      });
+      var bannerText = notifyBanner.querySelector("span");
+      if (bannerText) bannerText.textContent = "Ative notificações para receber lembretes garantidos, mesmo com o app fechado.";
+      return;
+    }
+    notifyBanner.classList.toggle("show", Notification.permission === "default");
+  }
+
+  notifyBtn.addEventListener("click", function () {
+    if (!notifSupported()) return;
+    if (isNative) {
+      LocalNotifications.requestPermissions().then(function (res) {
+        updateNotifyBanner();
+        showToast(res.display === "granted" ? "Notificações ativadas." : "Permissão não concedida.");
+        if (res.display === "granted") rescheduleAllNativeAlarms();
+      });
+      return;
+    }
+    Notification.requestPermission().then(function () {
+      updateNotifyBanner();
+      showToast(Notification.permission === "granted" ? "Notificações ativadas." : "Permissão não concedida.");
+    });
+  });
+  updateNotifyBanner();
+
+  // Stable 32-bit int id for native scheduling, derived from the "dia:tarefa" key.
+  function alarmNativeId(key) {
+    var h = 0;
+    for (var i = 0; i < key.length; i++) { h = (h * 31 + key.charCodeAt(i)) | 0; }
+    return Math.abs(h) % 2147483647;
+  }
+
+  var WEEKDAY_NUM = { seg: 2, ter: 3, qua: 4, qui: 5, sex: 6 }; // JS-ish: 1=Sun..7=Sat (Capacitor "on.weekday" 1-7, Sun=1)
+
+  function scheduleNativeAlarm(key, time, label) {
+    if (!LocalNotifications) return;
+    var parts = key.split(":");
+    var dayKey = parts[0];
+    var hh = parseInt(time.split(":")[0], 10);
+    var mm = parseInt(time.split(":")[1], 10);
+    LocalNotifications.schedule({
+      notifications: [{
+        id: alarmNativeId(key),
+        title: "Rotina TDAH — " + time,
+        body: label,
+        schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true },
+        sound: null
+      }]
+    }).catch(function () {});
+  }
+  function cancelNativeAlarm(key) {
+    if (!LocalNotifications) return;
+    LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function () {});
+  }
+  function rescheduleAllNativeAlarms() {
+    if (!LocalNotifications) return;
+    Object.keys(alarms).forEach(function (key) {
+      scheduleNativeAlarm(key, alarms[key].time, alarms[key].label);
+    });
+  }
+
+  function toggleAlarm(key, time, label) {
+    if (alarms[key]) {
+      delete alarms[key];
+      if (isNative) cancelNativeAlarm(key);
+    } else {
+      alarms[key] = { time: time, label: label };
+      if (isNative) {
+        LocalNotifications.checkPermissions().then(function (res) {
+          if (res.display === "granted") { scheduleNativeAlarm(key, time, label); return; }
+          LocalNotifications.requestPermissions().then(function (r2) {
+            if (r2.display === "granted") scheduleNativeAlarm(key, time, label);
+            updateNotifyBanner();
+          });
+        });
+      } else if (notifSupported() && Notification.permission === "default") {
+        Notification.requestPermission().then(updateNotifyBanner);
+      }
+    }
+    saveAlarms(alarms);
+    // Sync (Fase 6): reflete o lembrete no servidor (upsert enabled / delete).
+    if (typeof Sync !== "undefined") {
+      Sync.onAlarmChanged(key, time, label, !!alarms[key]);
+    }
+    renderBlocks();
+    showToast(alarms[key] ? "Lembrete ativado para " + time : "Lembrete removido");
+  }
+
+  function checkDueAlarms(now) {
+    // Native alarms are scheduled with the OS and fire independently — nothing to poll here.
+    if (isNative) return;
+    var realDay = todayKeyBR();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var mm = String(now.getMinutes()).padStart(2, "0");
+    var nowHM = hh + ":" + mm;
+
+    Object.keys(alarms).forEach(function (key) {
+      var parts = key.split(":");
+      var dayKey = parts[0];
+      if (dayKey !== realDay) return;
+      var a = alarms[key];
+      if (a.time !== nowHM) return;
+      var fireFlag = key + "@" + currentDateISO;
+      if (firedToday[fireFlag]) return;
+      firedToday[fireFlag] = true;
+      fireReminder(a.label, a.time);
+    });
+  }
+
+  function fireReminder(label, time) {
+    showToast("⏰ " + time + " — " + label);
+    if (notifSupported() && Notification.permission === "granted") {
+      try {
+        var n = new Notification("Rotina TDAH — " + time, { body: label, tag: "rotina-" + time });
+      } catch (e) { /* some browsers require SW-based notifications; toast covers fallback */ }
+    }
+    if (navigator.vibrate) { try { navigator.vibrate([120, 60, 120]); } catch (e) {} }
+  }
+
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 3200);
+  }
+
+  /* ---------- Init ---------- */
+  renderDayTabs();
+  renderBlocks();
+
+  if (isNative && LocalNotifications) {
+    LocalNotifications.checkPermissions().then(function (res) {
+      if (res.display === "granted") rescheduleAllNativeAlarms();
+    });
+  }
+
+  /* ---------- PWA: manifest + service worker (installability + offline) ---------- */
+  var manifest = {
+    name: "Rotina Diária — Apoio TDAH",
+    short_name: "Rotina TDAH",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#f4f6f4",
+    theme_color: "#285a52",
+    icons: [{
+      src: "data:image/svg+xml," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="%23285a52"/><path d="M56 100l24 24 56-56" stroke="%23ffffff" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      ),
+      sizes: "192x192",
+      type: "image/svg+xml"
+    }]
+  };
+  var manifestBlob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+  document.getElementById("manifestLink").setAttribute("href", URL.createObjectURL(manifestBlob));
+
+  var deferredPrompt = null;
+  var installBtn = document.getElementById("installBtn");
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add("show");
+  });
+  installBtn.addEventListener("click", function () {
+    if (!deferredPrompt) { showToast("Use o menu do navegador → \"Adicionar à tela inicial\"."); return; }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(function () {
+      deferredPrompt = null;
+      installBtn.classList.remove("show");
+    });
+  });
+  window.addEventListener("appinstalled", function () {
+    installBtn.classList.remove("show");
+    showToast("Instalado com sucesso.");
+  });
+
+  if ("serviceWorker" in navigator) {
+    try {
+      var swCode = "self.addEventListener('install', e => self.skipWaiting());" +
+        "self.addEventListener('activate', e => self.clients.claim());";
+      var swBlob = new Blob([swCode], { type: "application/javascript" });
+      var swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl).catch(function () {});
+    } catch (e) {}
+  }
+
+  /* ---------- Editor: cada pessoa monta seus próprios horários ---------- */
+  var editOverlay = document.getElementById("editOverlay");
+  var editDayTabsEl = document.getElementById("editDayTabs");
+  var editRowsEl = document.getElementById("editRows");
+  var editDay = currentDay;
+
+  function openEditor() {
+    editDay = currentDay;
+    renderEditDayTabs();
+    renderEditRows();
+    editOverlay.classList.add("show");
+  }
+  function closeEditor() {
+    editOverlay.classList.remove("show");
+    renderDayTabs();
+    renderBlocks();
+  }
+  document.getElementById("editFab").addEventListener("click", openEditor);
+  document.getElementById("editCloseBtn").addEventListener("click", closeEditor);
+  document.getElementById("editDoneBtn").addEventListener("click", closeEditor);
+  editOverlay.addEventListener("click", function (ev) {
+    if (ev.target === editOverlay) closeEditor();
+  });
+
+  function renderEditDayTabs() {
+    editDayTabsEl.innerHTML = "";
+    DAYS.forEach(function (d) {
+      var btn = document.createElement("button");
+      btn.className = "edit-daytab";
+      btn.type = "button";
+      btn.setAttribute("aria-selected", String(d.key === editDay));
+      btn.textContent = d.label;
+      btn.addEventListener("click", function () {
+        editDay = d.key;
+        renderEditDayTabs();
+        renderEditRows();
+      });
+      editDayTabsEl.appendChild(btn);
+    });
+  }
+
+  function trashIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function dupIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10" stroke-linecap="round"/></svg>';
+  }
+
+  function openDuplicateMenu(anchorBtn, task) {
+    var others = DAYS.filter(function (d) { return d.key !== editDay; });
+    var choice = prompt(
+      "Duplicar \"" + task.label + "\" para qual dia? (" + others.map(function (d) { return d.label; }).join(", ") + ")\nDigite o nome do dia:"
+    );
+    if (!choice) return;
+    var norm = choice.trim().toLowerCase();
+    var target = others.find(function (d) { return d.label.toLowerCase().indexOf(norm) === 0; });
+    if (!target) { showToast("Dia não reconhecido"); return; }
+    var list = tasksByDay[target.key] || (tasksByDay[target.key] = []);
+    var newId = uniqueId(target.key, task.id);
+    list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule });
+    saveTasksByDay(tasksByDay);
+    showToast('Copiada para ' + target.label);
+  }
+
+  function renderEditRows() {
+    var list = (tasksByDay[editDay] || []).slice().sort(function (a, b) { return a.time.localeCompare(b.time); });
+    editRowsEl.innerHTML = "";
+    list.forEach(function (t) {
+      var row = document.createElement("div");
+      row.className = "edit-row";
+
+      var timeInput = document.createElement("input");
+      timeInput.type = "time";
+      timeInput.value = t.time;
+      timeInput.addEventListener("change", function () {
+        t.time = timeInput.value;
+        persistTasks();
+      });
+
+      var fields = document.createElement("div");
+      fields.className = "fields";
+
+      var labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.placeholder = "Nome da tarefa";
+      labelInput.value = t.label;
+      labelInput.addEventListener("input", function () { t.label = labelInput.value; persistTasks(true); });
+
+      var fieldsRow = document.createElement("div");
+      fieldsRow.className = "fields-row";
+
+      var blockSelect = document.createElement("select");
+      BLOCK_ORDER.forEach(function (b) {
+        var opt = document.createElement("option");
+        opt.value = b; opt.textContent = b;
+        if (b === t.block) opt.selected = true;
+        blockSelect.appendChild(opt);
+      });
+      blockSelect.addEventListener("change", function () { t.block = blockSelect.value; persistTasks(); });
+
+      fieldsRow.appendChild(blockSelect);
+
+      var detailInput = document.createElement("textarea");
+      detailInput.placeholder = "Detalhe (opcional)";
+      detailInput.value = t.detail || "";
+      detailInput.addEventListener("input", function () { t.detail = detailInput.value; persistTasks(true); });
+
+      fields.appendChild(labelInput);
+      fields.appendChild(fieldsRow);
+      fields.appendChild(detailInput);
+
+      var dupBtn = document.createElement("button");
+      dupBtn.className = "del-btn";
+      dupBtn.type = "button";
+      dupBtn.setAttribute("aria-label", "Duplicar tarefa para outro dia");
+      dupBtn.innerHTML = dupIcon();
+      dupBtn.addEventListener("click", function () { openDuplicateMenu(dupBtn, t); });
+
+      var delBtn = document.createElement("button");
+      delBtn.className = "del-btn";
+      delBtn.type = "button";
+      delBtn.setAttribute("aria-label", "Excluir tarefa");
+      delBtn.innerHTML = trashIcon();
+      delBtn.addEventListener("click", function () {
+        if (!confirm('Excluir a tarefa "' + t.label + '"?')) return;
+        tasksByDay[editDay] = (tasksByDay[editDay] || []).filter(function (x) { return x.id !== t.id; });
+        saveTasksByDay(tasksByDay);
+        renderEditRows();
+        showToast("Tarefa removida");
+      });
+
+      var btnGroup = document.createElement("div");
+      btnGroup.style.display = "flex";
+      btnGroup.style.flexDirection = "column";
+      btnGroup.style.gap = "6px";
+      btnGroup.appendChild(dupBtn);
+      btnGroup.appendChild(delBtn);
+
+      row.appendChild(timeInput);
+      row.appendChild(fields);
+      row.appendChild(btnGroup);
+      editRowsEl.appendChild(row);
+    });
+  }
+
+  var persistTimer = null;
+  function persistTasks(debounced) {
+    if (debounced) {
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(function () { saveTasksByDay(tasksByDay); }, 300);
+      return;
+    }
+    saveTasksByDay(tasksByDay);
+  }
+
+  document.getElementById("addTaskBtn").addEventListener("click", function () {
+    var list = tasksByDay[editDay] || (tasksByDay[editDay] = []);
+    var id = uniqueId(editDay, "nova-tarefa");
+    list.push({ id: id, time: "12:00", label: "Nova tarefa", block: "Trabalho", detail: "", rule: "" });
+    saveTasksByDay(tasksByDay);
+    renderEditRows();
+  });
+
+  document.getElementById("restoreDefaultBtn").addEventListener("click", function () {
+    if (!confirm("Restaurar a rotina padrão? Suas edições de horários/tarefas serão substituídas (o progresso marcado nos dias não é afetado).")) return;
+    tasksByDay = defaultTasksByDay();
+    saveTasksByDay(tasksByDay);
+    renderEditRows();
+    showToast("Rotina padrão restaurada");
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", function () {
+    var blob = new Blob([JSON.stringify({ tasksByDay: tasksByDay }, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "rotina-tdah-" + isoDate() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
+  var TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+  var DAY_KEYS = DAYS.map(function (d) { return d.key; });
+
+  function sanitizeImportedTasksByDay(raw) {
+    if (!raw || typeof raw !== "object") throw new Error("formato inválido");
+    var clean = {};
+    DAY_KEYS.forEach(function (dayKey) {
+      var list = Array.isArray(raw[dayKey]) ? raw[dayKey] : [];
+      var seenIds = {};
+      clean[dayKey] = list.map(function (item, idx) {
+        if (!item || typeof item !== "object") return null;
+        var time = TIME_RE.test(item.time) ? item.time : "12:00";
+        var block = BLOCK_ORDER.indexOf(item.block) !== -1 ? item.block : "Trabalho";
+        var label = String(item.label || "Tarefa").slice(0, 140);
+        var detail = String(item.detail || "").slice(0, 500);
+        var rule = String(item.rule || "").slice(0, 80);
+        var id = String(item.id || "").replace(/[^a-z0-9-]/gi, "").slice(0, 60) || ("tarefa-" + idx);
+        if (seenIds[id]) id = id + "-" + idx;
+        seenIds[id] = true;
+        return { id: id, time: time, block: block, label: label, detail: detail, rule: rule };
+      }).filter(Boolean);
+    });
+    return clean;
+  }
+
+  document.getElementById("importFile").addEventListener("change", function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    if (!confirm("Importar substitui a rotina atual (horários e tarefas) neste dispositivo. Continuar?")) {
+      ev.target.value = "";
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data || !data.tasksByDay) throw new Error("formato inválido");
+        tasksByDay = sanitizeImportedTasksByDay(data.tasksByDay);
+        saveTasksByDay(tasksByDay);
+        renderEditRows();
+        showToast("Rotina importada");
+      } catch (e) {
+        showToast("Arquivo inválido");
+      }
+    };
+    reader.readAsText(file);
+    ev.target.value = "";
+  });
+
+  /* ---------- Auth UI (Fase 5): topbar chip + modal login/cadastro ---------- */
+  var GOOGLE_ENABLED = false; // gancho pronto; OAuth do Google exige config adicional (Fase futura).
+
+  var sessionChip = document.getElementById("sessionChip");
+  var clockEl2 = document.getElementById("clock");
+
+  function renderSessionChip() {
+    // Preserva o relógio existente; apenas adiciona/remove os controles de sessão.
+    Array.prototype.slice.call(sessionChip.querySelectorAll("[data-session]")).forEach(function (el) {
+      sessionChip.removeChild(el);
+    });
+    var s = Api.getSession();
+    if (s && s.user) {
+      var name = document.createElement("span");
+      name.className = "session-name";
+      name.setAttribute("data-session", "");
+      name.textContent = s.user.displayName || s.user.email || "Conta";
+      var out = document.createElement("button");
+      out.className = "session-logout";
+      out.type = "button";
+      out.setAttribute("data-session", "");
+      out.textContent = "Sair";
+      out.addEventListener("click", handleLogout);
+      sessionChip.insertBefore(out, clockEl2);
+      sessionChip.insertBefore(name, out);
+    } else {
+      var btn = document.createElement("button");
+      btn.className = "session-btn";
+      btn.type = "button";
+      btn.setAttribute("data-session", "");
+      btn.textContent = "Entrar";
+      btn.addEventListener("click", openAuth);
+      sessionChip.insertBefore(btn, clockEl2);
+    }
+  }
+
+  function handleLogout() {
+    Api.logout().then(function () {
+      showToast("Você saiu da conta.");
+    });
+  }
+
+  var authOverlay = document.getElementById("authOverlay");
+  var authForm = document.getElementById("authForm");
+  var authTitle = document.getElementById("authTitle");
+  var authNameField = document.getElementById("authNameField");
+  var authNameInput = document.getElementById("authName");
+  var authEmailInput = document.getElementById("authEmail");
+  var authPasswordInput = document.getElementById("authPassword");
+  var authSubmit = document.getElementById("authSubmit");
+  var authError = document.getElementById("authError");
+  var authToggleBtn = document.getElementById("authToggleBtn");
+  var authToggleText = document.getElementById("authToggleText");
+  var authGoogleBtn = document.getElementById("authGoogleBtn");
+  var authMode = "login"; // "login" | "register"
+
+  function setAuthError(msg) {
+    if (!msg) { authError.classList.remove("show"); authError.textContent = ""; return; }
+    authError.textContent = msg;
+    authError.classList.add("show");
+  }
+
+  function applyAuthMode() {
+    var isReg = authMode === "register";
+    authTitle.textContent = isReg ? "Criar conta" : "Entrar";
+    authSubmit.textContent = isReg ? "Criar conta" : "Entrar";
+    authNameField.style.display = isReg ? "block" : "none";
+    authPasswordInput.setAttribute("autocomplete", isReg ? "new-password" : "current-password");
+    authToggleText.textContent = isReg ? "Já tem conta?" : "Não tem conta?";
+    authToggleBtn.textContent = isReg ? "Entrar" : "Criar conta";
+    setAuthError("");
+  }
+
+  function openAuth() {
+    authMode = "login";
+    applyAuthMode();
+    authForm.reset();
+    setAuthError("");
+    authOverlay.classList.add("show");
+    setTimeout(function () { authEmailInput.focus(); }, 30);
+  }
+  function closeAuth() {
+    authOverlay.classList.remove("show");
+  }
+
+  document.getElementById("authCloseBtn").addEventListener("click", closeAuth);
+  authOverlay.addEventListener("click", function (ev) {
+    if (ev.target === authOverlay) closeAuth();
+  });
+  authToggleBtn.addEventListener("click", function () {
+    authMode = authMode === "login" ? "register" : "login";
+    applyAuthMode();
+  });
+
+  // Esc fecha os modais abertos.
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    if (authOverlay.classList.contains("show")) closeAuth();
+    else if (editOverlay.classList.contains("show")) closeEditor();
+  });
+
+  function validEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+  }
+
+  function setAuthLoading(loading) {
+    authSubmit.disabled = loading;
+    authSubmit.textContent = loading
+      ? (authMode === "register" ? "Criando…" : "Entrando…")
+      : (authMode === "register" ? "Criar conta" : "Entrar");
+  }
+
+  function friendlyAuthError(err) {
+    if (err && err.isNetworkError) {
+      return "Sem conexão com o servidor. Você pode usar o app offline; tente entrar mais tarde.";
+    }
+    if (err && err.name === "ApiError") {
+      if (err.status === 401) return "Credenciais inválidas.";
+      if (err.status === 409) return err.message || "Email já cadastrado.";
+      return err.message || "Não foi possível concluir. Tente novamente.";
+    }
+    return "Não foi possível concluir. Tente novamente.";
+  }
+
+  authForm.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    setAuthError("");
+    var email = authEmailInput.value.trim();
+    var password = authPasswordInput.value;
+    var displayName = authNameInput.value.trim();
+
+    if (!validEmail(email)) { setAuthError("Informe um email válido."); authEmailInput.focus(); return; }
+    if (password.length < 8) { setAuthError("A senha precisa ter ao menos 8 caracteres."); authPasswordInput.focus(); return; }
+    if (authMode === "register" && !displayName) { setAuthError("Informe seu nome."); authNameInput.focus(); return; }
+
+    setAuthLoading(true);
+    var op = authMode === "register"
+      ? Api.register(email, password, displayName)
+      : Api.login(email, password);
+
+    op.then(function () {
+      // Valida o token e atualiza o usuário exibido.
+      return Api.me().catch(function () { return null; });
+    }).then(function () {
+      setAuthLoading(false);
+      closeAuth();
+      var s = Api.getSession();
+      var who = s && s.user ? (s.user.displayName || s.user.email) : "";
+      showToast(authMode === "register" ? "Conta criada. Bem-vindo(a)!" : ("Conectado como " + who));
+    }).catch(function (err) {
+      setAuthLoading(false);
+      setAuthError(friendlyAuthError(err));
+    });
+  });
+
+  authGoogleBtn.addEventListener("click", function () {
+    if (!GOOGLE_ENABLED) {
+      showToast("Login com Google chega em breve.");
+      return;
+    }
+    // Gancho: quando habilitado, iniciar aqui o fluxo OAuth do Google.
+  });
+
+  Api.onChange(renderSessionChip);
+  renderSessionChip();
+
+  // Se já havia sessão salva, valida o token silenciosamente (não bloqueia a UI).
+  if (Api.isLoggedIn()) {
+    Api.me().catch(function () { /* offline ou token inválido: refresh/limpeza já tratados no Api */ });
+  }
+
+  /* ========================================================================
+   * FASE 6 — Sincronização cliente: migração one-time + outbox + status.
+   *
+   * Princípios rígidos:
+   *  - Offline-first: sem rede/sem login o app funciona 100% igual a antes.
+   *    Nada aqui bloqueia a UI; todas as escritas locais continuam instantâneas.
+   *  - Migração ADITIVA e segura: NUNCA descarta dado local antes de confirmar
+   *    o upload remoto com sucesso. Em qualquer erro de rede, aborta sem tocar
+   *    no estado local e tenta de novo no próximo login.
+   *  - Idempotência: a outbox usa upsert/delete (o backend protege via
+   *    UNIQUE/upsert), então reenvio não duplica.
+   *
+   * Decisão para o caso "local TEM dados E remoto TEM dados":
+   *    NÃO fazemos merge automático (arriscado — poderia duplicar/embaralhar a
+   *    rotina que o usuário já montou nos dois lados). O servidor é a fonte de
+   *    verdade: baixamos (pull) e só DEPOIS de baixar com sucesso substituímos
+   *    o estado local pelos dados da conta, avisando o usuário por toast. O
+   *    dado local anterior nunca é apagado antes do download remoto estar OK.
+   * ====================================================================== */
+  var Sync = (function () {
+    var OUTBOX_KEY = "rotina_tdah_outbox_v1";
+    var MIGRATED_KEY = "rotina_tdah_migrated_v1";
+
+    // Mapa bidirecional weekday: cliente 'seg'..'dom' <-> servidor 1..7.
+    var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
+    var NUM_TO_WD = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex", 6: "sab", 7: "dom" };
+
+    var statusEl = document.getElementById("syncStatus");
+    var flushTimer = null;
+    var routineDirtyTimer = null;
+    var flushing = false;
+    var periodicStarted = false;
+
+    /* ---------- Outbox (localStorage) ---------- */
+    function loadOutbox() {
+      try {
+        var raw = localStorage.getItem(OUTBOX_KEY);
+        var arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) { return []; }
+    }
+    function saveOutbox(arr) {
+      try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(arr)); } catch (e) {}
+    }
+    function outboxCount() { return loadOutbox().length; }
+
+    // Enfileira uma mutação. Faz "coalescing" por chave lógica (entity+identidade)
+    // para não acumular mutações redundantes da mesma entidade.
+    function enqueueMutation(entity, op, data) {
+      var box = loadOutbox();
+      var k = mutationKey(entity, data);
+      box = box.filter(function (m) { return mutationKey(m.entity, m.data) !== k; });
+      box.push({
+        id: "m_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7),
+        entity: entity,
+        op: op,
+        data: data,
+        clientUpdatedAt: new Date().toISOString()
+      });
+      saveOutbox(box);
+      updateStatus();
+    }
+
+    function mutationKey(entity, data) {
+      if (entity === "completion") return "completion|" + data.taskId + "|" + data.date;
+      if (entity === "reminder") return "reminder|" + data.taskId + "|" + data.weekday;
+      if (entity === "task") return "task|" + (data.id || "");
+      return entity + "|?";
+    }
+
+    /* ---------- Status indicator ---------- */
+    function isOnline() { return navigator.onLine !== false; }
+
+    function updateStatus() {
+      if (!statusEl) return;
+      if (!Api.isLoggedIn()) { statusEl.hidden = true; return; }
+      statusEl.hidden = false;
+      var pending = outboxCount();
+      statusEl.classList.remove("synced", "pending", "offline", "syncing");
+      if (!isOnline()) {
+        statusEl.classList.add("offline");
+        statusEl.textContent = "offline";
+        statusEl.title = "Sem conexão — " + pending + " alteração(ões) na fila";
+      } else if (flushing && pending) {
+        statusEl.classList.add("syncing");
+        statusEl.textContent = "sincronizando";
+        statusEl.title = "Enviando alterações…";
+      } else if (pending) {
+        statusEl.classList.add("pending");
+        statusEl.textContent = "pendente";
+        statusEl.title = pending + " alteração(ões) aguardando envio";
+      } else {
+        statusEl.classList.add("synced");
+        statusEl.textContent = "sincronizado";
+        statusEl.title = "Tudo sincronizado";
+      }
+    }
+
+    /* ---------- Push da outbox (best-effort, com retry) ---------- */
+    function flushOutbox() {
+      if (flushing) return Promise.resolve();
+      if (!Api.isLoggedIn() || !isOnline()) { updateStatus(); return Promise.resolve(); }
+      var box = loadOutbox();
+      if (!box.length) { updateStatus(); return Promise.resolve(); }
+
+      flushing = true;
+      updateStatus();
+
+      var mutations = box.map(function (m) {
+        return { entity: m.entity, op: m.op, data: m.data, clientUpdatedAt: m.clientUpdatedAt };
+      });
+      var sentIds = box.map(function (m) { return m.id; });
+
+      return Api.fetch("/sync/push", { method: "POST", body: { mutations: mutations } })
+        .then(function () {
+          // Sucesso: remove exatamente as mutações que enviamos (preserva as que
+          // possam ter sido enfileiradas durante o envio).
+          var current = loadOutbox();
+          var sentSet = {};
+          sentIds.forEach(function (id) { sentSet[id] = true; });
+          saveOutbox(current.filter(function (m) { return !sentSet[m.id]; }));
+        })
+        .catch(function (err) {
+          // NetworkError / offline / servidor fora: mantém a outbox intacta e
+          // tenta de novo depois. Erros de sessão são tratados pelo Api.
+          if (err && err.isNetworkError) return;
+          // ApiError não-rede (ex.: 400 numa mutação malformada): registra e
+          // segue — não trava a fila para sempre. Como usamos apenas op/data
+          // bem-formados, isso não deve acontecer no fluxo normal.
+        })
+        .then(function () {
+          flushing = false;
+          updateStatus();
+        });
+    }
+
+    /* ---------- Hooks vindos dos pontos de escrita ---------- */
+    function onCompletionChanged(taskId, dateISO, done) {
+      if (!Api.isLoggedIn()) return; // deslogado: outbox inativa, só local.
+      enqueueMutation("completion", "upsert", { taskId: taskId, date: dateISO, done: !!done });
+      scheduleFlush();
+    }
+
+    function onAlarmChanged(alarmKey, time, label, enabled) {
+      if (!Api.isLoggedIn()) return;
+      var parts = alarmKey.split(":");
+      var dayKey = parts[0];
+      var taskId = parts.slice(1).join(":");
+      var weekday = WD_TO_NUM[dayKey];
+      if (!weekday) return;
+      enqueueMutation("reminder", "upsert", {
+        taskId: taskId, weekday: weekday, time: time, label: label, enabled: !!enabled
+      });
+      scheduleFlush();
+    }
+
+    // Edição de rotina: como PUT /routine/tasks substitui o conjunto inteiro e
+    // envolve reconciliação de ids uuid, empurramos a rotina inteira via REST
+    // (não via outbox de mutações granulares) de forma debounced.
+    function onRoutineChanged() {
+      if (!Api.isLoggedIn() || !migrationDone()) return;
+      clearTimeout(routineDirtyTimer);
+      routineDirtyTimer = setTimeout(function () {
+        pushRoutine().catch(function () {});
+      }, 1200);
+    }
+
+    function scheduleFlush() {
+      clearTimeout(flushTimer);
+      flushTimer = setTimeout(function () { flushOutbox(); }, 800);
+    }
+
+    /* ---------- Envio da rotina inteira + reconciliação de ids ---------- */
+    // Converte tasksByDay local -> payload do servidor (com weekday numérico).
+    function localTasksToPayload() {
+      var out = [];
+      Object.keys(tasksByDay).forEach(function (dayKey) {
+        var wd = WD_TO_NUM[dayKey];
+        if (!wd) return;
+        (tasksByDay[dayKey] || []).forEach(function (t, idx) {
+          out.push({
+            id: t.id, weekday: wd, time: t.time, label: t.label,
+            block: t.block, detail: t.detail || "", rule: t.rule || "", sortOrder: idx
+          });
+        });
+      });
+      return out;
+    }
+
+    // Assinatura estável para casar task local <-> task retornada pelo servidor.
+    function taskSig(weekday, time, label, block) {
+      return weekday + "|" + time + "|" + label + "|" + (block || "");
+    }
+
+    // Aplica o mapeamento de ids antigos->novos em tasksByDay, state e alarms.
+    // Exemplo: "acordar" -> uuid  =>  state["2026-07-11"]["acordar"] vira
+    // state["2026-07-11"][uuid]; alarms["seg:acordar"] vira alarms["seg:uuid"].
+    function reconcileIds(idMap) {
+      var changed = false;
+      // 1) tasksByDay
+      Object.keys(tasksByDay).forEach(function (dayKey) {
+        (tasksByDay[dayKey] || []).forEach(function (t) {
+          if (idMap[t.id] && idMap[t.id] !== t.id) { t.id = idMap[t.id]; changed = true; }
+        });
+      });
+      // 2) state (progresso por data) — reindexar chaves de taskId.
+      Object.keys(state).forEach(function (dateKey) {
+        var ds = state[dateKey];
+        if (!ds || typeof ds !== "object") return;
+        Object.keys(ds).forEach(function (oldTaskId) {
+          var newId = idMap[oldTaskId];
+          if (newId && newId !== oldTaskId) {
+            ds[newId] = ds[oldTaskId];
+            delete ds[oldTaskId];
+            changed = true;
+          }
+        });
+      });
+      // 3) alarms ("day:taskId") — reconstruir a chave com o novo id.
+      Object.keys(alarms).forEach(function (alarmKey) {
+        var idx = alarmKey.indexOf(":");
+        if (idx < 0) return;
+        var dayKey = alarmKey.slice(0, idx);
+        var oldTaskId = alarmKey.slice(idx + 1);
+        var newId = idMap[oldTaskId];
+        if (newId && newId !== oldTaskId) {
+          var newKey = dayKey + ":" + newId;
+          alarms[newKey] = alarms[alarmKey];
+          delete alarms[alarmKey];
+          changed = true;
+        }
+      });
+      if (changed) {
+        saveTasksByDay(tasksByDay);
+        saveState(state);
+        saveAlarms(alarms);
+      }
+      return changed;
+    }
+
+    // Constrói o idMap a partir das tasks locais enviadas e das tasks retornadas
+    // pelo servidor (com uuid). Casa por assinatura; empata por ordem (sortOrder).
+    function buildIdMap(sentPayload, serverTasks) {
+      var idMap = {};
+      // Agrupa tasks do servidor por assinatura -> fila de uuids disponíveis.
+      var bySig = {};
+      (serverTasks || []).forEach(function (st) {
+        var sig = taskSig(st.weekday, st.time, st.label, st.block);
+        if (!bySig[sig]) bySig[sig] = [];
+        bySig[sig].push(st);
+      });
+      Object.keys(bySig).forEach(function (sig) {
+        bySig[sig].sort(function (a, b) { return (a.sortOrder || 0) - (b.sortOrder || 0); });
+      });
+      sentPayload.forEach(function (local) {
+        var sig = taskSig(local.weekday, local.time, local.label, local.block);
+        var queue = bySig[sig];
+        if (queue && queue.length) {
+          var st = queue.shift();
+          if (st && st.id) idMap[local.id] = st.id;
+        }
+      });
+      return idMap;
+    }
+
+    // PUT /routine/tasks com as tasks locais; adota os ids uuid retornados.
+    function pushRoutine() {
+      if (!Api.isLoggedIn()) return Promise.resolve();
+      var payload = localTasksToPayload();
+      return Api.fetch("/routine/tasks", { method: "PUT", body: { tasks: payload } })
+        .then(function (resp) {
+          var serverTasks = resp && resp.tasks;
+          if (serverTasks && serverTasks.length) {
+            var idMap = buildIdMap(payload, serverTasks);
+            reconcileIds(idMap);
+          }
+          return resp;
+        });
+    }
+
+    /* ---------- Migração one-time por conta ---------- */
+    function migratedUserId() {
+      try { return localStorage.getItem(MIGRATED_KEY) || null; } catch (e) { return null; }
+    }
+    function currentUserId() {
+      var s = Api.getSession();
+      return s && s.user && (s.user.id || s.user.userId || s.user.email) || null;
+    }
+    function migrationDone() {
+      var uid = currentUserId();
+      return !!uid && migratedUserId() === String(uid);
+    }
+    function markMigrated() {
+      var uid = currentUserId();
+      if (uid) { try { localStorage.setItem(MIGRATED_KEY, String(uid)); } catch (e) {} }
+    }
+
+    // Coleta as completions locais que devem ir ao servidor (apenas datas reais
+    // marcadas como true; pseudo-dias "template-*" ficam só locais).
+    function localCompletions() {
+      var out = [];
+      Object.keys(state).forEach(function (dateKey) {
+        if (dateKey.indexOf("template-") === 0) return;
+        var ds = state[dateKey];
+        if (!ds || typeof ds !== "object") return;
+        Object.keys(ds).forEach(function (taskId) {
+          if (ds[taskId]) out.push({ taskId: taskId, date: dateKey });
+        });
+      });
+      return out;
+    }
+    // Coleta os alarmes locais como reminders para o servidor.
+    function localReminders() {
+      var out = [];
+      Object.keys(alarms).forEach(function (alarmKey) {
+        var idx = alarmKey.indexOf(":");
+        if (idx < 0) return;
+        var dayKey = alarmKey.slice(0, idx);
+        var taskId = alarmKey.slice(idx + 1);
+        var wd = WD_TO_NUM[dayKey];
+        if (!wd) return;
+        var a = alarms[alarmKey];
+        out.push({ taskId: taskId, weekday: wd, time: a.time, label: a.label });
+      });
+      return out;
+    }
+
+    // Sobe completions e reminders um a um. Se algum falhar por rede, propaga o
+    // erro (o chamador aborta a migração sem marcar como concluída).
+    function uploadCompletionsAndReminders() {
+      var comps = localCompletions();
+      var rems = localReminders();
+      var chain = Promise.resolve();
+      comps.forEach(function (c) {
+        chain = chain.then(function () {
+          return Api.fetch("/completions", { method: "PUT", body: { taskId: c.taskId, date: c.date, done: true } });
+        });
+      });
+      rems.forEach(function (r) {
+        chain = chain.then(function () {
+          return Api.fetch("/reminders", { method: "PUT", body: {
+            taskId: r.taskId, enabled: true, time: r.time, weekday: r.weekday, label: r.label
+          } });
+        });
+      });
+      return chain;
+    }
+
+    // Substitui o estado local pelos dados baixados do servidor (usado quando a
+    // conta remota já tem rotina). Só é chamado APÓS um pull bem-sucedido.
+    function adoptServerData(pull) {
+      // Rotina/tasks -> tasksByDay
+      var newTasks = {};
+      DAYS.forEach(function (d) { newTasks[d.key] = []; });
+      (pull.tasks || []).forEach(function (st) {
+        var dayKey = NUM_TO_WD[st.weekday];
+        if (!dayKey) return;
+        if (!newTasks[dayKey]) newTasks[dayKey] = [];
+        newTasks[dayKey].push({
+          id: st.id, time: st.time, label: st.label,
+          block: st.block, detail: st.detail || "", rule: st.rule || ""
+        });
+      });
+      tasksByDay = newTasks;
+      saveTasksByDay(tasksByDay);
+
+      // Completions -> state (por data real).
+      var newState = {};
+      (pull.completions || []).forEach(function (c) {
+        if (!c.done) return;
+        if (!newState[c.date]) newState[c.date] = {};
+        newState[c.date][c.taskId] = true;
+      });
+      // Preserva progresso local dos pseudo-dias "template-*" (só visual local).
+      Object.keys(state).forEach(function (k) {
+        if (k.indexOf("template-") === 0) newState[k] = state[k];
+      });
+      state = newState;
+      saveState(state);
+
+      // Reminders -> alarms.
+      var newAlarms = {};
+      (pull.reminders || []).forEach(function (r) {
+        if (r.enabled === false) return;
+        var dayKey = NUM_TO_WD[r.weekday];
+        if (!dayKey) return;
+        newAlarms[dayKey + ":" + r.taskId] = { time: r.time, label: r.label };
+      });
+      alarms = newAlarms;
+      saveAlarms(alarms);
+
+      if (isNative) { try { rescheduleAllNativeAlarms(); } catch (e) {} }
+    }
+
+    // Executa a migração one-time. Resiliente: qualquer falha de rede aborta sem
+    // corromper o estado local, e tentará de novo no próximo login/flush.
+    function runMigration() {
+      if (!Api.isLoggedIn() || migrationDone()) { updateStatus(); return; }
+
+      Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function (pull) {
+        var remoteHasTasks = pull && pull.tasks && pull.tasks.length > 0;
+
+        if (!remoteHasTasks) {
+          // Conta remota VAZIA: sobe os dados locais (upload aditivo).
+          // 1) tasks -> recebe uuids -> reconcilia ids em state/alarms
+          // 2) só então sobe completions/reminders (já com os ids novos).
+          return pushRoutine().then(function () {
+            return uploadCompletionsAndReminders();
+          }).then(function () {
+            markMigrated();
+            showToast("Rotina enviada para sua conta.");
+          });
+        }
+
+        // Conta remota JÁ TEM dados: servidor é a fonte de verdade.
+        // NÃO fazemos merge automático. Adotamos o remoto (após pull OK).
+        adoptServerData(pull);
+        markMigrated();
+        currentDay = todayKeyBR();
+        renderDayTabs();
+        renderBlocks();
+        showToast("Rotina da sua conta carregada.");
+      }).catch(function (err) {
+        // Falha de rede / servidor: aborta silenciosamente. Estado local intacto.
+        // Migração será re-tentada no próximo login ou ao voltar a ficar online.
+        if (!(err && err.isNetworkError)) {
+          // Erro não-rede (ex.: sessão): também mantém local intacto.
+        }
+      }).then(function () {
+        updateStatus();
+      });
+    }
+
+    /* ---------- Reações a login/logout e conectividade ---------- */
+    function onSessionChange(session) {
+      if (session && session.user) {
+        // Login: tenta migração one-time (segura) e depois esvazia a outbox.
+        runMigration();
+        scheduleFlush();
+      }
+      updateStatus();
+    }
+
+    function startPeriodic() {
+      if (periodicStarted) return;
+      periodicStarted = true;
+      // Retry periódico enquanto o app está aberto (best-effort).
+      setInterval(function () {
+        if (Api.isLoggedIn() && isOnline() && outboxCount()) flushOutbox();
+      }, 30000);
+      // Retry ao voltar a ficar online.
+      window.addEventListener("online", function () {
+        updateStatus();
+        if (Api.isLoggedIn()) { runMigration(); flushOutbox(); }
+      });
+      window.addEventListener("offline", updateStatus);
+    }
+
+    /* ---------- Bootstrap ---------- */
+    Api.onChange(onSessionChange);
+    startPeriodic();
+    updateStatus();
+    // Se já estava logado ao abrir (sessão persistida), tenta migração + flush.
+    if (Api.isLoggedIn()) {
+      runMigration();
+      scheduleFlush();
+    }
+
+    return {
+      onCompletionChanged: onCompletionChanged,
+      onAlarmChanged: onAlarmChanged,
+      onRoutineChanged: onRoutineChanged,
+      flushOutbox: flushOutbox,
+      enqueueMutation: enqueueMutation
+    };
+  })();
+})();
+</script>
+</body>
+</html>
