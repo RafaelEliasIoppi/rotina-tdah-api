@@ -1849,6 +1849,13 @@
     if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
   }).catch(function () { /* servidor offline, Google login nao disponivel */ });
 
+  // Busca config do Stripe (priceId do plano Premium) para não hardcodar no frontend.
+  window.stripeConfig = { priceId: "" };
+  fetch(API_BASE + "/subscriptions/config").then(function (r) { return r.json(); }).then(function (cfg) {
+    window.stripeConfig.priceId = (cfg && cfg.priceId) || "";
+    updateSubscribeButtonAvailability();
+  }).catch(function () { /* servidor offline, priceId permanece vazio */ });
+
   Api.onChange(renderSessionChip);
   renderSessionChip();
 
@@ -1868,6 +1875,8 @@
   var planFreeCard = document.getElementById("planFreeCard");
   var planPremiumCard = document.getElementById("planPremiumCard");
 
+  updateSubscribeButtonAvailability();
+
   var SUBSCRIPTION_CACHE_KEY = "rotina_tdah_sub_v1";
 
   function getCachedSubscription() {
@@ -1886,6 +1895,12 @@
     var plan = sub && sub.plan === "premium" ? "Premium" : "Free";
     premiumBadge.textContent = plan;
     premiumBadge.classList.toggle("is-premium", plan === "Premium");
+  }
+
+  function updateSubscribeButtonAvailability() {
+    var hasPriceId = !!(window.stripeConfig && window.stripeConfig.priceId);
+    planSubscribeBtn.disabled = !hasPriceId;
+    planSubscribeBtn.title = hasPriceId ? "" : "Stripe não configurado";
   }
 
   function openPlans() {
@@ -1937,6 +1952,12 @@
       return;
     }
 
+    var stripePriceId = window.stripeConfig && window.stripeConfig.priceId;
+    if (!stripePriceId) {
+      showToast("Stripe não configurado");
+      return;
+    }
+
     planSubscribeBtn.style.display = "none";
     planManageBtn.style.display = "none";
     planLoading.style.display = "";
@@ -1945,7 +1966,7 @@
     Api.fetch("/subscriptions/checkout", {
       method: "POST",
       body: {
-        priceId: "price_premium", // será substituído pelo STRIPE_PREMIUM_PRICE_ID
+        priceId: stripePriceId,
         successUrl: window.location.href,
         cancelUrl: window.location.href,
       }
