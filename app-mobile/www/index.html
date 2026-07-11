@@ -994,13 +994,91 @@
 (function () {
   "use strict";
 
+  /* ---------- AppStorage: camada única de acesso ao localStorage ----------
+   * Centraliza todas as chaves usadas pelo app e o try/catch de leitura/
+   * escrita, evitando magic strings e blocos try/catch duplicados espalhados
+   * pelo arquivo. Não muda o formato dos dados armazenados (mesmo JSON de
+   * antes) — apenas centraliza o acesso. */
+  var AppStorage = (function () {
+    var KEYS = {
+      AUTH: "rotina_tdah_auth_v1",
+      TASKS: "rotina_tdah_tasks_v1",
+      STATE: "rotina_tdah_v1",
+      ALARMS: "rotina_tdah_alarms_v1",
+      SUBSCRIPTION: "rotina_tdah_sub_v1",
+      OUTBOX: "rotina_tdah_outbox_v1",
+      MIGRATED: "rotina_tdah_migrated_v1"
+    };
+
+    function read(key, fallback) {
+      try {
+        var raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) { return fallback; }
+    }
+    function write(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (e) { return false; }
+    }
+    function remove(key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
+    // Leitura/escrita de string crua (sem JSON), usada por MIGRATED.
+    function readRaw(key, fallback) {
+      try {
+        var raw = localStorage.getItem(key);
+        return raw || fallback;
+      } catch (e) { return fallback; }
+    }
+    function writeRaw(key, value) {
+      try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
+    }
+
+    return {
+      KEYS: KEYS,
+      read: read,
+      write: write,
+      remove: remove,
+      readRaw: readRaw,
+      writeRaw: writeRaw,
+
+      getAuth: function () { return read(KEYS.AUTH, null); },
+      setAuth: function (session) {
+        if (session) write(KEYS.AUTH, session);
+        else remove(KEYS.AUTH);
+      },
+
+      getTasksByDay: function (fallback) { return read(KEYS.TASKS, fallback); },
+      setTasksByDay: function (obj) { write(KEYS.TASKS, obj); },
+
+      getState: function () { return read(KEYS.STATE, {}); },
+      setState: function (state) { write(KEYS.STATE, state); },
+
+      getAlarms: function () { return read(KEYS.ALARMS, {}); },
+      setAlarms: function (a) { write(KEYS.ALARMS, a); },
+
+      getSubscription: function () { return read(KEYS.SUBSCRIPTION, null); },
+      setSubscription: function (sub) { if (sub) write(KEYS.SUBSCRIPTION, sub); },
+
+      getOutbox: function () {
+        var arr = read(KEYS.OUTBOX, []);
+        return Array.isArray(arr) ? arr : [];
+      },
+      setOutbox: function (arr) { write(KEYS.OUTBOX, arr); },
+
+      getMigratedUserId: function () { return readRaw(KEYS.MIGRATED, null); },
+      setMigratedUserId: function (uid) { writeRaw(KEYS.MIGRATED, String(uid)); }
+    };
+  })();
+
   /* ---------- API layer (Fase 5) ----------
    * Base da API. Em produção troque por sua URL HTTPS pública, ex:
    *   var API_BASE = "https://api.seu-dominio.com";
    * (uma linha só). Mantém-se 100% offline-first: se a rede/servidor
    * estiver indisponível, o app continua funcionando com localStorage. */
   var API_BASE = "https://rotina-tdah-api.onrender.com";
-  var AUTH_KEY = "rotina_tdah_auth_v1";
 
   // Erro identificável de rede (backend offline / sem conexão).
   function NetworkError(message) {
@@ -1024,16 +1102,10 @@
     var listeners = [];
 
     function loadSession() {
-      try {
-        var raw = localStorage.getItem(AUTH_KEY);
-        return raw ? JSON.parse(raw) : null;
-      } catch (e) { return null; }
+      return AppStorage.getAuth();
     }
     function persist() {
-      try {
-        if (session) localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-        else localStorage.removeItem(AUTH_KEY);
-      } catch (e) {}
+      AppStorage.setAuth(session);
     }
     function setSession(user, tokens) {
       session = { user: user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
@@ -1220,19 +1292,15 @@
     return out;
   }
 
-  var TASKS_KEY = "rotina_tdah_tasks_v1";
-
   function loadTasksByDay() {
-    try {
-      var raw = localStorage.getItem(TASKS_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) {}
+    var found = AppStorage.getTasksByDay(null);
+    if (found) return found;
     var def = defaultTasksByDay();
     saveTasksByDay(def);
     return def;
   }
   function saveTasksByDay(obj) {
-    localStorage.setItem(TASKS_KEY, JSON.stringify(obj));
+    AppStorage.setTasksByDay(obj);
     // Sync (Fase 6): qualquer edição de rotina (add/edit/excluir/duplicar/import/restaurar)
     // marca a rotina como "suja" para reenvio ao servidor. Debounced e best-effort.
     if (typeof Sync !== "undefined") Sync.onRoutineChanged();
@@ -1259,8 +1327,6 @@
   }
 
   /* ---------- State (localStorage) ---------- */
-  var STORAGE_KEY = "rotina_tdah_v1";
-  var ALARM_KEY = "rotina_tdah_alarms_v1";
 
   function todayKeyBR() {
     var idx = new Date().getDay(); // 0 sun .. 6 sat
@@ -1273,22 +1339,16 @@
   }
 
   function loadState() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+    return AppStorage.getState();
   }
   function saveState(state) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    AppStorage.setState(state);
   }
   function loadAlarms() {
-    try {
-      var raw = localStorage.getItem(ALARM_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+    return AppStorage.getAlarms();
   }
   function saveAlarms(a) {
-    localStorage.setItem(ALARM_KEY, JSON.stringify(a));
+    AppStorage.setAlarms(a);
   }
 
   var state = loadState();     // { "2026-07-11": { "acordar": true, ... } }
@@ -2231,17 +2291,12 @@
 
   updateSubscribeButtonAvailability();
 
-  var SUBSCRIPTION_CACHE_KEY = "rotina_tdah_sub_v1";
-
   function getCachedSubscription() {
-    try {
-      var raw = localStorage.getItem(SUBSCRIPTION_CACHE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch (e) { return null; }
+    return AppStorage.getSubscription();
   }
 
   function cacheSubscription(sub) {
-    if (sub) localStorage.setItem(SUBSCRIPTION_CACHE_KEY, JSON.stringify(sub));
+    AppStorage.setSubscription(sub);
   }
 
   function updatePremiumBadge(sub) {
@@ -2416,9 +2471,6 @@
    *    dado local anterior nunca é apagado antes do download remoto estar OK.
    * ====================================================================== */
   var Sync = (function () {
-    var OUTBOX_KEY = "rotina_tdah_outbox_v1";
-    var MIGRATED_KEY = "rotina_tdah_migrated_v1";
-
     // Mapa bidirecional weekday: cliente 'seg'..'dom' <-> servidor 1..7.
     var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
     var NUM_TO_WD = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex", 6: "sab", 7: "dom" };
@@ -2431,14 +2483,10 @@
 
     /* ---------- Outbox (localStorage) ---------- */
     function loadOutbox() {
-      try {
-        var raw = localStorage.getItem(OUTBOX_KEY);
-        var arr = raw ? JSON.parse(raw) : [];
-        return Array.isArray(arr) ? arr : [];
-      } catch (e) { return []; }
+      return AppStorage.getOutbox();
     }
     function saveOutbox(arr) {
-      try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(arr)); } catch (e) {}
+      AppStorage.setOutbox(arr);
     }
     function outboxCount() { return loadOutbox().length; }
 
@@ -2678,7 +2726,7 @@
 
     /* ---------- Migração one-time por conta ---------- */
     function migratedUserId() {
-      try { return localStorage.getItem(MIGRATED_KEY) || null; } catch (e) { return null; }
+      return AppStorage.getMigratedUserId();
     }
     function currentUserId() {
       var s = Api.getSession();
@@ -2690,7 +2738,7 @@
     }
     function markMigrated() {
       var uid = currentUserId();
-      if (uid) { try { localStorage.setItem(MIGRATED_KEY, String(uid)); } catch (e) {} }
+      if (uid) { AppStorage.setMigratedUserId(uid); }
     }
 
     // Coleta as completions locais que devem ir ao servidor (apenas datas reais
