@@ -1,13 +1,10 @@
 /**
  * Página de Política de Privacidade servida como HTML simples em GET /privacy.
  * Conteúdo isolado neste módulo para manter app.js enxuto.
- *
- * AJUSTAR ANTES DE PUBLICAR: substituir o email de contato placeholder
- * (contato@rotinatdah.app) pelo email de contato real do responsável.
  */
 
 const LAST_UPDATED = '11 de julho de 2026';
-const CONTACT_EMAIL = 'contato@rotinatdah.app'; // AJUSTAR: substituir pelo email de contato real antes de publicar
+const CONTACT_EMAIL = 'rafaelioppi@gmail.com';
 const RESPONSIBLE_NAME = 'Rafael Elias Ioppi';
 
 export function renderPrivacyPolicyHtml() {
@@ -194,9 +191,6 @@ export function renderPrivacyPolicyHtml() {
     <li><strong>Responsável:</strong> ${RESPONSIBLE_NAME}</li>
     <li><strong>Email:</strong> <a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></li>
   </ul>
-  <p class="notice">
-    AJUSTAR: substituir o email de contato acima pelo email de contato real antes de publicar o app.
-  </p>
 
   <footer>
     Rotina Diária — Apoio TDAH · Política de Privacidade · ${LAST_UPDATED}
