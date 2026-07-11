@@ -289,6 +289,52 @@
   .principle .label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
   .principle p { font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; margin: 8px 0 0 0; color: var(--ink); }
 
+  .tdah-info-link {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 14px 16px; margin-top: 12px; cursor: pointer;
+    font-family: var(--font-body); text-align: left;
+  }
+  .tdah-info-link .ico {
+    flex: none; width: 36px; height: 36px; border-radius: 10px;
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tdah-info-link .ico svg { width: 19px; height: 19px; }
+  .tdah-info-link .txt { flex: 1; }
+  .tdah-info-link h3 { font-size: 0.86rem; font-weight: 700; color: var(--ink); margin: 0 0 2px; }
+  .tdah-info-link p { font-size: 0.76rem; color: var(--ink-soft); margin: 0; }
+  .tdah-info-link .chev { flex: none; color: var(--ink-faint); }
+  .tdah-info-link .chev svg { width: 16px; height: 16px; }
+
+  .tdah-topics { display: flex; flex-direction: column; gap: 8px; }
+  .tdah-topic {
+    border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated);
+  }
+  .tdah-topic summary {
+    list-style: none; cursor: pointer; padding: 13px 14px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    font-family: var(--font-body); font-size: 0.87rem; font-weight: 700; color: var(--ink);
+  }
+  .tdah-topic summary::-webkit-details-marker { display: none; }
+  .tdah-topic summary .plus {
+    flex: none; width: 22px; height: 22px; border-radius: 6px; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 1.05rem; line-height: 1;
+    transition: transform 0.15s ease;
+  }
+  .tdah-topic[open] summary .plus { transform: rotate(45deg); }
+  .tdah-topic .tdah-body {
+    padding: 0 16px 16px; font-family: var(--font-body); font-size: 0.84rem; line-height: 1.6; color: var(--ink-soft);
+  }
+  .tdah-topic .tdah-body p { margin: 0 0 10px; }
+  .tdah-topic .tdah-source {
+    font-size: 0.71rem; color: var(--ink-faint); font-style: italic; margin-top: 6px;
+  }
+  .tdah-disclaimer {
+    font-size: 0.72rem; color: var(--ink-faint); line-height: 1.5; text-align: center;
+    padding: 4px 4px 0;
+  }
+
   footer {
     text-align: center; font-size: 0.72rem; color: var(--ink-faint);
     padding: 24px 16px 8px;
@@ -718,6 +764,15 @@
     <p>O cérebro com TDAH não sustenta bem informação, tempo e motivação internamente — a solução não é "tentar mais", é <strong>externalizar</strong>. Este checklist é isso aplicado à sua rotina real.</p>
   </div>
 
+  <button class="tdah-info-link" id="tdahInfoBtn" type="button">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke-linejoin="round"/><path d="M9 8h4M9 12h6M9 16h6" stroke-linecap="round"/></svg></div>
+    <div class="txt">
+      <h3>Entenda o TDAH</h3>
+      <p>Resumos sobre diagnóstico, tratamento e funções executivas</p>
+    </div>
+    <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </button>
+
   <footer>
     Baseado nas 8 Regras de Barkley e no plano de rotina semanal construído a partir dos livros deste projeto.<br />
     Ferramenta educacional de apoio — não substitui acompanhamento clínico.
@@ -828,6 +883,108 @@
         <button class="btn btn-primary" id="planSubscribeBtn" type="button">Assinar Premium</button>
         <button class="btn" id="planManageBtn" type="button" style="display:none;">Gerenciar assinatura</button>
         <div class="plan-loading" id="planLoading" style="display:none;">Abrindo pagamento...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tdahInfoOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tdahInfoTitle">
+    <div class="modal-header">
+      <h2 id="tdahInfoTitle">Entenda o TDAH</h2>
+      <button class="modal-close" id="tdahInfoCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="tdah-topics">
+        <details class="tdah-topic">
+          <summary>O que é TDAH?<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>TDAH (Transtorno de Déficit de Atenção/Hiperatividade) é uma condição neurobiológica, não uma questão de "falta de esforço" ou má educação. A base científica mostra que ele envolve uma dificuldade real de autorregulação, com origem em diferenças no desenvolvimento e funcionamento do cérebro — especialmente nos sistemas que usam dopamina e noradrenalina como mensageiros. Estudos com gêmeos e famílias apontam herdabilidade entre 70% e 90%, ou seja, a genética tem peso muito maior que fatores ambientais isolados.</p>
+            <p>O TDAH se manifesta em três padrões principais: predominantemente desatento, predominantemente hiperativo-impulsivo, ou combinado (o mais comum). Para receber o diagnóstico, os sintomas precisam ter começado antes dos 12 anos, aparecer em pelo menos dois ambientes diferentes (por exemplo, casa e escola/trabalho) e causar prejuízo real no dia a dia.</p>
+            <p>É uma condição comum: afeta cerca de 5-7% das crianças e 2,8% dos adultos no mundo todo, com prevalência parecida em diferentes países e décadas — o que derruba a ideia de que seria "invenção moderna". E, diferente do que muita gente pensa, o TDAH não desaparece na vida adulta: ele muda de forma, mas persiste em boa parte dos casos.</p>
+            <div class="tdah-source">Fontes: Cartilha ABP/Alexa; Cap. IACAPAP; Cap. 2 do Manual Barkley.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>Funções executivas<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>Um dos pontos mais importantes para entender o TDAH é que ele não é sobre "força de vontade". A teoria central do psicólogo Russell Barkley explica que a raiz do problema é um déficit na capacidade de <strong>inibição comportamental</strong> — a dificuldade de pausar um impulso antes de agir.</p>
+            <p>Esse déficit primário compromete quatro capacidades que todo mundo usa o tempo todo: seguir um raciocínio mentalmente sem esquecer o objetivo, usar o "diálogo interno" para se orientar e planejar, controlar emoções e manter a motivação mesmo sem recompensa imediata, e organizar ações complexas em etapas.</p>
+            <p>O resultado é o que Barkley chama de "miopia temporal": a dificuldade de deixar o comportamento presente ser guiado por consequências futuras. Por isso, pedir para "se esforçar mais" não funciona — o problema não é falta de conhecimento sobre o que fazer, é a dificuldade de transformar esse conhecimento em ação no momento certo.</p>
+            <div class="tdah-source">Fonte: Cap. 7 do Manual Barkley — "Uma Teoria para o TDAH".</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>TDAH em crianças vs. adultos<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>O TDAH muda de "roupagem" conforme a pessoa cresce. Na infância, os sintomas mais visíveis costumam ser a hiperatividade motora e a impulsividade mais explícita. Na adolescência e vida adulta, a hiperatividade física tende a diminuir ou se tornar mais interna, enquanto desatenção, desorganização, gestão de tempo e impulsividade em decisões ganham mais destaque.</p>
+            <p>Estudos longitudinais de décadas mostram que a persistência do diagnóstico da infância para a vida adulta varia bastante conforme o critério usado — indo de 15% a 65% — mas uma parte significativa dos adultos continua enfrentando dificuldades reais, mesmo sem preencher mais todos os critérios formais da infância.</p>
+            <p>Diagnosticar TDAH em adultos é mais complexo, pois depende em parte de memória retrospectiva e os sintomas se sobrepõem a outras condições comuns na vida adulta, como ansiedade. Por isso os critérios reconhecem essa diferença: adultos podem ser diagnosticados com um número menor de sintomas presentes.</p>
+            <div class="tdah-source">Fontes: Cap. 6 e 11 do Manual Barkley; Cartilha ABP/Alexa; Cap. IACAPAP.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>Como é feito o diagnóstico<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>Não existe exame de sangue, de imagem cerebral ou teste único que diagnostique TDAH. O diagnóstico é clínico, feito por profissional de saúde qualificado, com base em uma avaliação cuidadosa que reúne várias fontes de informação.</p>
+            <p>O processo tipicamente envolve entrevista detalhada com a pessoa e, quando é criança/adolescente, também com pais e professores; escalas de avaliação de comportamento; histórico de desenvolvimento; e exame médico para descartar outras causas. Testes neuropsicológicos podem ajudar a compor o quadro, mas nenhum, isoladamente, confirma ou descarta o diagnóstico.</p>
+            <p>Um passo essencial é separar TDAH de outras condições parecidas, como ansiedade, depressão ou trauma. Por isso, uma avaliação completa leva tempo e não deveria se basear em um questionário rápido isolado.</p>
+            <div class="tdah-source">Fontes: Cap. 8, 9, 10 e 11 do Manual Barkley; Cap. IACAPAP; Cartilha ABP/Alexa.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>Opções de tratamento<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>A evidência científica converge num ponto: o tratamento mais eficaz costuma ser o <strong>multimodal</strong> — combinando abordagem comportamental e, quando indicado, medicação.</p>
+            <p>No campo comportamental, programas de treinamento parental ensinam técnicas como atenção positiva, ordens claras e sistemas de recompensa. Em adultos, a terapia cognitivo-comportamental tem bons resultados, especialmente ajudando a criar estruturas externas de organização.</p>
+            <p>Medicamentos estimulantes são considerados primeira linha por sua eficácia bem documentada. Existem também opções não-estimulantes para quem não responde bem a estimulantes. O tratamento medicamentoso bem conduzido reduz, e não aumenta, o risco de uso indevido de substâncias no futuro.</p>
+            <div class="tdah-source">Fontes: Cap. 12, 15, 17, 18, 19 e 20 do Manual Barkley; Cap. IACAPAP; Cartilha ABP/Alexa.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>Por que rotina e lembretes ajudam<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>Se o TDAH envolve dificuldade em manter informações, motivação e planos "por dentro" da própria cabeça, faz sentido que a solução passe por colocar esse apoio "por fora" — o que Barkley chama de <strong>externalização</strong>.</p>
+            <p>Na prática: transformar prazos e tarefas em listas visíveis, usar timers e alarmes para tornar o tempo algo concreto, quebrar objetivos grandes em passos pequenos e escritos, e criar consequências e recompensas imediatas e visíveis.</p>
+            <p>Ferramentas como assistentes de voz, checklists e apps de rotina funcionam como um "cérebro auxiliar externo" — não porque a pessoa "não sabe" o que precisa fazer, mas porque precisa de apoio externo para transformar essa intenção em ação no momento certo. Não são muleta ou sinal de fraqueza: são o tipo de ferramenta que a própria ciência do TDAH indica como eficaz.</p>
+            <div class="tdah-source">Fonte central: Cap. 7 do Manual Barkley; Cartilha ABP/Alexa.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>Mitos comuns sobre TDAH<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p><strong>"É só preguiça ou falta de disciplina"</strong> — Falso. TDAH tem base neurobiológica bem documentada, com herdabilidade genética de 70-90%.</p>
+            <p><strong>"É invenção moderna da indústria farmacêutica"</strong> — Falso. Descrições de quadros equivalentes existem desde o século 18, muito antes de qualquer indústria farmacêutica relevante.</p>
+            <p><strong>"É causado por má criação dos pais"</strong> — Falso. O ambiente influencia o manejo dos sintomas, mas fatores genéticos e neurobiológicos dominam amplamente sobre fatores sociais.</p>
+            <p><strong>"Só afeta crianças, passa na vida adulta"</strong> — Falso. Estudos mostram persistência significativa até a vida adulta.</p>
+            <p><strong>"Medicação para TDAH vicia ou aumenta risco de abuso de drogas"</strong> — Falso: o tratamento adequado está associado a menor risco de uso indevido de substâncias no futuro.</p>
+            <div class="tdah-source">Fonte: Cartilha ABP/Alexa, seção "Mitos"; Cap. 1 e 17 do Manual Barkley; Cap. IACAPAP.</div>
+          </div>
+        </details>
+
+        <details class="tdah-topic">
+          <summary>TDAH e outras condições<span class="plus">+</span></summary>
+          <div class="tdah-body">
+            <p>É muito comum o TDAH vir acompanhado de outras condições (comorbidade). Entre 67% e 80% das crianças com TDAH e mais de 80% dos adultos em acompanhamento clínico apresentam ao menos uma condição associada — isso é a regra mais do que a exceção.</p>
+            <p>As comorbidades mais frequentes incluem Transtorno Opositor Desafiador e Transtorno de Conduta (cerca de 10x mais prováveis), ansiedade (cerca de 3x mais frequente) e depressão (cerca de 5x mais frequente). Em adultos, transtorno por uso de substâncias é a comorbidade mais comum.</p>
+            <p>Por isso, uma avaliação bem-feita não busca apenas confirmar o TDAH, mas também mapear se existem outras condições associadas que precisam ser tratadas em conjunto.</p>
+            <div class="tdah-source">Fontes: Cartilha ABP/Alexa; Cap. IACAPAP; Cap. 4 do Manual Barkley.</div>
+          </div>
+        </details>
+      </div>
+
+      <div class="tdah-disclaimer">
+        Conteúdo educacional baseado no Manual Barkley ("TDAH: Diagnóstico e Tratamento", 3ª ed.), na Cartilha
+        TDAH (ABP/Amazon Alexa, 2024) e no capítulo D.1 do Tratado IACAPAP. Não substitui avaliação, diagnóstico
+        ou acompanhamento com profissional de saúde qualificado.
       </div>
     </div>
   </div>
@@ -2142,6 +2299,20 @@
     if (ev.target === plansOverlay) closePlans();
   });
 
+  /* ---------- Modal: Entenda o TDAH ---------- */
+  var tdahInfoOverlay = document.getElementById("tdahInfoOverlay");
+  var tdahInfoBtn = document.getElementById("tdahInfoBtn");
+  var tdahInfoCloseBtn = document.getElementById("tdahInfoCloseBtn");
+
+  function openTdahInfo() { tdahInfoOverlay.classList.add("show"); }
+  function closeTdahInfo() { tdahInfoOverlay.classList.remove("show"); }
+
+  tdahInfoBtn.addEventListener("click", openTdahInfo);
+  tdahInfoCloseBtn.addEventListener("click", closeTdahInfo);
+  tdahInfoOverlay.addEventListener("click", function (ev) {
+    if (ev.target === tdahInfoOverlay) closeTdahInfo();
+  });
+
   planSubscribeBtn.addEventListener("click", function () {
     if (!Api.isLoggedIn()) {
       closePlans();
@@ -2219,7 +2390,8 @@
   // Override: adicionar plansOverlay no handler de Escape
   document.addEventListener("keydown", function (ev) {
     if (ev.key !== "Escape") return;
-    if (plansOverlay.classList.contains("show")) closePlans();
+    if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
+    else if (plansOverlay.classList.contains("show")) closePlans();
     else if (authOverlay.classList.contains("show")) closeAuth();
     else if (editOverlay.classList.contains("show")) closeEditor();
   });
