@@ -1842,7 +1842,7 @@
     ensureSocialLoginInit().then(function () {
       return SocialLogin.login({
         provider: "google",
-        options: { scopes: ["email", "profile"] }
+        options: {}
       });
     }).then(function (res) {
       var idToken = res && res.result && res.result.idToken;
