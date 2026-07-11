@@ -4,6 +4,7 @@
   "private": true,
   "description": "App Android da Rotina Diária TDAH, com alarmes locais nativos garantidos.",
   "scripts": {
+    "build": "esbuild src/main.js --bundle --outfile=www/app.bundle.js",
     "sync": "npx cap sync android",
     "open:android": "npx cap open android",
     "copy-web": "node scripts/copy-web.js",

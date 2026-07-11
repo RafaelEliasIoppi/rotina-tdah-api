@@ -1,0 +1,1903 @@
+(() => {
+  // src/storage.js
+  var AppStorage = /* @__PURE__ */ (function() {
+    var KEYS = {
+      AUTH: "rotina_tdah_auth_v1",
+      TASKS: "rotina_tdah_tasks_v1",
+      STATE: "rotina_tdah_v1",
+      ALARMS: "rotina_tdah_alarms_v1",
+      SUBSCRIPTION: "rotina_tdah_sub_v1",
+      OUTBOX: "rotina_tdah_outbox_v1",
+      MIGRATED: "rotina_tdah_migrated_v1"
+    };
+    function read(key, fallback) {
+      try {
+        var raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+    function write(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    function remove(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (e) {
+      }
+    }
+    function readRaw(key, fallback) {
+      try {
+        var raw = localStorage.getItem(key);
+        return raw || fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+    function writeRaw(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    return {
+      KEYS,
+      read,
+      write,
+      remove,
+      readRaw,
+      writeRaw,
+      getAuth: function() {
+        return read(KEYS.AUTH, null);
+      },
+      setAuth: function(session) {
+        if (session) write(KEYS.AUTH, session);
+        else remove(KEYS.AUTH);
+      },
+      getTasksByDay: function(fallback) {
+        return read(KEYS.TASKS, fallback);
+      },
+      setTasksByDay: function(obj) {
+        write(KEYS.TASKS, obj);
+      },
+      getState: function() {
+        return read(KEYS.STATE, {});
+      },
+      setState: function(state2) {
+        write(KEYS.STATE, state2);
+      },
+      getAlarms: function() {
+        return read(KEYS.ALARMS, {});
+      },
+      setAlarms: function(a) {
+        write(KEYS.ALARMS, a);
+      },
+      getSubscription: function() {
+        return read(KEYS.SUBSCRIPTION, null);
+      },
+      setSubscription: function(sub) {
+        if (sub) write(KEYS.SUBSCRIPTION, sub);
+      },
+      getOutbox: function() {
+        var arr = read(KEYS.OUTBOX, []);
+        return Array.isArray(arr) ? arr : [];
+      },
+      setOutbox: function(arr) {
+        write(KEYS.OUTBOX, arr);
+      },
+      getMigratedUserId: function() {
+        return readRaw(KEYS.MIGRATED, null);
+      },
+      setMigratedUserId: function(uid) {
+        writeRaw(KEYS.MIGRATED, String(uid));
+      }
+    };
+  })();
+
+  // src/tasks.js
+  var DAYS = [
+    { key: "seg", label: "Segunda" },
+    { key: "ter", label: "Ter\xE7a" },
+    { key: "qua", label: "Quarta" },
+    { key: "qui", label: "Quinta" },
+    { key: "sex", label: "Sexta" }
+  ];
+  var BLOCK_ORDER = ["Manh\xE3", "Trabalho", "Meio-dia", "Tarde", "Noite"];
+  var _Sync = null;
+  function setSyncHook(syncModule) {
+    _Sync = syncModule;
+  }
+  function defaultTasksByDay() {
+    var base = [
+      { id: "acordar", time: "05:45", label: "Acordar", block: "Manh\xE3", detail: "Alarme f\xEDsico, n\xE3o celular na m\xE3o. Levante imediatamente.", rule: "Regra 1 \u2014 Pare a a\xE7\xE3o" },
+      { id: "espiritual-manha", time: "05:50", label: "Momento espiritual (15 min)", block: "Manh\xE3", detail: 'Ora\xE7\xE3o + leitura b\xEDblica breve, antes de qualquer tela. "Buscai primeiro o Reino de Deus" (Mt 6:33).', rule: "Regra 5 \u2014 Considere o futuro" },
+      { id: "preparo-saida", time: "06:05", label: "Prepara\xE7\xE3o para sair (10 min)", block: "Manh\xE3", detail: "Lista fixa perto da porta: carteira, chave, celular, carregador. N\xE3o confie na mem\xF3ria.", rule: "Exteriorizar" },
+      { id: "sair-casa", time: "06:15", label: "Sair de casa", block: "Manh\xE3", detail: "", rule: "" },
+      { id: "comer-trajeto", time: "06:20", label: "Comer algo leve no trajeto/chegada", block: "Manh\xE3", detail: "Sem caf\xE9 em casa \u2014 hipoglicemia piora desaten\xE7\xE3o e irritabilidade. N\xE3o \xE9 opcional.", rule: "Manejo de energia" },
+      { id: "prioridades", time: "07:30", label: "Escrever as 3 prioridades do dia", block: "Trabalho", detail: "Papel ou app, antes de mergulhar em tarefas. A lista existe fora da sua cabe\xE7a, n\xE3o dentro dela.", rule: "Regra 4 \u2014 Exteriorize" },
+      { id: "bloco-foco-1", time: "08:00", label: "Bloco de foco 1 (25\u201345 min + timer vis\xEDvel)", block: "Trabalho", detail: "Pausa de 5 min ao final, com pequena recompensa (caf\xE9, alongamento).", rule: "Regra 6 \u2014 Recompensa imediata" },
+      { id: "janela-livre-1", time: "09:30", label: "Janela livre: leitura/estudo (20\u201330 min)", block: "Trabalho", detail: "N\xE3o ultrapasse 30 min sem pausa. Pode alternar entre 2 atividades se uma ficar entediante.", rule: "" },
+      { id: "revisar-lista-manha", time: "10:15", label: "Revisar lista de prioridades e riscar o que j\xE1 foi feito", block: "Trabalho", detail: "Refor\xE7o visual de progresso.", rule: "" },
+      { id: "bloco-foco-2", time: "10:30", label: "Bloco de foco 2 (25\u201345 min + timer vis\xEDvel)", block: "Trabalho", detail: "Tarefas mais exigentes de concentra\xE7\xE3o, se essa costuma ser sua janela de mais energia.", rule: "" },
+      { id: "almoco", time: "12:00", label: "Almo\xE7o \u2014 pausa real, sem tela se poss\xEDvel", block: "Meio-dia", detail: "30 segundos de gratid\xE3o antes de comer j\xE1 contam.", rule: "" },
+      { id: "janela-livre-2", time: "13:30", label: "Janela livre: leitura/estudo ou outra atividade", block: "Tarde", detail: "Tarefas administrativas/repetitivas nos per\xEDodos de menor energia.", rule: "" },
+      { id: "bloco-foco-3", time: "14:00", label: "Bloco de foco 3 (25\u201345 min + timer vis\xEDvel)", block: "Tarde", detail: "", rule: "" },
+      { id: "antes-reuniao", time: "15:00", label: "Antes de reuni\xE3o/conversa importante: anotar 2\u20133 pontos-chave", block: "Tarde", detail: "Se perceber que est\xE1 divagando, pause e repita mentalmente o ponto principal.", rule: "Comunica\xE7\xE3o" },
+      { id: "bloco-foco-4", time: "16:00", label: "Bloco de foco 4 (25\u201345 min + timer vis\xEDvel)", block: "Tarde", detail: "", rule: "" },
+      { id: "revisar-fim-dia", time: "17:30", label: "Revisar prioridades: pend\xEAncias viram 1\xAA prioridade de amanh\xE3", block: "Tarde", detail: "Evita come\xE7ar o dia seguinte sem rumo.", rule: "" },
+      { id: "transicao", time: "18:00", label: "Transi\xE7\xE3o mental no trajeto de volta (5 min sem celular)", block: "Noite", detail: 'Ajuda a "desligar" do trabalho antes de entrar em outro contexto.', rule: "Regula\xE7\xE3o emocional" },
+      { id: "espiritual-noite", time: "20:30", label: "Momento espiritual de encerramento (10 min)", block: "Noite", detail: "Ora\xE7\xE3o de gratid\xE3o e entrega do dia. Reconhecer o erro sem se punir.", rule: "Regra 8 \u2014 Senso de humor" },
+      { id: "preparar-amanha", time: "21:30", label: "Preparar o dia seguinte (10 min)", block: "Noite", detail: "Separar roupa, mochila. Definir 1\u20132 prioridades para amanh\xE3.", rule: "" },
+      { id: "dormir", time: "22:30", label: "Hor\xE1rio fixo para dormir", block: "Noite", detail: "Sono ruim piora desaten\xE7\xE3o e impulsividade no dia seguinte.", rule: "" }
+    ];
+    var out = {};
+    DAYS.forEach(function(d) {
+      var list = base.map(function(t) {
+        return Object.assign({}, t);
+      });
+      if (d.key === "seg") {
+        list.splice(5, 0, { id: "planejar-semana", time: "07:35", label: "Planejar a semana inteira (10 min)", block: "Trabalho", detail: "Fragmente metas grandes em passos di\xE1rios.", rule: "Regra 6 \u2014 Decomponha o futuro" });
+      }
+      if (d.key === "sex") {
+        list.push({ id: "revisao-semana", time: "17:45", label: "Revis\xE3o da semana: o que funcionou, o que n\xE3o", block: "Tarde", detail: "Ajuste de estrat\xE9gia \xE9 parte do processo.", rule: "" });
+      }
+      out[d.key] = list;
+    });
+    return out;
+  }
+  function loadTasksByDay() {
+    var found = AppStorage.getTasksByDay(null);
+    if (found) return found;
+    var def = defaultTasksByDay();
+    saveTasksByDay(def);
+    return def;
+  }
+  function saveTasksByDay(obj) {
+    AppStorage.setTasksByDay(obj);
+    if (_Sync) _Sync.onRoutineChanged();
+  }
+  var tasksByDay = loadTasksByDay();
+  function buildTasks(dayKey) {
+    return (tasksByDay[dayKey] || []).slice().sort(function(a, b) {
+      return a.time.localeCompare(b.time);
+    });
+  }
+  function uniqueId(dayKey, base) {
+    var list = tasksByDay[dayKey] || [];
+    var id = base, n = 2;
+    while (list.some(function(t) {
+      return t.id === id;
+    })) {
+      id = base + "-" + n;
+      n++;
+    }
+    return id;
+  }
+  function todayKeyBR() {
+    var idx = (/* @__PURE__ */ new Date()).getDay();
+    var map = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex" };
+    return map[idx] || "seg";
+  }
+  function isoDate(d) {
+    d = d || /* @__PURE__ */ new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function loadState() {
+    return AppStorage.getState();
+  }
+  function saveState(state2) {
+    AppStorage.setState(state2);
+  }
+  function loadAlarms() {
+    return AppStorage.getAlarms();
+  }
+  function saveAlarms(a) {
+    AppStorage.setAlarms(a);
+  }
+  var state = loadState();
+  var alarms = loadAlarms();
+  var currentDay = todayKeyBR();
+  var currentDateISO = isoDate();
+  function dayState(dateISO) {
+    if (!state[dateISO]) state[dateISO] = {};
+    return state[dateISO];
+  }
+  function effectiveDateForDay(dayKey) {
+    if (dayKey === todayKeyBR()) return currentDateISO;
+    return "template-" + dayKey;
+  }
+  function getCurrentDay() {
+    return currentDay;
+  }
+  function setCurrentDay(v) {
+    currentDay = v;
+  }
+  function getCurrentDateISO() {
+    return currentDateISO;
+  }
+  function setCurrentDateISO(v) {
+    currentDateISO = v;
+  }
+  function getTasksByDay() {
+    return tasksByDay;
+  }
+  function setTasksByDay(obj) {
+    tasksByDay = obj;
+  }
+  function getStateObj() {
+    return state;
+  }
+  function setStateObj(obj) {
+    state = obj;
+  }
+  function getAlarmsObj() {
+    return alarms;
+  }
+  function setAlarmsObj(obj) {
+    alarms = obj;
+  }
+
+  // src/notifications.js
+  var _Sync2 = null;
+  function setSyncHook2(syncModule) {
+    _Sync2 = syncModule;
+  }
+  var clockEl = document.getElementById("clock");
+  var toastEl = document.getElementById("toast");
+  function tickClock() {
+    var now = /* @__PURE__ */ new Date();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var mm = String(now.getMinutes()).padStart(2, "0");
+    clockEl.textContent = hh + ":" + mm;
+    var iso = isoDate();
+    if (iso !== getCurrentDateISO()) {
+      setCurrentDateISO(iso);
+      setCurrentDay(todayKeyBR());
+      renderDayTabs();
+      renderBlocks();
+    }
+    checkDueAlarms(now);
+  }
+  var notifyBanner = document.getElementById("notifyBanner");
+  var notifyBtn = document.getElementById("notifyBtn");
+  var firedToday = {};
+  var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var LocalNotifications = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+  function notifSupported() {
+    if (isNative) return !!LocalNotifications;
+    return "Notification" in window;
+  }
+  function updateNotifyBanner() {
+    if (!notifSupported()) {
+      notifyBanner.classList.remove("show");
+      return;
+    }
+    if (isNative) {
+      LocalNotifications.checkPermissions().then(function(res) {
+        notifyBanner.classList.toggle("show", res.display !== "granted");
+      });
+      var bannerText = notifyBanner.querySelector("span");
+      if (bannerText) bannerText.textContent = "Ative notifica\xE7\xF5es para receber lembretes garantidos, mesmo com o app fechado.";
+      return;
+    }
+    notifyBanner.classList.toggle("show", Notification.permission === "default");
+  }
+  notifyBtn.addEventListener("click", function() {
+    if (!notifSupported()) return;
+    if (isNative) {
+      LocalNotifications.requestPermissions().then(function(res) {
+        updateNotifyBanner();
+        showToast(res.display === "granted" ? "Notifica\xE7\xF5es ativadas." : "Permiss\xE3o n\xE3o concedida.");
+        if (res.display === "granted") rescheduleAllNativeAlarms();
+      });
+      return;
+    }
+    Notification.requestPermission().then(function() {
+      updateNotifyBanner();
+      showToast(Notification.permission === "granted" ? "Notifica\xE7\xF5es ativadas." : "Permiss\xE3o n\xE3o concedida.");
+    });
+  });
+  function alarmNativeId(key) {
+    var h = 0;
+    for (var i = 0; i < key.length; i++) {
+      h = h * 31 + key.charCodeAt(i) | 0;
+    }
+    return Math.abs(h) % 2147483647;
+  }
+  var WEEKDAY_NUM = { seg: 2, ter: 3, qua: 4, qui: 5, sex: 6 };
+  function scheduleNativeAlarm(key, time, label) {
+    if (!LocalNotifications) return;
+    var parts = key.split(":");
+    var dayKey = parts[0];
+    var hh = parseInt(time.split(":")[0], 10);
+    var mm = parseInt(time.split(":")[1], 10);
+    LocalNotifications.schedule({
+      notifications: [{
+        id: alarmNativeId(key),
+        title: "Rotina TDAH \u2014 " + time,
+        body: label,
+        schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true },
+        sound: null
+      }]
+    }).catch(function() {
+    });
+  }
+  function cancelNativeAlarm(key) {
+    if (!LocalNotifications) return;
+    LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function() {
+    });
+  }
+  function rescheduleAllNativeAlarms() {
+    if (!LocalNotifications) return;
+    var alarms2 = getAlarmsObj();
+    Object.keys(alarms2).forEach(function(key) {
+      scheduleNativeAlarm(key, alarms2[key].time, alarms2[key].label);
+    });
+  }
+  function toggleAlarm(key, time, label) {
+    var alarms2 = getAlarmsObj();
+    if (alarms2[key]) {
+      delete alarms2[key];
+      if (isNative) cancelNativeAlarm(key);
+    } else {
+      alarms2[key] = { time, label };
+      if (isNative) {
+        LocalNotifications.checkPermissions().then(function(res) {
+          if (res.display === "granted") {
+            scheduleNativeAlarm(key, time, label);
+            return;
+          }
+          LocalNotifications.requestPermissions().then(function(r2) {
+            if (r2.display === "granted") scheduleNativeAlarm(key, time, label);
+            updateNotifyBanner();
+          });
+        });
+      } else if (notifSupported() && Notification.permission === "default") {
+        Notification.requestPermission().then(updateNotifyBanner);
+      }
+    }
+    saveAlarms(alarms2);
+    if (_Sync2) {
+      _Sync2.onAlarmChanged(key, time, label, !!alarms2[key]);
+    }
+    renderBlocks();
+    showToast(alarms2[key] ? "Lembrete ativado para " + time : "Lembrete removido");
+  }
+  function checkDueAlarms(now) {
+    if (isNative) return;
+    var alarms2 = getAlarmsObj();
+    var realDay = todayKeyBR();
+    var hh = String(now.getHours()).padStart(2, "0");
+    var mm = String(now.getMinutes()).padStart(2, "0");
+    var nowHM = hh + ":" + mm;
+    Object.keys(alarms2).forEach(function(key) {
+      var parts = key.split(":");
+      var dayKey = parts[0];
+      if (dayKey !== realDay) return;
+      var a = alarms2[key];
+      if (a.time !== nowHM) return;
+      var fireFlag = key + "@" + getCurrentDateISO();
+      if (firedToday[fireFlag]) return;
+      firedToday[fireFlag] = true;
+      fireReminder(a.label, a.time);
+    });
+  }
+  function fireReminder(label, time) {
+    showToast("\u23F0 " + time + " \u2014 " + label);
+    if (notifSupported() && Notification.permission === "granted") {
+      try {
+        var n = new Notification("Rotina TDAH \u2014 " + time, { body: label, tag: "rotina-" + time });
+      } catch (e) {
+      }
+    }
+    if (navigator.vibrate) {
+      try {
+        navigator.vibrate([120, 60, 120]);
+      } catch (e) {
+      }
+    }
+  }
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toastEl.classList.remove("show");
+    }, 3200);
+  }
+  function initNotifications() {
+    updateNotifyBanner();
+    setInterval(tickClock, 15e3);
+    tickClock();
+    if (isNative && LocalNotifications) {
+      LocalNotifications.checkPermissions().then(function(res) {
+        if (res.display === "granted") rescheduleAllNativeAlarms();
+      });
+    }
+  }
+
+  // src/render.js
+  var _Sync3 = null;
+  function setSyncHook3(syncModule) {
+    _Sync3 = syncModule;
+  }
+  var dayTabsEl = document.getElementById("dayTabs");
+  var blocksEl = document.getElementById("blocksContainer");
+  var ringFill = document.getElementById("ringFill");
+  var ringLabel = document.getElementById("ringLabel");
+  var progressHeadline = document.getElementById("progressHeadline");
+  var progressSub = document.getElementById("progressSub");
+  var RING_CIRC = 169.6;
+  function renderDayTabs() {
+    dayTabsEl.innerHTML = "";
+    DAYS.forEach(function(d) {
+      var btn = document.createElement("button");
+      btn.className = "daytab";
+      btn.type = "button";
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", String(d.key === getCurrentDay()));
+      var isReal = d.key === todayKeyBR();
+      btn.innerHTML = (isReal ? '<span class="dot"></span>' : "") + d.label;
+      btn.addEventListener("click", function() {
+        setCurrentDay(d.key);
+        renderDayTabs();
+        renderBlocks();
+      });
+      dayTabsEl.appendChild(btn);
+    });
+  }
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function checkIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function bellIcon(filled) {
+    return '<svg viewBox="0 0 24 24" fill="' + (filled ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2"><path d="M12 3a5 5 0 00-5 5v3.3c0 .5-.2 1-.5 1.4L5 15h14l-1.5-2.3c-.3-.4-.5-.9-.5-1.4V8a5 5 0 00-5-5z" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 005 0" stroke-linecap="round"/></svg>';
+  }
+  function renderBlocks() {
+    var currentDay2 = getCurrentDay();
+    var tasks = buildTasks(currentDay2);
+    var ds = dayState(effectiveDateForDay(currentDay2));
+    var alarms2 = getAlarmsObj();
+    blocksEl.innerHTML = "";
+    var byBlock = {};
+    tasks.forEach(function(t) {
+      if (!byBlock[t.block]) byBlock[t.block] = [];
+      byBlock[t.block].push(t);
+    });
+    BLOCK_ORDER.forEach(function(blockName) {
+      var items = byBlock[blockName];
+      if (!items || !items.length) return;
+      var section = document.createElement("div");
+      section.className = "block";
+      var title = document.createElement("div");
+      title.className = "block-title";
+      title.innerHTML = escapeHtml(blockName) + '<span class="tag">' + items.length + " itens</span>";
+      section.appendChild(title);
+      items.forEach(function(t) {
+        var alarmKey = currentDay2 + ":" + t.id;
+        var card = document.createElement("div");
+        card.className = "task" + (ds[t.id] ? " done" : "");
+        card.setAttribute("role", "checkbox");
+        card.setAttribute("aria-checked", String(!!ds[t.id]));
+        card.tabIndex = 0;
+        var detailHtml = t.detail ? '<div class="task-detail">' + escapeHtml(t.detail) + "</div>" : "";
+        var ruleHtml = t.rule ? '<span class="task-rule">' + escapeHtml(t.rule) + "</span>" : "";
+        card.innerHTML = '<div class="check">' + checkIcon() + '</div><div class="task-body"><div class="task-top"><span class="task-time">' + escapeHtml(t.time) + '</span><span class="task-label">' + escapeHtml(t.label) + "</span></div>" + detailHtml + ruleHtml + '</div><button class="alarm-btn' + (alarms2[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms2[alarmKey]) + "</button>";
+        card.addEventListener("click", function(ev) {
+          if (ev.target.closest(".alarm-btn")) return;
+          toggleTask(t.id);
+        });
+        card.addEventListener("keydown", function(ev) {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            toggleTask(t.id);
+          }
+        });
+        section.appendChild(card);
+      });
+      blocksEl.appendChild(section);
+    });
+    blocksEl.querySelectorAll(".alarm-btn").forEach(function(btn) {
+      btn.addEventListener("click", function(ev) {
+        ev.stopPropagation();
+        toggleAlarm(btn.dataset.alarm, btn.dataset.time, btn.dataset.label);
+      });
+    });
+    updateProgress();
+  }
+  function toggleTask(id) {
+    var currentDay2 = getCurrentDay();
+    var dateISO = effectiveDateForDay(currentDay2);
+    var ds = dayState(dateISO);
+    ds[id] = !ds[id];
+    saveState(getStateObj());
+    if (_Sync3 && dateISO.indexOf("template-") !== 0) {
+      _Sync3.onCompletionChanged(id, dateISO, !!ds[id]);
+    }
+    renderBlocks();
+  }
+  function updateProgress() {
+    var currentDay2 = getCurrentDay();
+    var tasks = buildTasks(currentDay2);
+    var ds = dayState(effectiveDateForDay(currentDay2));
+    var total = tasks.length;
+    var done = tasks.filter(function(t) {
+      return ds[t.id];
+    }).length;
+    var pct = total ? Math.round(done / total * 100) : 0;
+    var offset = RING_CIRC - RING_CIRC * pct / 100;
+    ringFill.style.strokeDashoffset = String(offset);
+    ringLabel.textContent = pct + "%";
+    progressSub.textContent = done + " de " + total + " conclu\xEDdas";
+    progressSub.textContent += currentDay2 === todayKeyBR() ? " hoje" : " (" + DAYS.find(function(d) {
+      return d.key === currentDay2;
+    }).label + ")";
+    var headline;
+    if (pct === 0) headline = "Vamos come\xE7ar";
+    else if (pct < 50) headline = "Em andamento";
+    else if (pct < 100) headline = "Bom progresso";
+    else headline = "Dia conclu\xEDdo";
+    progressHeadline.textContent = headline;
+    renderStreak();
+  }
+  var streakRowEl = document.getElementById("streakRow");
+  function renderStreak() {
+    streakRowEl.innerHTML = "";
+    var weekdayKeys = ["seg", "ter", "qua", "qui", "sex"];
+    var todayKey = todayKeyBR();
+    var state2 = getStateObj();
+    weekdayKeys.forEach(function(dayKey) {
+      var dateISO = effectiveDateForDay(dayKey);
+      var ds = state2[dateISO] || {};
+      var tasks = buildTasks(dayKey);
+      var total = tasks.length;
+      var done = tasks.filter(function(t) {
+        return ds[t.id];
+      }).length;
+      var pct = total ? Math.round(done / total * 100) : 0;
+      var cell = document.createElement("div");
+      cell.className = "streak-day" + (pct === 100 ? " full" : pct > 0 ? " partial" : "") + (dayKey === todayKey ? " today" : "");
+      cell.innerHTML = '<div class="d-label">' + DAYS.find(function(x) {
+        return x.key === dayKey;
+      }).label.slice(0, 3) + '</div><div class="d-pct">' + pct + "%</div>";
+      streakRowEl.appendChild(cell);
+    });
+  }
+  document.getElementById("resetBtn").addEventListener("click", function() {
+    var currentDay2 = getCurrentDay();
+    var dateISO = effectiveDateForDay(currentDay2);
+    if (!confirm("Reiniciar o checklist de " + (currentDay2 === todayKeyBR() ? "hoje" : DAYS.find(function(d) {
+      return d.key === currentDay2;
+    }).label) + "?")) return;
+    var state2 = getStateObj();
+    state2[dateISO] = {};
+    saveState(state2);
+    renderBlocks();
+  });
+
+  // src/editor.js
+  var editOverlay = document.getElementById("editOverlay");
+  var editDayTabsEl = document.getElementById("editDayTabs");
+  var editRowsEl = document.getElementById("editRows");
+  var editDay = getCurrentDay();
+  function openEditor() {
+    editDay = getCurrentDay();
+    renderEditDayTabs();
+    renderEditRows();
+    editOverlay.classList.add("show");
+  }
+  function closeEditor() {
+    editOverlay.classList.remove("show");
+    renderDayTabs();
+    renderBlocks();
+  }
+  function renderEditDayTabs() {
+    editDayTabsEl.innerHTML = "";
+    DAYS.forEach(function(d) {
+      var btn = document.createElement("button");
+      btn.className = "edit-daytab";
+      btn.type = "button";
+      btn.setAttribute("aria-selected", String(d.key === editDay));
+      btn.textContent = d.label;
+      btn.addEventListener("click", function() {
+        editDay = d.key;
+        renderEditDayTabs();
+        renderEditRows();
+      });
+      editDayTabsEl.appendChild(btn);
+    });
+  }
+  function trashIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function dupIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10" stroke-linecap="round"/></svg>';
+  }
+  function openDuplicateMenu(anchorBtn, task) {
+    var others = DAYS.filter(function(d) {
+      return d.key !== editDay;
+    });
+    var choice = prompt(
+      'Duplicar "' + task.label + '" para qual dia? (' + others.map(function(d) {
+        return d.label;
+      }).join(", ") + ")\nDigite o nome do dia:"
+    );
+    if (!choice) return;
+    var norm = choice.trim().toLowerCase();
+    var target = others.find(function(d) {
+      return d.label.toLowerCase().indexOf(norm) === 0;
+    });
+    if (!target) {
+      showToast("Dia n\xE3o reconhecido");
+      return;
+    }
+    var tasksByDay2 = getTasksByDay();
+    var list = tasksByDay2[target.key] || (tasksByDay2[target.key] = []);
+    var newId = uniqueId(target.key, task.id);
+    list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule });
+    saveTasksByDay(tasksByDay2);
+    showToast("Copiada para " + target.label);
+  }
+  function renderEditRows() {
+    var tasksByDay2 = getTasksByDay();
+    var list = (tasksByDay2[editDay] || []).slice().sort(function(a, b) {
+      return a.time.localeCompare(b.time);
+    });
+    editRowsEl.innerHTML = "";
+    list.forEach(function(t) {
+      var row = document.createElement("div");
+      row.className = "edit-row";
+      var timeInput = document.createElement("input");
+      timeInput.type = "time";
+      timeInput.value = t.time;
+      timeInput.addEventListener("change", function() {
+        t.time = timeInput.value;
+        persistTasks();
+      });
+      var fields = document.createElement("div");
+      fields.className = "fields";
+      var labelInput = document.createElement("input");
+      labelInput.type = "text";
+      labelInput.placeholder = "Nome da tarefa";
+      labelInput.value = t.label;
+      labelInput.addEventListener("input", function() {
+        t.label = labelInput.value;
+        persistTasks(true);
+      });
+      var fieldsRow = document.createElement("div");
+      fieldsRow.className = "fields-row";
+      var blockSelect = document.createElement("select");
+      BLOCK_ORDER.forEach(function(b) {
+        var opt = document.createElement("option");
+        opt.value = b;
+        opt.textContent = b;
+        if (b === t.block) opt.selected = true;
+        blockSelect.appendChild(opt);
+      });
+      blockSelect.addEventListener("change", function() {
+        t.block = blockSelect.value;
+        persistTasks();
+      });
+      fieldsRow.appendChild(blockSelect);
+      var detailInput = document.createElement("textarea");
+      detailInput.placeholder = "Detalhe (opcional)";
+      detailInput.value = t.detail || "";
+      detailInput.addEventListener("input", function() {
+        t.detail = detailInput.value;
+        persistTasks(true);
+      });
+      fields.appendChild(labelInput);
+      fields.appendChild(fieldsRow);
+      fields.appendChild(detailInput);
+      var dupBtn = document.createElement("button");
+      dupBtn.className = "del-btn";
+      dupBtn.type = "button";
+      dupBtn.setAttribute("aria-label", "Duplicar tarefa para outro dia");
+      dupBtn.innerHTML = dupIcon();
+      dupBtn.addEventListener("click", function() {
+        openDuplicateMenu(dupBtn, t);
+      });
+      var delBtn = document.createElement("button");
+      delBtn.className = "del-btn";
+      delBtn.type = "button";
+      delBtn.setAttribute("aria-label", "Excluir tarefa");
+      delBtn.innerHTML = trashIcon();
+      delBtn.addEventListener("click", function() {
+        if (!confirm('Excluir a tarefa "' + t.label + '"?')) return;
+        var tasksByDay3 = getTasksByDay();
+        tasksByDay3[editDay] = (tasksByDay3[editDay] || []).filter(function(x) {
+          return x.id !== t.id;
+        });
+        saveTasksByDay(tasksByDay3);
+        renderEditRows();
+        showToast("Tarefa removida");
+      });
+      var btnGroup = document.createElement("div");
+      btnGroup.style.display = "flex";
+      btnGroup.style.flexDirection = "column";
+      btnGroup.style.gap = "6px";
+      btnGroup.appendChild(dupBtn);
+      btnGroup.appendChild(delBtn);
+      row.appendChild(timeInput);
+      row.appendChild(fields);
+      row.appendChild(btnGroup);
+      editRowsEl.appendChild(row);
+    });
+  }
+  var persistTimer = null;
+  function persistTasks(debounced) {
+    var tasksByDay2 = getTasksByDay();
+    if (debounced) {
+      clearTimeout(persistTimer);
+      persistTimer = setTimeout(function() {
+        saveTasksByDay(tasksByDay2);
+      }, 300);
+      return;
+    }
+    saveTasksByDay(tasksByDay2);
+  }
+  var TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+  var DAY_KEYS = DAYS.map(function(d) {
+    return d.key;
+  });
+  function sanitizeImportedTasksByDay(raw) {
+    if (!raw || typeof raw !== "object") throw new Error("formato inv\xE1lido");
+    var clean = {};
+    DAY_KEYS.forEach(function(dayKey) {
+      var list = Array.isArray(raw[dayKey]) ? raw[dayKey] : [];
+      var seenIds = {};
+      clean[dayKey] = list.map(function(item, idx) {
+        if (!item || typeof item !== "object") return null;
+        var time = TIME_RE.test(item.time) ? item.time : "12:00";
+        var block = BLOCK_ORDER.indexOf(item.block) !== -1 ? item.block : "Trabalho";
+        var label = String(item.label || "Tarefa").slice(0, 140);
+        var detail = String(item.detail || "").slice(0, 500);
+        var rule = String(item.rule || "").slice(0, 80);
+        var id = String(item.id || "").replace(/[^a-z0-9-]/gi, "").slice(0, 60) || "tarefa-" + idx;
+        if (seenIds[id]) id = id + "-" + idx;
+        seenIds[id] = true;
+        return { id, time, block, label, detail, rule };
+      }).filter(Boolean);
+    });
+    return clean;
+  }
+  function initEditor() {
+    document.getElementById("editFab").addEventListener("click", openEditor);
+    document.getElementById("editCloseBtn").addEventListener("click", closeEditor);
+    document.getElementById("editDoneBtn").addEventListener("click", closeEditor);
+    editOverlay.addEventListener("click", function(ev) {
+      if (ev.target === editOverlay) closeEditor();
+    });
+    document.getElementById("addTaskBtn").addEventListener("click", function() {
+      var tasksByDay2 = getTasksByDay();
+      var list = tasksByDay2[editDay] || (tasksByDay2[editDay] = []);
+      var id = uniqueId(editDay, "nova-tarefa");
+      list.push({ id, time: "12:00", label: "Nova tarefa", block: "Trabalho", detail: "", rule: "" });
+      saveTasksByDay(tasksByDay2);
+      renderEditRows();
+    });
+    document.getElementById("restoreDefaultBtn").addEventListener("click", function() {
+      if (!confirm("Restaurar a rotina padr\xE3o? Suas edi\xE7\xF5es de hor\xE1rios/tarefas ser\xE3o substitu\xEDdas (o progresso marcado nos dias n\xE3o \xE9 afetado).")) return;
+      var tasksByDay2 = defaultTasksByDay();
+      setTasksByDay(tasksByDay2);
+      saveTasksByDay(tasksByDay2);
+      renderEditRows();
+      showToast("Rotina padr\xE3o restaurada");
+    });
+    document.getElementById("exportBtn").addEventListener("click", function() {
+      var tasksByDay2 = getTasksByDay();
+      var blob = new Blob([JSON.stringify({ tasksByDay: tasksByDay2 }, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "rotina-tdah-" + isoDate() + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+    document.getElementById("importFile").addEventListener("change", function(ev) {
+      var file = ev.target.files && ev.target.files[0];
+      if (!file) return;
+      if (!confirm("Importar substitui a rotina atual (hor\xE1rios e tarefas) neste dispositivo. Continuar?")) {
+        ev.target.value = "";
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function() {
+        try {
+          var data = JSON.parse(reader.result);
+          if (!data || !data.tasksByDay) throw new Error("formato inv\xE1lido");
+          var tasksByDay2 = sanitizeImportedTasksByDay(data.tasksByDay);
+          setTasksByDay(tasksByDay2);
+          saveTasksByDay(tasksByDay2);
+          renderEditRows();
+          showToast("Rotina importada");
+        } catch (e) {
+          showToast("Arquivo inv\xE1lido");
+        }
+      };
+      reader.readAsText(file);
+      ev.target.value = "";
+    });
+  }
+
+  // src/api.js
+  var API_BASE = "https://rotina-tdah-api.onrender.com";
+  function NetworkError(message) {
+    this.name = "NetworkError";
+    this.message = message || "Sem conex\xE3o com o servidor";
+    this.isNetworkError = true;
+  }
+  NetworkError.prototype = Object.create(Error.prototype);
+  function ApiError(message, status, code) {
+    this.name = "ApiError";
+    this.message = message || "Erro inesperado";
+    this.status = status || 0;
+    this.code = code || null;
+  }
+  ApiError.prototype = Object.create(Error.prototype);
+  var Api = (function() {
+    var session = loadSession();
+    var listeners = [];
+    function loadSession() {
+      return AppStorage.getAuth();
+    }
+    function persist() {
+      AppStorage.setAuth(session);
+    }
+    function setSession(user, tokens) {
+      session = { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+      persist();
+      emit();
+    }
+    function clearSession() {
+      session = null;
+      persist();
+      emit();
+    }
+    function emit() {
+      listeners.forEach(function(fn) {
+        try {
+          fn(session);
+        } catch (e) {
+        }
+      });
+    }
+    function rawJson(path, opts) {
+      opts = opts || {};
+      var headers = Object.assign({ "Content-Type": "application/json" }, opts.headers || {});
+      var init = { method: opts.method || "GET", headers };
+      if (opts.body !== void 0) init.body = JSON.stringify(opts.body);
+      return fetch(API_BASE + path, init).then(function(res) {
+        if (res.status === 204) return { status: 204, data: null };
+        return res.text().then(function(txt) {
+          var data = null;
+          if (txt) {
+            try {
+              data = JSON.parse(txt);
+            } catch (e) {
+              data = null;
+            }
+          }
+          return { status: res.status, data, ok: res.ok };
+        });
+      }, function() {
+        throw new NetworkError();
+      });
+    }
+    function toApiError(result) {
+      var msg = result.data && result.data.error && result.data.error.message;
+      var code = result.data && result.data.error && result.data.error.code;
+      return new ApiError(msg || "Erro " + result.status, result.status, code);
+    }
+    function authedFetch(path, opts, _retried) {
+      opts = opts || {};
+      if (!session) return Promise.reject(new ApiError("N\xE3o autenticado", 401, "NO_SESSION"));
+      var headers = Object.assign({}, opts.headers || {}, { Authorization: "Bearer " + session.accessToken });
+      return rawJson(path, Object.assign({}, opts, { headers })).then(function(result) {
+        if (result.status === 401 && !_retried) {
+          return refresh().then(function() {
+            return authedFetch(path, opts, true);
+          }, function() {
+            clearSession();
+            throw new ApiError("Sess\xE3o expirada", 401, "SESSION_EXPIRED");
+          });
+        }
+        if (!result.ok) throw toApiError(result);
+        return result.data;
+      });
+    }
+    function refresh() {
+      if (!session || !session.refreshToken) return Promise.reject(new ApiError("Sem refresh token", 401));
+      return rawJson("/auth/refresh", { method: "POST", body: { refreshToken: session.refreshToken } }).then(function(result) {
+        if (!result.ok || !result.data || !result.data.tokens) throw toApiError(result);
+        session.accessToken = result.data.tokens.accessToken;
+        session.refreshToken = result.data.tokens.refreshToken;
+        persist();
+        return session;
+      });
+    }
+    return {
+      NetworkError,
+      ApiError,
+      getSession: function() {
+        return session;
+      },
+      isLoggedIn: function() {
+        return !!session;
+      },
+      onChange: function(fn) {
+        listeners.push(fn);
+      },
+      fetch: authedFetch,
+      register: function(email, password, displayName) {
+        return rawJson("/auth/register", { method: "POST", body: { email, password, displayName } }).then(function(result) {
+          if (!result.ok || !result.data) throw toApiError(result);
+          setSession(result.data.user, result.data.tokens);
+          return result.data.user;
+        });
+      },
+      login: function(email, password) {
+        return rawJson("/auth/login", { method: "POST", body: { email, password } }).then(function(result) {
+          if (!result.ok || !result.data) throw toApiError(result);
+          setSession(result.data.user, result.data.tokens);
+          return result.data.user;
+        });
+      },
+      logout: function() {
+        var token = session && session.refreshToken;
+        var done = token ? rawJson("/auth/logout", { method: "POST", body: { refreshToken: token } }).catch(function() {
+        }) : Promise.resolve();
+        return done.then(function() {
+          clearSession();
+        });
+      },
+      me: function() {
+        return authedFetch("/me", { method: "GET" }).then(function(data) {
+          if (data && data.user && session) {
+            session.user = data.user;
+            persist();
+            emit();
+          }
+          return data && data.user;
+        });
+      },
+      googleLogin: function(idToken) {
+        return rawJson("/auth/google", { method: "POST", body: { idToken } }).then(function(result) {
+          if (!result.ok || !result.data) throw toApiError(result);
+          setSession(result.data.user, result.data.tokens);
+          return result.data.user;
+        });
+      }
+    };
+  })();
+
+  // src/auth.js
+  var GOOGLE_CLIENT_ID = null;
+  var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
+  var socialLoginInitPromise = null;
+  function ensureSocialLoginInit() {
+    if (!SocialLogin) return Promise.reject(new Error("SocialLogin indisponivel"));
+    if (!GOOGLE_CLIENT_ID) return Promise.reject(new Error("Google Client ID nao configurado"));
+    if (!socialLoginInitPromise) {
+      socialLoginInitPromise = SocialLogin.initialize({
+        google: { webClientId: GOOGLE_CLIENT_ID }
+      });
+    }
+    return socialLoginInitPromise;
+  }
+  var sessionChip = document.getElementById("sessionChip");
+  var clockEl2 = document.getElementById("clock");
+  function renderSessionChip() {
+    Array.prototype.slice.call(sessionChip.querySelectorAll("[data-session]")).forEach(function(el) {
+      sessionChip.removeChild(el);
+    });
+    var s = Api.getSession();
+    if (s && s.user) {
+      var name = document.createElement("span");
+      name.className = "session-name";
+      name.setAttribute("data-session", "");
+      name.textContent = s.user.displayName || s.user.email || "Conta";
+      var out = document.createElement("button");
+      out.className = "session-logout";
+      out.type = "button";
+      out.setAttribute("data-session", "");
+      out.textContent = "Sair";
+      out.addEventListener("click", handleLogout);
+      sessionChip.insertBefore(out, clockEl2);
+      sessionChip.insertBefore(name, out);
+    } else {
+      var btn = document.createElement("button");
+      btn.className = "session-btn";
+      btn.type = "button";
+      btn.setAttribute("data-session", "");
+      btn.textContent = "Entrar";
+      btn.addEventListener("click", openAuth);
+      sessionChip.insertBefore(btn, clockEl2);
+    }
+  }
+  function handleLogout() {
+    Api.logout().then(function() {
+      showToast("Voc\xEA saiu da conta.");
+    });
+  }
+  var authOverlay = document.getElementById("authOverlay");
+  var authForm = document.getElementById("authForm");
+  var authTitle = document.getElementById("authTitle");
+  var authNameField = document.getElementById("authNameField");
+  var authNameInput = document.getElementById("authName");
+  var authEmailInput = document.getElementById("authEmail");
+  var authPasswordInput = document.getElementById("authPassword");
+  var authSubmit = document.getElementById("authSubmit");
+  var authError = document.getElementById("authError");
+  var authToggleBtn = document.getElementById("authToggleBtn");
+  var authToggleText = document.getElementById("authToggleText");
+  var authGoogleBtn = document.getElementById("authGoogleBtn");
+  var authMode = "login";
+  function setAuthError(msg) {
+    if (!msg) {
+      authError.classList.remove("show");
+      authError.textContent = "";
+      return;
+    }
+    authError.textContent = msg;
+    authError.classList.add("show");
+  }
+  function applyAuthMode() {
+    var isReg = authMode === "register";
+    authTitle.textContent = isReg ? "Criar conta" : "Entrar";
+    authSubmit.textContent = isReg ? "Criar conta" : "Entrar";
+    authNameField.style.display = isReg ? "block" : "none";
+    authPasswordInput.setAttribute("autocomplete", isReg ? "new-password" : "current-password");
+    authToggleText.textContent = isReg ? "J\xE1 tem conta?" : "N\xE3o tem conta?";
+    authToggleBtn.textContent = isReg ? "Entrar" : "Criar conta";
+    setAuthError("");
+  }
+  function openAuth() {
+    authMode = "login";
+    applyAuthMode();
+    authForm.reset();
+    setAuthError("");
+    authOverlay.classList.add("show");
+    setTimeout(function() {
+      authEmailInput.focus();
+    }, 30);
+  }
+  function closeAuth() {
+    authOverlay.classList.remove("show");
+  }
+  function validEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+  }
+  function setAuthLoading(loading) {
+    authSubmit.disabled = loading;
+    authSubmit.textContent = loading ? authMode === "register" ? "Criando\u2026" : "Entrando\u2026" : authMode === "register" ? "Criar conta" : "Entrar";
+  }
+  function friendlyAuthError(err) {
+    if (err && err.isNetworkError) {
+      return "Sem conex\xE3o com o servidor. Voc\xEA pode usar o app offline; tente entrar mais tarde.";
+    }
+    if (err && err.name === "ApiError") {
+      if (err.status === 401) return "Credenciais inv\xE1lidas.";
+      if (err.status === 409) return err.message || "Email j\xE1 cadastrado.";
+      return err.message || "N\xE3o foi poss\xEDvel concluir. Tente novamente.";
+    }
+    return "N\xE3o foi poss\xEDvel concluir. Tente novamente.";
+  }
+  function doGoogleLogin(onDone) {
+    if (!SocialLogin) {
+      showToast("Login com Google indisponivel neste app.");
+      if (onDone) onDone(false);
+      return;
+    }
+    if (!GOOGLE_CLIENT_ID) {
+      showToast("Google Client ID nao configurado.");
+      if (onDone) onDone(false);
+      return;
+    }
+    setAuthLoading(true);
+    ensureSocialLoginInit().then(function() {
+      return SocialLogin.login({
+        provider: "google",
+        options: {}
+      });
+    }).then(function(res) {
+      var idToken = res && res.result && res.result.idToken;
+      if (!idToken) {
+        setAuthLoading(false);
+        setAuthError("Falha na autenticacao com Google.");
+        if (onDone) onDone(false);
+        return;
+      }
+      return Api.googleLogin(idToken).then(function() {
+        return Api.me().catch(function() {
+          return null;
+        });
+      }).then(function() {
+        setAuthLoading(false);
+        closeAuth();
+        var s = Api.getSession();
+        var who = s && s.user ? s.user.displayName || s.user.email : "";
+        showToast("Conectado com Google" + (who ? " como " + who : ""));
+        if (onDone) onDone(true);
+      });
+    }).catch(function(err) {
+      setAuthLoading(false);
+      if (err && err.message === "Google Client ID nao configurado") {
+        showToast("Google Client ID nao configurado.");
+      } else {
+        setAuthError(friendlyAuthError(err));
+      }
+      if (onDone) onDone(false);
+    });
+  }
+  var splashScreen = document.getElementById("splashScreen");
+  var splashGoogleBtn = document.getElementById("splashGoogleBtn");
+  var splashGoogleLabel = document.getElementById("splashGoogleLabel");
+  var splashGoogleIcon = document.getElementById("splashGoogleIcon");
+  var splashSkipBtn = document.getElementById("splashSkipBtn");
+  function dismissSplash() {
+    splashScreen.setAttribute("hidden", "");
+  }
+  function applySplashSessionState() {
+    var s = Api.getSession();
+    if (s && s.user) {
+      var who = s.user.displayName || s.user.email || "";
+      splashGoogleLabel.textContent = who ? "Continuar como " + who : "Continuar";
+      splashGoogleIcon.style.display = "none";
+    } else {
+      splashGoogleLabel.textContent = "Continuar com Google";
+      splashGoogleIcon.style.display = "";
+    }
+  }
+  function initAuth() {
+    document.getElementById("authCloseBtn").addEventListener("click", closeAuth);
+    authOverlay.addEventListener("click", function(ev) {
+      if (ev.target === authOverlay) closeAuth();
+    });
+    authToggleBtn.addEventListener("click", function() {
+      authMode = authMode === "login" ? "register" : "login";
+      applyAuthMode();
+    });
+    document.addEventListener("keydown", function(ev) {
+      if (ev.key !== "Escape") return;
+      if (authOverlay.classList.contains("show")) closeAuth();
+      else if (document.getElementById("editOverlay").classList.contains("show")) closeEditor();
+    });
+    authForm.addEventListener("submit", function(ev) {
+      ev.preventDefault();
+      setAuthError("");
+      var email = authEmailInput.value.trim();
+      var password = authPasswordInput.value;
+      var displayName = authNameInput.value.trim();
+      if (!validEmail(email)) {
+        setAuthError("Informe um email v\xE1lido.");
+        authEmailInput.focus();
+        return;
+      }
+      if (password.length < 8) {
+        setAuthError("A senha precisa ter ao menos 8 caracteres.");
+        authPasswordInput.focus();
+        return;
+      }
+      if (authMode === "register" && !displayName) {
+        setAuthError("Informe seu nome.");
+        authNameInput.focus();
+        return;
+      }
+      setAuthLoading(true);
+      var op = authMode === "register" ? Api.register(email, password, displayName) : Api.login(email, password);
+      op.then(function() {
+        return Api.me().catch(function() {
+          return null;
+        });
+      }).then(function() {
+        setAuthLoading(false);
+        closeAuth();
+        var s = Api.getSession();
+        var who = s && s.user ? s.user.displayName || s.user.email : "";
+        showToast(authMode === "register" ? "Conta criada. Bem-vindo(a)!" : "Conectado como " + who);
+      }).catch(function(err) {
+        setAuthLoading(false);
+        setAuthError(friendlyAuthError(err));
+      });
+    });
+    authGoogleBtn.addEventListener("click", function() {
+      doGoogleLogin();
+    });
+    applySplashSessionState();
+    splashSkipBtn.addEventListener("click", dismissSplash);
+    splashGoogleBtn.addEventListener("click", function() {
+      if (Api.isLoggedIn()) {
+        dismissSplash();
+        return;
+      }
+      doGoogleLogin(function() {
+        dismissSplash();
+      });
+    });
+    fetch(API_BASE + "/config").then(function(r) {
+      return r.json();
+    }).then(function(cfg) {
+      if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
+    }).catch(function() {
+    });
+    Api.onChange(renderSessionChip);
+    renderSessionChip();
+    if (Api.isLoggedIn()) {
+      Api.me().catch(function() {
+      });
+    }
+  }
+
+  // src/subscriptions.js
+  var premiumBadge = document.getElementById("premiumBadge");
+  var plansOverlay = document.getElementById("plansOverlay");
+  var plansCloseBtn = document.getElementById("plansCloseBtn");
+  var planSubscribeBtn = document.getElementById("planSubscribeBtn");
+  var planManageBtn = document.getElementById("planManageBtn");
+  var planLoading = document.getElementById("planLoading");
+  var planCurrentFree = document.getElementById("planCurrentFree");
+  var planFreeCard = document.getElementById("planFreeCard");
+  var planPremiumCard = document.getElementById("planPremiumCard");
+  function getCachedSubscription() {
+    return AppStorage.getSubscription();
+  }
+  function cacheSubscription(sub) {
+    AppStorage.setSubscription(sub);
+  }
+  function updatePremiumBadge(sub) {
+    if (!premiumBadge) return;
+    var plan = sub && sub.plan === "premium" ? "Premium" : "Free";
+    premiumBadge.textContent = plan;
+    premiumBadge.classList.toggle("is-premium", plan === "Premium");
+  }
+  function updateSubscribeButtonAvailability() {
+    var hasPriceId = !!(window.stripeConfig && window.stripeConfig.priceId);
+    planSubscribeBtn.disabled = !hasPriceId;
+    planSubscribeBtn.title = hasPriceId ? "" : "Stripe n\xE3o configurado";
+  }
+  function openPlans() {
+    plansOverlay.classList.add("show");
+    planSubscribeBtn.style.display = "";
+    planManageBtn.style.display = "none";
+    planLoading.style.display = "none";
+    if (Api.isLoggedIn()) {
+      Api.fetch("/subscriptions/me").then(function(sub) {
+        cacheSubscription(sub);
+        updatePremiumBadge(sub);
+        if (sub && sub.plan === "premium") {
+          planCurrentFree.textContent = "Fa\xE7a upgrade ou gerencie";
+          planSubscribeBtn.textContent = "Mudar para Premium";
+          planSubscribeBtn.style.display = "none";
+          planManageBtn.style.display = "";
+        } else {
+          planCurrentFree.textContent = "Seu plano atual";
+          planSubscribeBtn.textContent = "Assinar Premium";
+          planSubscribeBtn.style.display = "";
+          planManageBtn.style.display = "none";
+        }
+      }).catch(function() {
+        var cached = getCachedSubscription();
+        if (cached) updatePremiumBadge(cached);
+      });
+    } else {
+      planCurrentFree.textContent = "Fa\xE7a login para assinar";
+      planSubscribeBtn.textContent = "Fazer login";
+    }
+  }
+  function closePlans() {
+    plansOverlay.classList.remove("show");
+  }
+  function initSubscriptions() {
+    updateSubscribeButtonAvailability();
+    premiumBadge.addEventListener("click", openPlans);
+    plansCloseBtn.addEventListener("click", closePlans);
+    plansOverlay.addEventListener("click", function(ev) {
+      if (ev.target === plansOverlay) closePlans();
+    });
+    planSubscribeBtn.addEventListener("click", function() {
+      if (!Api.isLoggedIn()) {
+        closePlans();
+        openAuth();
+        return;
+      }
+      var stripePriceId = window.stripeConfig && window.stripeConfig.priceId;
+      if (!stripePriceId) {
+        showToast("Stripe n\xE3o configurado");
+        return;
+      }
+      planSubscribeBtn.style.display = "none";
+      planManageBtn.style.display = "none";
+      planLoading.style.display = "";
+      planLoading.textContent = "Preparando pagamento...";
+      Api.fetch("/subscriptions/checkout", {
+        method: "POST",
+        body: {
+          priceId: stripePriceId,
+          successUrl: window.location.href,
+          cancelUrl: window.location.href
+        }
+      }).then(function(data) {
+        if (data && data.url) {
+          planLoading.textContent = "Redirecionando...";
+          window.location.href = data.url;
+        } else {
+          throw new Error("Resposta invalida");
+        }
+      }).catch(function(err) {
+        planLoading.style.display = "none";
+        planSubscribeBtn.style.display = "";
+        showToast("Erro ao iniciar pagamento. Tente novamente.");
+      });
+    });
+    planManageBtn.addEventListener("click", function() {
+      planManageBtn.style.display = "none";
+      planLoading.style.display = "";
+      planLoading.textContent = "Abrindo gerenciamento...";
+      Api.fetch("/subscriptions/portal", {
+        method: "POST",
+        body: { returnUrl: window.location.href }
+      }).then(function(data) {
+        if (data && data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error("Resposta invalida");
+        }
+      }).catch(function(err) {
+        planLoading.style.display = "none";
+        planManageBtn.style.display = "";
+        showToast("Erro ao abrir gerenciamento.");
+      });
+    });
+    if (Api.isLoggedIn()) {
+      Api.fetch("/subscriptions/me").then(function(sub) {
+        cacheSubscription(sub);
+        updatePremiumBadge(sub);
+      }).catch(function() {
+        var cached = getCachedSubscription();
+        if (cached) updatePremiumBadge(cached);
+      });
+    }
+  }
+
+  // src/education.js
+  var tdahInfoOverlay = document.getElementById("tdahInfoOverlay");
+  var tdahInfoBtn = document.getElementById("tdahInfoBtn");
+  var tdahInfoCloseBtn = document.getElementById("tdahInfoCloseBtn");
+  function openTdahInfo() {
+    tdahInfoOverlay.classList.add("show");
+  }
+  function closeTdahInfo() {
+    tdahInfoOverlay.classList.remove("show");
+  }
+  function initEducation() {
+    tdahInfoBtn.addEventListener("click", openTdahInfo);
+    tdahInfoCloseBtn.addEventListener("click", closeTdahInfo);
+    tdahInfoOverlay.addEventListener("click", function(ev) {
+      if (ev.target === tdahInfoOverlay) closeTdahInfo();
+    });
+  }
+
+  // src/sync.js
+  var Sync = (function() {
+    var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
+    var NUM_TO_WD = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex", 6: "sab", 7: "dom" };
+    var statusEl = document.getElementById("syncStatus");
+    var flushTimer = null;
+    var routineDirtyTimer = null;
+    var flushing = false;
+    var periodicStarted = false;
+    function loadOutbox() {
+      return AppStorage.getOutbox();
+    }
+    function saveOutbox(arr) {
+      AppStorage.setOutbox(arr);
+    }
+    function outboxCount() {
+      return loadOutbox().length;
+    }
+    function enqueueMutation(entity, op, data) {
+      var box = loadOutbox();
+      var k = mutationKey(entity, data);
+      box = box.filter(function(m) {
+        return mutationKey(m.entity, m.data) !== k;
+      });
+      box.push({
+        id: "m_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7),
+        entity,
+        op,
+        data,
+        clientUpdatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      saveOutbox(box);
+      updateStatus();
+    }
+    function mutationKey(entity, data) {
+      if (entity === "completion") return "completion|" + data.taskId + "|" + data.date;
+      if (entity === "reminder") return "reminder|" + data.taskId + "|" + data.weekday;
+      if (entity === "task") return "task|" + (data.id || "");
+      return entity + "|?";
+    }
+    function isOnline() {
+      return navigator.onLine !== false;
+    }
+    function updateStatus() {
+      if (!statusEl) return;
+      if (!Api.isLoggedIn()) {
+        statusEl.hidden = true;
+        return;
+      }
+      statusEl.hidden = false;
+      var pending = outboxCount();
+      statusEl.classList.remove("synced", "pending", "offline", "syncing");
+      if (!isOnline()) {
+        statusEl.classList.add("offline");
+        statusEl.textContent = "offline";
+        statusEl.title = "Sem conex\xE3o \u2014 " + pending + " altera\xE7\xE3o(\xF5es) na fila";
+      } else if (flushing && pending) {
+        statusEl.classList.add("syncing");
+        statusEl.textContent = "sincronizando";
+        statusEl.title = "Enviando altera\xE7\xF5es\u2026";
+      } else if (pending) {
+        statusEl.classList.add("pending");
+        statusEl.textContent = "pendente";
+        statusEl.title = pending + " altera\xE7\xE3o(\xF5es) aguardando envio";
+      } else {
+        statusEl.classList.add("synced");
+        statusEl.textContent = "sincronizado";
+        statusEl.title = "Tudo sincronizado";
+      }
+    }
+    function flushOutbox() {
+      if (flushing) return Promise.resolve();
+      if (!Api.isLoggedIn() || !isOnline()) {
+        updateStatus();
+        return Promise.resolve();
+      }
+      var box = loadOutbox();
+      if (!box.length) {
+        updateStatus();
+        return Promise.resolve();
+      }
+      flushing = true;
+      updateStatus();
+      var mutations = box.map(function(m) {
+        return { entity: m.entity, op: m.op, data: m.data, clientUpdatedAt: m.clientUpdatedAt };
+      });
+      var sentIds = box.map(function(m) {
+        return m.id;
+      });
+      return Api.fetch("/sync/push", { method: "POST", body: { mutations } }).then(function() {
+        var current = loadOutbox();
+        var sentSet = {};
+        sentIds.forEach(function(id) {
+          sentSet[id] = true;
+        });
+        saveOutbox(current.filter(function(m) {
+          return !sentSet[m.id];
+        }));
+      }).catch(function(err) {
+        if (err && err.isNetworkError) return;
+      }).then(function() {
+        flushing = false;
+        updateStatus();
+      });
+    }
+    function onCompletionChanged(taskId, dateISO, done) {
+      if (!Api.isLoggedIn()) return;
+      enqueueMutation("completion", "upsert", { taskId, date: dateISO, done: !!done });
+      scheduleFlush();
+    }
+    function onAlarmChanged(alarmKey, time, label, enabled) {
+      if (!Api.isLoggedIn()) return;
+      var parts = alarmKey.split(":");
+      var dayKey = parts[0];
+      var taskId = parts.slice(1).join(":");
+      var weekday = WD_TO_NUM[dayKey];
+      if (!weekday) return;
+      enqueueMutation("reminder", "upsert", {
+        taskId,
+        weekday,
+        time,
+        label,
+        enabled: !!enabled
+      });
+      scheduleFlush();
+    }
+    function onRoutineChanged() {
+      if (!Api.isLoggedIn() || !migrationDone()) return;
+      clearTimeout(routineDirtyTimer);
+      routineDirtyTimer = setTimeout(function() {
+        pushRoutine().catch(function() {
+        });
+      }, 1200);
+    }
+    function scheduleFlush() {
+      clearTimeout(flushTimer);
+      flushTimer = setTimeout(function() {
+        flushOutbox();
+      }, 800);
+    }
+    function localTasksToPayload() {
+      var tasksByDay2 = getTasksByDay();
+      var out = [];
+      Object.keys(tasksByDay2).forEach(function(dayKey) {
+        var wd = WD_TO_NUM[dayKey];
+        if (!wd) return;
+        (tasksByDay2[dayKey] || []).forEach(function(t, idx) {
+          out.push({
+            id: t.id,
+            weekday: wd,
+            time: t.time,
+            label: t.label,
+            block: t.block,
+            detail: t.detail || "",
+            rule: t.rule || "",
+            sortOrder: idx
+          });
+        });
+      });
+      return out;
+    }
+    function taskSig(weekday, time, label, block) {
+      return weekday + "|" + time + "|" + label + "|" + (block || "");
+    }
+    function reconcileIds(idMap) {
+      var changed = false;
+      var tasksByDay2 = getTasksByDay();
+      var state2 = getStateObj();
+      var alarms2 = getAlarmsObj();
+      Object.keys(tasksByDay2).forEach(function(dayKey) {
+        (tasksByDay2[dayKey] || []).forEach(function(t) {
+          if (idMap[t.id] && idMap[t.id] !== t.id) {
+            t.id = idMap[t.id];
+            changed = true;
+          }
+        });
+      });
+      Object.keys(state2).forEach(function(dateKey) {
+        var ds = state2[dateKey];
+        if (!ds || typeof ds !== "object") return;
+        Object.keys(ds).forEach(function(oldTaskId) {
+          var newId = idMap[oldTaskId];
+          if (newId && newId !== oldTaskId) {
+            ds[newId] = ds[oldTaskId];
+            delete ds[oldTaskId];
+            changed = true;
+          }
+        });
+      });
+      Object.keys(alarms2).forEach(function(alarmKey) {
+        var idx = alarmKey.indexOf(":");
+        if (idx < 0) return;
+        var dayKey = alarmKey.slice(0, idx);
+        var oldTaskId = alarmKey.slice(idx + 1);
+        var newId = idMap[oldTaskId];
+        if (newId && newId !== oldTaskId) {
+          var newKey = dayKey + ":" + newId;
+          alarms2[newKey] = alarms2[alarmKey];
+          delete alarms2[alarmKey];
+          changed = true;
+        }
+      });
+      if (changed) {
+        saveTasksByDay(tasksByDay2);
+        saveState(state2);
+        saveAlarms(alarms2);
+      }
+      return changed;
+    }
+    function buildIdMap(sentPayload, serverTasks) {
+      var idMap = {};
+      var bySig = {};
+      (serverTasks || []).forEach(function(st) {
+        var sig = taskSig(st.weekday, st.time, st.label, st.block);
+        if (!bySig[sig]) bySig[sig] = [];
+        bySig[sig].push(st);
+      });
+      Object.keys(bySig).forEach(function(sig) {
+        bySig[sig].sort(function(a, b) {
+          return (a.sortOrder || 0) - (b.sortOrder || 0);
+        });
+      });
+      sentPayload.forEach(function(local) {
+        var sig = taskSig(local.weekday, local.time, local.label, local.block);
+        var queue = bySig[sig];
+        if (queue && queue.length) {
+          var st = queue.shift();
+          if (st && st.id) idMap[local.id] = st.id;
+        }
+      });
+      return idMap;
+    }
+    function pushRoutine() {
+      if (!Api.isLoggedIn()) return Promise.resolve();
+      var payload = localTasksToPayload();
+      return Api.fetch("/routine/tasks", { method: "PUT", body: { tasks: payload } }).then(function(resp) {
+        var serverTasks = resp && resp.tasks;
+        if (serverTasks && serverTasks.length) {
+          var idMap = buildIdMap(payload, serverTasks);
+          reconcileIds(idMap);
+        }
+        return resp;
+      });
+    }
+    function migratedUserId() {
+      return AppStorage.getMigratedUserId();
+    }
+    function currentUserId() {
+      var s = Api.getSession();
+      return s && s.user && (s.user.id || s.user.userId || s.user.email) || null;
+    }
+    function migrationDone() {
+      var uid = currentUserId();
+      return !!uid && migratedUserId() === String(uid);
+    }
+    function markMigrated() {
+      var uid = currentUserId();
+      if (uid) {
+        AppStorage.setMigratedUserId(uid);
+      }
+    }
+    function localCompletions() {
+      var state2 = getStateObj();
+      var out = [];
+      Object.keys(state2).forEach(function(dateKey) {
+        if (dateKey.indexOf("template-") === 0) return;
+        var ds = state2[dateKey];
+        if (!ds || typeof ds !== "object") return;
+        Object.keys(ds).forEach(function(taskId) {
+          if (ds[taskId]) out.push({ taskId, date: dateKey });
+        });
+      });
+      return out;
+    }
+    function localReminders() {
+      var alarms2 = getAlarmsObj();
+      var out = [];
+      Object.keys(alarms2).forEach(function(alarmKey) {
+        var idx = alarmKey.indexOf(":");
+        if (idx < 0) return;
+        var dayKey = alarmKey.slice(0, idx);
+        var taskId = alarmKey.slice(idx + 1);
+        var wd = WD_TO_NUM[dayKey];
+        if (!wd) return;
+        var a = alarms2[alarmKey];
+        out.push({ taskId, weekday: wd, time: a.time, label: a.label });
+      });
+      return out;
+    }
+    function uploadCompletionsAndReminders() {
+      var comps = localCompletions();
+      var rems = localReminders();
+      var chain = Promise.resolve();
+      comps.forEach(function(c) {
+        chain = chain.then(function() {
+          return Api.fetch("/completions", { method: "PUT", body: { taskId: c.taskId, date: c.date, done: true } });
+        });
+      });
+      rems.forEach(function(r) {
+        chain = chain.then(function() {
+          return Api.fetch("/reminders", { method: "PUT", body: {
+            taskId: r.taskId,
+            enabled: true,
+            time: r.time,
+            weekday: r.weekday,
+            label: r.label
+          } });
+        });
+      });
+      return chain;
+    }
+    function adoptServerData(pull) {
+      var newTasks = {};
+      DAYS.forEach(function(d) {
+        newTasks[d.key] = [];
+      });
+      (pull.tasks || []).forEach(function(st) {
+        var dayKey = NUM_TO_WD[st.weekday];
+        if (!dayKey) return;
+        if (!newTasks[dayKey]) newTasks[dayKey] = [];
+        newTasks[dayKey].push({
+          id: st.id,
+          time: st.time,
+          label: st.label,
+          block: st.block,
+          detail: st.detail || "",
+          rule: st.rule || ""
+        });
+      });
+      setTasksByDay(newTasks);
+      saveTasksByDay(newTasks);
+      var state2 = getStateObj();
+      var newState = {};
+      (pull.completions || []).forEach(function(c) {
+        if (!c.done) return;
+        if (!newState[c.date]) newState[c.date] = {};
+        newState[c.date][c.taskId] = true;
+      });
+      Object.keys(state2).forEach(function(k) {
+        if (k.indexOf("template-") === 0) newState[k] = state2[k];
+      });
+      setStateObj(newState);
+      saveState(newState);
+      var newAlarms = {};
+      (pull.reminders || []).forEach(function(r) {
+        if (r.enabled === false) return;
+        var dayKey = NUM_TO_WD[r.weekday];
+        if (!dayKey) return;
+        newAlarms[dayKey + ":" + r.taskId] = { time: r.time, label: r.label };
+      });
+      setAlarmsObj(newAlarms);
+      saveAlarms(newAlarms);
+      if (isNative) {
+        try {
+          rescheduleAllNativeAlarms();
+        } catch (e) {
+        }
+      }
+    }
+    function runMigration() {
+      if (!Api.isLoggedIn() || migrationDone()) {
+        updateStatus();
+        return;
+      }
+      Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function(pull) {
+        var remoteHasTasks = pull && pull.tasks && pull.tasks.length > 0;
+        if (!remoteHasTasks) {
+          return pushRoutine().then(function() {
+            return uploadCompletionsAndReminders();
+          }).then(function() {
+            markMigrated();
+            showToast("Rotina enviada para sua conta.");
+          });
+        }
+        adoptServerData(pull);
+        markMigrated();
+        setCurrentDay(todayKeyBR());
+        renderDayTabs();
+        renderBlocks();
+        showToast("Rotina da sua conta carregada.");
+      }).catch(function(err) {
+        if (!(err && err.isNetworkError)) {
+        }
+      }).then(function() {
+        updateStatus();
+      });
+    }
+    function onSessionChange(session) {
+      if (session && session.user) {
+        runMigration();
+        scheduleFlush();
+      }
+      updateStatus();
+    }
+    function startPeriodic() {
+      if (periodicStarted) return;
+      periodicStarted = true;
+      setInterval(function() {
+        if (Api.isLoggedIn() && isOnline() && outboxCount()) flushOutbox();
+      }, 3e4);
+      window.addEventListener("online", function() {
+        updateStatus();
+        if (Api.isLoggedIn()) {
+          runMigration();
+          flushOutbox();
+        }
+      });
+      window.addEventListener("offline", updateStatus);
+    }
+    function init() {
+      Api.onChange(onSessionChange);
+      startPeriodic();
+      updateStatus();
+      if (Api.isLoggedIn()) {
+        runMigration();
+        scheduleFlush();
+      }
+    }
+    return {
+      init,
+      onCompletionChanged,
+      onAlarmChanged,
+      onRoutineChanged,
+      flushOutbox,
+      enqueueMutation
+    };
+  })();
+
+  // src/main.js
+  (function() {
+    "use strict";
+    setSyncHook(Sync);
+    setSyncHook3(Sync);
+    setSyncHook2(Sync);
+    renderDayTabs();
+    renderBlocks();
+    var manifest = {
+      name: "Rotina Di\xE1ria \u2014 Apoio TDAH",
+      short_name: "Rotina TDAH",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#f6f6fb",
+      theme_color: "#4338ca",
+      icons: [{
+        src: "data:image/svg+xml," + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="%234338ca"/><path d="M56 100l24 24 56-56" stroke="%23ffffff" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        ),
+        sizes: "192x192",
+        type: "image/svg+xml"
+      }]
+    };
+    var manifestBlob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
+    document.getElementById("manifestLink").setAttribute("href", URL.createObjectURL(manifestBlob));
+    var deferredPrompt = null;
+    var installBtn = document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.add("show");
+    });
+    installBtn.addEventListener("click", function() {
+      if (!deferredPrompt) {
+        showToast('Use o menu do navegador \u2192 "Adicionar \xE0 tela inicial".');
+        return;
+      }
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function() {
+        deferredPrompt = null;
+        installBtn.classList.remove("show");
+      });
+    });
+    window.addEventListener("appinstalled", function() {
+      installBtn.classList.remove("show");
+      showToast("Instalado com sucesso.");
+    });
+    if ("serviceWorker" in navigator) {
+      try {
+        var swCode = "self.addEventListener('install', e => self.skipWaiting());self.addEventListener('activate', e => self.clients.claim());";
+        var swBlob = new Blob([swCode], { type: "application/javascript" });
+        var swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl).catch(function() {
+        });
+      } catch (e) {
+      }
+    }
+    initNotifications();
+    initEditor();
+    initAuth();
+    window.stripeConfig = { priceId: "" };
+    fetch(API_BASE + "/subscriptions/config").then(function(r) {
+      return r.json();
+    }).then(function(cfg) {
+      window.stripeConfig.priceId = cfg && cfg.priceId || "";
+      updateSubscribeButtonAvailability();
+    }).catch(function() {
+    });
+    initSubscriptions();
+    initEducation();
+    document.addEventListener("keydown", function(ev) {
+      if (ev.key !== "Escape") return;
+      var tdahInfoOverlay2 = document.getElementById("tdahInfoOverlay");
+      var plansOverlay2 = document.getElementById("plansOverlay");
+      var authOverlay2 = document.getElementById("authOverlay");
+      var editOverlay2 = document.getElementById("editOverlay");
+      if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
+      else if (plansOverlay2.classList.contains("show")) closePlans();
+      else if (authOverlay2.classList.contains("show")) closeAuth();
+      else if (editOverlay2.classList.contains("show")) closeEditor();
+    });
+    Sync.init();
+  })();
+})();
