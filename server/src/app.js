@@ -14,6 +14,7 @@ import { createRemindersRouter } from './modules/reminders/reminders.router.js';
 import { createSyncRouter } from './modules/sync/sync.router.js';
 import subscriptionsRouter from './modules/subscriptions/subscriptions.router.js';
 import subscriptionsWebhookRouter from './modules/subscriptions/subscriptions.webhook.router.js';
+import { renderPrivacyPolicyHtml } from './privacyPolicy.js';
 
 /**
  * Cria e configura a instância do Express (sem escutar em porta).
@@ -77,6 +78,12 @@ export function createApp() {
       googleClientId: env.GOOGLE_CLIENT_ID || null,
       googleAndroidClientId: env.GOOGLE_ANDROID_CLIENT_ID || null,
     });
+  });
+
+  // Política de Privacidade: página pública em HTML, exigida pela Google Play
+  // (o app coleta dados via login por email/senha e Google OAuth).
+  app.get('/privacy', (req, res) => {
+    res.type('html').send(renderPrivacyPolicyHtml());
   });
 
   // Healthcheck: status do app + booleano da conexão com o banco.
