@@ -12,4 +12,7 @@ app-mobile/android/.gradle/
 app-mobile/android/build/
 app-mobile/android/local.properties
 app-mobile/android/app/build/
+app-mobile/android/gradle.properties
+app-mobile/android/*.jks
+app-mobile/android/*.keystore
 server/certs/
