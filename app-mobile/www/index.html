@@ -1300,27 +1300,20 @@
   var streakRowEl = document.getElementById("streakRow");
   function renderStreak() {
     streakRowEl.innerHTML = "";
-    var now = new Date();
-    var todayIdx = now.getDay();
-    // Build last 5 weekdays (mon..fri) ending today or the most recent business day.
-    var cursor = new Date(now);
-    var weekdays = [];
-    while (weekdays.length < 5) {
-      var wd = cursor.getDay();
-      if (wd >= 1 && wd <= 5) weekdays.unshift(new Date(cursor));
-      cursor.setDate(cursor.getDate() - 1);
-    }
-    var map = { 1: "seg", 2: "ter", 3: "qua", 4: "qui", 5: "sex" };
-    weekdays.forEach(function (d) {
-      var dayKey = map[d.getDay()];
-      var dateISO = isoDate(d);
+    var weekdayKeys = ["seg", "ter", "qua", "qui", "sex"];
+    var todayKey = todayKeyBR();
+    weekdayKeys.forEach(function (dayKey) {
+      // Usa a mesma resolucao de chave do resto do app: dia real (data ISO) só
+      // para "hoje"; os demais dias da semana usam o pseudo-dia "template-*"
+      // onde as marcacoes de preview/edicao desses dias sao de fato gravadas.
+      var dateISO = effectiveDateForDay(dayKey);
       var ds = state[dateISO] || {};
       var tasks = buildTasks(dayKey);
       var total = tasks.length;
       var done = tasks.filter(function (t) { return ds[t.id]; }).length;
       var pct = total ? Math.round((done / total) * 100) : 0;
       var cell = document.createElement("div");
-      cell.className = "streak-day" + (pct === 100 ? " full" : pct > 0 ? " partial" : "") + (dateISO === currentDateISO ? " today" : "");
+      cell.className = "streak-day" + (pct === 100 ? " full" : pct > 0 ? " partial" : "") + (dayKey === todayKey ? " today" : "");
       cell.innerHTML = '<div class="d-label">' + DAYS.find(function (x) { return x.key === dayKey; }).label.slice(0, 3) + '</div><div class="d-pct">' + pct + '%</div>';
       streakRowEl.appendChild(cell);
     });
