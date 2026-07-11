@@ -1,0 +1,23 @@
+# Sobe um Postgres local isolado para desenvolvimento.
+# Uso: copie .env.example para .env e rode `docker compose up -d`.
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: rotina_tdah_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rotina}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rotina}
+      POSTGRES_DB: ${POSTGRES_DB:-rotina_tdah}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rotina} -d ${POSTGRES_DB:-rotina_tdah}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
