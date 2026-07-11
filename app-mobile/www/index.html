@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#285a52" />
 <meta name="description" content="Checklist diário de rotina com horários, lembretes e progresso, baseado nas 8 Regras de Barkley." />
 <link rel="manifest" id="manifestLink" />
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
     --bg: #f4f6f4;
@@ -1661,6 +1660,22 @@
   /* ---------- Auth UI (Fase 5): topbar chip + modal login/cadastro ---------- */
   var GOOGLE_CLIENT_ID = null;
   var GOOGLE_ANDROID_CLIENT_ID = null;
+  var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
+  var socialLoginInitPromise = null;
+
+  // Inicializa o plugin nativo de login social (Google via Credential Manager).
+  // Login com Google via WebView/GSI é bloqueado pelo Google em apps Android nativos
+  // (erro disallowed_useragent), por isso usamos o SDK nativo aqui.
+  function ensureSocialLoginInit() {
+    if (!SocialLogin) return Promise.reject(new Error("SocialLogin indisponivel"));
+    if (!GOOGLE_CLIENT_ID) return Promise.reject(new Error("Google Client ID nao configurado"));
+    if (!socialLoginInitPromise) {
+      socialLoginInitPromise = SocialLogin.initialize({
+        google: { webClientId: GOOGLE_CLIENT_ID }
+      });
+    }
+    return socialLoginInitPromise;
+  }
 
   var sessionChip = document.getElementById("sessionChip");
   var clockEl2 = document.getElementById("clock");
@@ -1815,33 +1830,44 @@
   });
 
   authGoogleBtn.addEventListener("click", function () {
+    if (!SocialLogin) {
+      showToast("Login com Google indisponivel neste app.");
+      return;
+    }
     if (!GOOGLE_CLIENT_ID) {
       showToast("Google Client ID nao configurado.");
       return;
     }
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: function (response) {
-        if (!response || !response.credential) {
-          setAuthError("Falha na autenticacao com Google.");
-          return;
-        }
-        setAuthLoading(true);
-        Api.googleLogin(response.credential).then(function () {
-          return Api.me().catch(function () { return null; });
-        }).then(function () {
-          setAuthLoading(false);
-          closeAuth();
-          var s = Api.getSession();
-          var who = s && s.user ? (s.user.displayName || s.user.email) : "";
-          showToast("Conectado com Google" + (who ? " como " + who : ""));
-        }).catch(function (err) {
-          setAuthLoading(false);
-          setAuthError(friendlyAuthError(err));
-        });
+    setAuthLoading(true);
+    ensureSocialLoginInit().then(function () {
+      return SocialLogin.login({
+        provider: "google",
+        options: { scopes: ["email", "profile"] }
+      });
+    }).then(function (res) {
+      var idToken = res && res.result && res.result.idToken;
+      if (!idToken) {
+        setAuthLoading(false);
+        setAuthError("Falha na autenticacao com Google.");
+        return;
+      }
+      return Api.googleLogin(idToken).then(function () {
+        return Api.me().catch(function () { return null; });
+      }).then(function () {
+        setAuthLoading(false);
+        closeAuth();
+        var s = Api.getSession();
+        var who = s && s.user ? (s.user.displayName || s.user.email) : "";
+        showToast("Conectado com Google" + (who ? " como " + who : ""));
+      });
+    }).catch(function (err) {
+      setAuthLoading(false);
+      if (err && err.message === "Google Client ID nao configurado") {
+        showToast("Google Client ID nao configurado.");
+      } else {
+        setAuthError(friendlyAuthError(err));
       }
     });
-    google.accounts.id.prompt();
   });
 
   // Busca config do servidor (GOOGLE_CLIENT_ID, etc.)

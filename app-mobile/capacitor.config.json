@@ -1,5 +1,15 @@
 {
   "appId": "com.rotinatdah.app",
   "appName": "Rotina TDAH",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "SocialLogin": {
+      "providers": {
+        "google": true,
+        "facebook": false,
+        "apple": false,
+        "twitter": false
+      }
+    }
+  }
 }
