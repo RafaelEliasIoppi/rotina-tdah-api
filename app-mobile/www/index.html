@@ -4,28 +4,28 @@
 <meta charset="UTF-8" />
 <title>Rotina Diária — Apoio TDAH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#285a52" />
+<meta name="theme-color" content="#4338ca" />
 <meta name="description" content="Checklist diário de rotina com horários, lembretes e progresso, baseado nas 8 Regras de Barkley." />
 <link rel="manifest" id="manifestLink" />
 <style>
   :root {
-    --bg: #f4f6f4;
+    --bg: #f6f6fb;
     --bg-elevated: #ffffff;
-    --bg-sunken: #e9ede9;
-    --ink: #16211d;
-    --ink-soft: #4a5852;
-    --ink-faint: #7c8b84;
-    --border: #d8e0da;
-    --accent: #285a52;
-    --accent-soft: #e3ede9;
+    --bg-sunken: #ececf5;
+    --ink: #191a2b;
+    --ink-soft: #55566f;
+    --ink-faint: #85869e;
+    --border: #dcdcec;
+    --accent: #4338ca;
+    --accent-soft: #e6e4fb;
     --accent-ink: #ffffff;
-    --good: #2f8f63;
-    --good-soft: #e2f3e8;
+    --good: #21875a;
+    --good-soft: #e0f4e9;
     --warn: #a3701f;
     --warn-soft: #f6ecd8;
-    --crit: #a8452f;
-    --crit-soft: #f8e5df;
-    --shadow: 0 1px 2px rgba(20, 30, 26, 0.06), 0 4px 14px rgba(20, 30, 26, 0.06);
+    --crit: #b8412a;
+    --crit-soft: #fae3dc;
+    --shadow: 0 1px 2px rgba(20, 20, 40, 0.06), 0 4px 14px rgba(20, 20, 40, 0.06);
     --radius: 14px;
     --font-display: Charter, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
     --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -33,18 +33,18 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #121715;
-      --bg-elevated: #1b2320;
-      --bg-sunken: #0d1210;
-      --ink: #e7efe9;
-      --ink-soft: #aebdb5;
-      --ink-faint: #71827a;
-      --border: #2a3531;
-      --accent: #7fbfae;
-      --accent-soft: #1f322c;
-      --accent-ink: #0d1815;
+      --bg: #14141f;
+      --bg-elevated: #1d1e2e;
+      --bg-sunken: #0e0e17;
+      --ink: #e9e9f4;
+      --ink-soft: #b0b1c9;
+      --ink-faint: #77789a;
+      --border: #2c2d42;
+      --accent: #a5b4fc;
+      --accent-soft: #262856;
+      --accent-ink: #181229;
       --good: #6bc496;
-      --good-soft: #16281f;
+      --good-soft: #17281f;
       --warn: #d8ab5c;
       --warn-soft: #2c2417;
       --crit: #e08469;
@@ -53,20 +53,20 @@
     }
   }
   :root[data-theme="dark"] {
-    --bg: #121715; --bg-elevated: #1b2320; --bg-sunken: #0d1210;
-    --ink: #e7efe9; --ink-soft: #aebdb5; --ink-faint: #71827a;
-    --border: #2a3531; --accent: #7fbfae; --accent-soft: #1f322c; --accent-ink: #0d1815;
-    --good: #6bc496; --good-soft: #16281f; --warn: #d8ab5c; --warn-soft: #2c2417;
+    --bg: #14141f; --bg-elevated: #1d1e2e; --bg-sunken: #0e0e17;
+    --ink: #e9e9f4; --ink-soft: #b0b1c9; --ink-faint: #77789a;
+    --border: #2c2d42; --accent: #a5b4fc; --accent-soft: #262856; --accent-ink: #181229;
+    --good: #6bc496; --good-soft: #17281f; --warn: #d8ab5c; --warn-soft: #2c2417;
     --crit: #e08469; --crit-soft: #2e1c17;
     --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 4px 18px rgba(0,0,0,0.35);
   }
   :root[data-theme="light"] {
-    --bg: #f4f6f4; --bg-elevated: #ffffff; --bg-sunken: #e9ede9;
-    --ink: #16211d; --ink-soft: #4a5852; --ink-faint: #7c8b84;
-    --border: #d8e0da; --accent: #285a52; --accent-soft: #e3ede9; --accent-ink: #ffffff;
-    --good: #2f8f63; --good-soft: #e2f3e8; --warn: #a3701f; --warn-soft: #f6ecd8;
-    --crit: #a8452f; --crit-soft: #f8e5df;
-    --shadow: 0 1px 2px rgba(20,30,26,0.06), 0 4px 14px rgba(20,30,26,0.06);
+    --bg: #f6f6fb; --bg-elevated: #ffffff; --bg-sunken: #ececf5;
+    --ink: #191a2b; --ink-soft: #55566f; --ink-faint: #85869e;
+    --border: #dcdcec; --accent: #4338ca; --accent-soft: #e6e4fb; --accent-ink: #ffffff;
+    --good: #21875a; --good-soft: #e0f4e9; --warn: #a3701f; --warn-soft: #f6ecd8;
+    --crit: #b8412a; --crit-soft: #fae3dc;
+    --shadow: 0 1px 2px rgba(20,20,40,0.06), 0 4px 14px rgba(20,20,40,0.06);
   }
 
   * { box-sizing: border-box; }
@@ -1508,11 +1508,11 @@
     short_name: "Rotina TDAH",
     start_url: ".",
     display: "standalone",
-    background_color: "#f4f6f4",
-    theme_color: "#285a52",
+    background_color: "#f6f6fb",
+    theme_color: "#4338ca",
     icons: [{
       src: "data:image/svg+xml," + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="%23285a52"/><path d="M56 100l24 24 56-56" stroke="%23ffffff" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="%234338ca"/><path d="M56 100l24 24 56-56" stroke="%23ffffff" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       ),
       sizes: "192x192",
       type: "image/svg+xml"
