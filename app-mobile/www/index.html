@@ -541,9 +541,140 @@
   .auth-offline-note {
     font-size: 0.72rem; color: var(--ink-faint); margin-top: 14px; line-height: 1.5; text-align: center;
   }
+
+  /* ===== Tela de boas-vindas (splash) ===== */
+  .splash {
+    position: fixed; inset: 0; z-index: 500;
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(circle at 18% -8%, var(--accent-soft) 0%, transparent 46%),
+      radial-gradient(circle at 92% 108%, var(--accent-soft) 0%, transparent 40%),
+      var(--bg);
+    overflow-y: auto;
+    animation: splashIn 0.5s ease both;
+  }
+  .splash[hidden] { display: none; }
+  @keyframes splashIn { from { opacity: 0; } to { opacity: 1; } }
+  .splash-inner {
+    max-width: 480px; width: 100%; margin: 0 auto;
+    padding: max(28px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; flex: 1;
+  }
+  .splash-art { display: flex; justify-content: center; margin: 12px 0 20px; }
+  .splash-art svg { width: 148px; height: 148px; }
+  .splash-eyebrow {
+    text-align: center; font-family: var(--font-body); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  .splash-title {
+    text-align: center; font-family: var(--font-display); font-size: 1.7rem; line-height: 1.25;
+    color: var(--ink); margin: 0 0 14px;
+  }
+  .splash-lede {
+    text-align: center; font-family: var(--font-body); font-size: 0.94rem; line-height: 1.55;
+    color: var(--ink-soft); margin: 0 0 22px;
+  }
+  .splash-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+  .splash-card {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 13px 14px; box-shadow: var(--shadow);
+  }
+  .splash-card .ico {
+    flex: none; width: 34px; height: 34px; border-radius: 9px;
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .splash-card .ico svg { width: 18px; height: 18px; }
+  .splash-card h3 {
+    font-family: var(--font-body); font-size: 0.86rem; font-weight: 700; color: var(--ink);
+    margin: 0 0 3px;
+  }
+  .splash-card p {
+    font-family: var(--font-body); font-size: 0.8rem; line-height: 1.45; color: var(--ink-soft); margin: 0;
+  }
+  .splash-actions { margin-top: auto; padding-top: 4px; }
+  .splash-google {
+    width: 100%; padding: 13px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--bg-elevated); color: var(--ink); font-family: var(--font-body);
+    font-weight: 700; font-size: 0.92rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: var(--shadow);
+  }
+  .splash-google svg { width: 19px; height: 19px; flex: none; }
+  .splash-secondary {
+    width: 100%; padding: 12px; margin-top: 10px; border-radius: 12px; border: none;
+    background: none; color: var(--ink-soft); font-family: var(--font-body);
+    font-weight: 600; font-size: 0.84rem; cursor: pointer; text-decoration: underline;
+  }
+  .splash-footnote {
+    text-align: center; font-family: var(--font-body); font-size: 0.68rem; line-height: 1.5;
+    color: var(--ink-faint); margin-top: 16px;
+  }
 </style>
 </head>
 <body>
+
+<div class="splash" id="splashScreen">
+  <div class="splash-inner">
+    <div class="splash-art" aria-hidden="true">
+      <svg viewBox="0 0 160 160" fill="none">
+        <circle cx="80" cy="80" r="72" fill="var(--accent-soft)"/>
+        <circle cx="80" cy="80" r="52" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 7" opacity="0.55"/>
+        <path d="M50 92 L70 92 L78 68 L88 108 L96 92 L112 92" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80" cy="80" r="6" fill="var(--accent)"/>
+        <path d="M80 38v10M80 112v10M38 80h10M112 80h10" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <div class="splash-eyebrow">Rotina Diária · Apoio TDAH</div>
+    <h1 class="splash-title">Feito para como sua mente realmente funciona</h1>
+    <p class="splash-lede">
+      TDAH não é falta de esforço — é um déficit real de inibição comportamental que afeta como o cérebro
+      sustenta tempo, memória e motivação internamente. A ciência chama isso de <em>miopia temporal</em>:
+      prazos e planos futuros perdem força no momento presente.
+    </p>
+
+    <div class="splash-cards">
+      <div class="splash-card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <div>
+          <h3>Por que rotina visual ajuda</h3>
+          <p>Externalizar tempo e tarefas — colocá-los fora da mente, à vista — compensa esse déficit. Não é uma muleta: é a estratégia com mais respaldo científico para TDAH.</p>
+        </div>
+      </div>
+      <div class="splash-card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke-linejoin="round"/><path d="M9 8h4M9 12h6M9 16h6" stroke-linecap="round"/></svg></div>
+        <div>
+          <h3>Base científica, não achismo</h3>
+          <p>Construído a partir do Manual Barkley (Diagnóstico e Tratamento, 3ª ed.) e da cartilha TDAH da Associação Brasileira de Psiquiatria.</p>
+        </div>
+      </div>
+      <div class="splash-card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21c-4.5-3-8-6.5-8-10.5A5.5 5.5 0 0112 6a5.5 5.5 0 018 4.5c0 4-3.5 7.5-8 10.5z" stroke-linejoin="round"/></svg></div>
+        <div>
+          <h3>Criado por quem vive isso</h3>
+          <p>Este app nasceu da experiência pessoal de quem convive com TDAH — pensado para reduzir carga mental, não para adicionar mais uma cobrança.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="splash-actions">
+      <button class="splash-google" id="splashGoogleBtn" type="button">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.58v2.98h3.93c2.3-2.12 3.62-5.24 3.62-8.8z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.92l-3.93-2.98c-1.09.73-2.48 1.16-4 1.16-3.08 0-5.68-2.08-6.61-4.87H1.34v3.07C3.31 21.3 7.35 24 12 24z"/><path fill="#FBBC05" d="M5.39 14.39A7.2 7.2 0 015 12c0-.83.14-1.64.39-2.39V6.54H1.34A11.98 11.98 0 000 12c0 1.93.46 3.76 1.34 5.46l4.05-3.07z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.94 1.19 15.23 0 12 0 7.35 0 3.31 2.7 1.34 6.54l4.05 3.07C6.32 6.85 8.92 4.77 12 4.77z"/></svg>
+        <span>Continuar com Google</span>
+      </button>
+      <button class="splash-secondary" id="splashSkipBtn" type="button">Continuar sem conta</button>
+    </div>
+
+    <div class="splash-footnote">
+      Criado por Rafael Elias Ioppi.<br />
+      Fundamentado em Barkley et al., "TDAH: Diagnóstico e Tratamento" (3ª ed., Artmed) e na Cartilha TDAH
+      (Associação Brasileira de Psiquiatria, 2024). Ferramenta educacional de apoio — não substitui
+      diagnóstico ou acompanhamento clínico.
+    </div>
+  </div>
+</div>
 
 <div class="topbar">
   <div class="topbar-row">
@@ -1829,13 +1960,15 @@
     });
   });
 
-  authGoogleBtn.addEventListener("click", function () {
+  function doGoogleLogin(onDone) {
     if (!SocialLogin) {
       showToast("Login com Google indisponivel neste app.");
+      if (onDone) onDone(false);
       return;
     }
     if (!GOOGLE_CLIENT_ID) {
       showToast("Google Client ID nao configurado.");
+      if (onDone) onDone(false);
       return;
     }
     setAuthLoading(true);
@@ -1849,6 +1982,7 @@
       if (!idToken) {
         setAuthLoading(false);
         setAuthError("Falha na autenticacao com Google.");
+        if (onDone) onDone(false);
         return;
       }
       return Api.googleLogin(idToken).then(function () {
@@ -1859,6 +1993,7 @@
         var s = Api.getSession();
         var who = s && s.user ? (s.user.displayName || s.user.email) : "";
         showToast("Conectado com Google" + (who ? " como " + who : ""));
+        if (onDone) onDone(true);
       });
     }).catch(function (err) {
       setAuthLoading(false);
@@ -1867,6 +2002,31 @@
       } else {
         setAuthError(friendlyAuthError(err));
       }
+      if (onDone) onDone(false);
+    });
+  }
+
+  authGoogleBtn.addEventListener("click", function () { doGoogleLogin(); });
+
+  /* ---------- Tela de boas-vindas (splash, só na 1a abertura) ---------- */
+  var SPLASH_KEY = "rotina_tdah_splash_seen_v1";
+  var splashScreen = document.getElementById("splashScreen");
+  var splashGoogleBtn = document.getElementById("splashGoogleBtn");
+  var splashSkipBtn = document.getElementById("splashSkipBtn");
+
+  function dismissSplash() {
+    localStorage.setItem(SPLASH_KEY, "1");
+    splashScreen.setAttribute("hidden", "");
+  }
+
+  if (localStorage.getItem(SPLASH_KEY) || Api.isLoggedIn()) {
+    splashScreen.setAttribute("hidden", "");
+  }
+
+  splashSkipBtn.addEventListener("click", dismissSplash);
+  splashGoogleBtn.addEventListener("click", function () {
+    doGoogleLogin(function (success) {
+      if (success) dismissSplash();
     });
   });
 
