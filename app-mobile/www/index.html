@@ -2025,6 +2025,9 @@
   }
   applySplashSessionState();
 
+  // A splash NUNCA deve travar o acesso ao app: se o login Google falhar por
+  // qualquer motivo (sem internet, popup cancelado, config nao carregada),
+  // o usuario ainda assim entra no app normalmente, apenas sem conta.
   splashSkipBtn.addEventListener("click", dismissSplash);
   splashGoogleBtn.addEventListener("click", function () {
     if (Api.isLoggedIn()) {
@@ -2032,8 +2035,9 @@
       dismissSplash();
       return;
     }
-    doGoogleLogin(function (success) {
-      if (success) dismissSplash();
+    doGoogleLogin(function () {
+      // Sucesso ou falha: sempre libera a entrada no app.
+      dismissSplash();
     });
   });
 
