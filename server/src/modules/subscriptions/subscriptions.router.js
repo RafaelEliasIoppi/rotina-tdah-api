@@ -2,8 +2,15 @@ import { Router } from 'express';
 import * as service from './subscriptions.service.js';
 import { createCheckoutSchema } from './subscriptions.schema.js';
 import { requireAuth } from '../../middleware/auth.js';
+import { env } from '../../config/env.js';
 
 const router = Router();
+
+// Pública (sem auth): devolve o priceId configurado para o frontend não
+// precisar hardcodar o ID do plano Premium.
+router.get('/config', (req, res) => {
+  res.json({ priceId: env.STRIPE_PREMIUM_PRICE_ID || '' });
+});
 
 router.post('/checkout', requireAuth, async (req, res, next) => {
   try {
