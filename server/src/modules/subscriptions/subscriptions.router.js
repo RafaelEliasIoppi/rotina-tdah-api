@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as service from './subscriptions.service.js';
 import { createCheckoutSchema } from './subscriptions.schema.js';
-import { requireAuth } from '../../middlewares/auth.js';
+import { requireAuth } from '../../middleware/auth.js';
 
 const router = Router();
 
