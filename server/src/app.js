@@ -12,6 +12,8 @@ import { createRoutinesRouter } from './modules/routines/routines.router.js';
 import { createCompletionsRouter } from './modules/completions/completions.router.js';
 import { createRemindersRouter } from './modules/reminders/reminders.router.js';
 import { createSyncRouter } from './modules/sync/sync.router.js';
+import subscriptionsRouter from './modules/subscriptions/subscriptions.router.js';
+import subscriptionsWebhookRouter from './modules/subscriptions/subscriptions.webhook.router.js';
 
 /**
  * Cria e configura a instância do Express (sem escutar em porta).
@@ -47,6 +49,10 @@ export function createApp() {
     ),
   );
 
+  // Webhook do Stripe: precisa do body CRU (raw) para verificar assinatura.
+  // Deve vir ANTES do express.json().
+  app.use('/subscriptions/webhook', express.raw({ type: 'application/json' }), subscriptionsWebhookRouter);
+
   // Limite de tamanho do corpo: evita payloads gigantes (DoS de memória).
   app.use(express.json({ limit: '100kb' }));
 
@@ -64,6 +70,14 @@ export function createApp() {
   // para que notificações funcionem (file:// não suporta Notification API).
   const __dirname = dirname(fileURLToPath(import.meta.url));
   app.use('/ferramentas', express.static(join(__dirname, '..', '..', 'ferramentas')));
+
+  // Config pública (expoe Google Client IDs para o frontend, sem segredos)
+  app.get('/config', (req, res) => {
+    res.json({
+      googleClientId: env.GOOGLE_CLIENT_ID || null,
+      googleAndroidClientId: env.GOOGLE_ANDROID_CLIENT_ID || null,
+    });
+  });
 
   // Healthcheck: status do app + booleano da conexão com o banco.
   app.get('/health', async (req, res, next) => {
@@ -84,6 +98,9 @@ export function createApp() {
   app.use('/completions', createCompletionsRouter());
   app.use('/reminders', createRemindersRouter());
   app.use('/sync', createSyncRouter());          // /sync/pull, /sync/push
+
+  // Assinaturas (Stripe).
+  app.use('/subscriptions', subscriptionsRouter); // /subscriptions/checkout, /subscriptions/me, /subscriptions/portal
 
   // errorHandler por último.
   app.use(errorHandler);

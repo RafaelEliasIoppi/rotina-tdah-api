@@ -28,12 +28,18 @@ const envSchema = z.object({
 
   // Opcional: se ausente, POST /auth/google responde 501 (não quebra o boot).
   GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_ANDROID_CLIENT_ID: z.string().optional(),
 
   // Origens permitidas no CORS (lista separada por vírgula).
   // Ausente/vazio → CORS permissivo (reflete qualquer origem), conveniente em dev.
   // Setado → apenas as origens listadas são aceitas (recomendado em produção).
   // Ex.: CORS_ORIGIN=https://meu-app.com,https://www.meu-app.com
   CORS_ORIGIN: z.string().optional(),
+
+  // Stripe — necessário para módulo de pagamentos
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PREMIUM_PRICE_ID: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

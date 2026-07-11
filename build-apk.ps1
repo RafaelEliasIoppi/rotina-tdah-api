@@ -8,7 +8,9 @@ $AndroidDir = "$env:LOCALAPPDATA\Android"
 
 Write-Host "=== Build APK Rotina TDAH ===" -ForegroundColor Cyan
 
-# 1. Check Java
+# 1. Check Java — usa JDK 21+ (necessario para capacitor-android)
+$env:JAVA_HOME = "C:\Users\rafae\Tools\jdk-21.0.11+10"
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 $javaOut = cmd /c "java -version 2>&1"
 if ($LASTEXITCODE -ne 0) { throw "Java JDK nao encontrado. Instale o JDK 17+." }
 Write-Host "[OK] Java encontrado" -ForegroundColor Green

@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#285a52" />
 <meta name="description" content="Checklist diário de rotina com horários, lembretes e progresso, baseado nas 8 Regras de Barkley." />
 <link rel="manifest" id="manifestLink" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
     --bg: #f4f6f4;
@@ -326,6 +327,45 @@
   }
   .edit-fab svg { width: 15px; height: 15px; }
 
+  /* Premium badge na topbar */
+  .premium-badge {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 2px 8px; font-size: 0.68rem; font-weight: 600;
+    color: var(--ink-faint); cursor: pointer; white-space: nowrap;
+    font-family: var(--font-body);
+  }
+  .premium-badge.is-premium {
+    border-color: #d4a017; color: #d4a017;
+    background: color-mix(in srgb, #d4a017 10%, transparent);
+  }
+
+  /* Plans modal */
+  .plans-grid { display: flex; gap: 12px; flex-direction: column; }
+  @media (min-width: 500px) { .plans-grid { flex-direction: row; } }
+  .plan-card {
+    border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+    flex: 1; display: flex; flex-direction: column; gap: 12px;
+    background: var(--bg);
+  }
+  .plan-card.plan-premium {
+    border-color: #d4a017;
+    background: color-mix(in srgb, #d4a017 6%, var(--bg));
+  }
+  .plan-name { font-size: 0.9rem; font-weight: 700; }
+  .plan-price { font-size: 1.6rem; font-weight: 800; line-height: 1; }
+  .plan-price span { font-size: 0.75rem; font-weight: 400; color: var(--ink-faint); }
+  .plan-features { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .plan-features li { font-size: 0.78rem; color: var(--ink-soft); padding-left: 18px; position: relative; }
+  .plan-features li::before {
+    content: "✓"; position: absolute; left: 0; color: var(--good);
+    font-weight: 700;
+  }
+  .plan-current {
+    font-size: 0.75rem; color: var(--ink-faint); text-align: center;
+    padding: 6px; border-radius: 8px; background: var(--bg-sunken);
+  }
+  .plan-loading { text-align: center; font-size: 0.82rem; color: var(--ink-faint); padding: 8px; }
+
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(10, 16, 13, 0.5);
     z-index: 60; display: none; align-items: flex-end; justify-content: center;
@@ -511,6 +551,7 @@
     <div class="brand">Rotina Diária<small>Apoio prático · TDAH</small></div>
     <div class="session-chip" id="sessionChip">
       <span class="sync-status" id="syncStatus" title="" hidden></span>
+      <button class="premium-badge" id="premiumBadge" type="button" title="Seu plano">Free</button>
       <div class="clock" id="clock">--:--</div>
     </div>
   </div>
@@ -610,7 +651,7 @@
 
       <div class="auth-sep">ou</div>
       <button class="auth-google" id="authGoogleBtn" type="button">
-        <span>Entrar com Google</span><span class="soon">em breve</span>
+        <span>Entrar com Google</span>
       </button>
 
       <div class="auth-toggle" id="authToggleWrap">
@@ -620,6 +661,43 @@
 
       <div class="auth-offline-note">
         O login é opcional. O app funciona normalmente sem conta e offline — sincronização entre dispositivos chega em breve.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="plansOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="plansTitle">
+    <div class="modal-header">
+      <h2 id="plansTitle">Planos</h2>
+      <button class="modal-close" id="plansCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="plansBody">
+      <div class="plan-card plan-free" id="planFreeCard">
+        <div class="plan-name">Grátis</div>
+        <div class="plan-price">R$ 0</div>
+        <ul class="plan-features">
+          <li>Rotina completa</li>
+          <li>1 dispositivo</li>
+          <li>Progresso diário</li>
+        </ul>
+        <div class="plan-current" id="planCurrentFree">Seu plano atual</div>
+      </div>
+      <div class="plan-card plan-premium" id="planPremiumCard">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">R$ 9,90<span>/mês</span></div>
+        <ul class="plan-features">
+          <li>Tudo do Grátis</li>
+          <li>Sincronia multi-dispositivo</li>
+          <li>Relatórios de adesão</li>
+          <li>Temas personalizados</li>
+          <li>Prioridade em novas funcionalidades</li>
+        </ul>
+        <button class="btn btn-primary" id="planSubscribeBtn" type="button">Assinar Premium</button>
+        <button class="btn" id="planManageBtn" type="button" style="display:none;">Gerenciar assinatura</button>
+        <div class="plan-loading" id="planLoading" style="display:none;">Abrindo pagamento...</div>
       </div>
     </div>
   </div>
@@ -778,6 +856,14 @@
           if (data && data.user && session) { session.user = data.user; persist(); emit(); }
           return data && data.user;
         });
+      },
+      googleLogin: function (idToken) {
+        return rawJson("/auth/google", { method: "POST", body: { idToken: idToken } })
+          .then(function (result) {
+            if (!result.ok || !result.data) throw toApiError(result);
+            setSession(result.data.user, result.data.tokens);
+            return result.data.user;
+          });
       }
     };
   })();
@@ -1573,7 +1659,8 @@
   });
 
   /* ---------- Auth UI (Fase 5): topbar chip + modal login/cadastro ---------- */
-  var GOOGLE_ENABLED = false; // gancho pronto; OAuth do Google exige config adicional (Fase futura).
+  var GOOGLE_CLIENT_ID = null;
+  var GOOGLE_ANDROID_CLIENT_ID = null;
 
   var sessionChip = document.getElementById("sessionChip");
   var clockEl2 = document.getElementById("clock");
@@ -1728,12 +1815,39 @@
   });
 
   authGoogleBtn.addEventListener("click", function () {
-    if (!GOOGLE_ENABLED) {
-      showToast("Login com Google chega em breve.");
+    if (!GOOGLE_CLIENT_ID) {
+      showToast("Google Client ID nao configurado.");
       return;
     }
-    // Gancho: quando habilitado, iniciar aqui o fluxo OAuth do Google.
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: function (response) {
+        if (!response || !response.credential) {
+          setAuthError("Falha na autenticacao com Google.");
+          return;
+        }
+        setAuthLoading(true);
+        Api.googleLogin(response.credential).then(function () {
+          return Api.me().catch(function () { return null; });
+        }).then(function () {
+          setAuthLoading(false);
+          closeAuth();
+          var s = Api.getSession();
+          var who = s && s.user ? (s.user.displayName || s.user.email) : "";
+          showToast("Conectado com Google" + (who ? " como " + who : ""));
+        }).catch(function (err) {
+          setAuthLoading(false);
+          setAuthError(friendlyAuthError(err));
+        });
+      }
+    });
+    google.accounts.id.prompt();
   });
+
+  // Busca config do servidor (GOOGLE_CLIENT_ID, etc.)
+  fetch(API_BASE + "/config").then(function (r) { return r.json(); }).then(function (cfg) {
+    if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
+  }).catch(function () { /* servidor offline, Google login nao disponivel */ });
 
   Api.onChange(renderSessionChip);
   renderSessionChip();
@@ -1742,6 +1856,155 @@
   if (Api.isLoggedIn()) {
     Api.me().catch(function () { /* offline ou token inválido: refresh/limpeza já tratados no Api */ });
   }
+
+  /* ---------- Premium / Planos UI ---------- */
+  var premiumBadge = document.getElementById("premiumBadge");
+  var plansOverlay = document.getElementById("plansOverlay");
+  var plansCloseBtn = document.getElementById("plansCloseBtn");
+  var planSubscribeBtn = document.getElementById("planSubscribeBtn");
+  var planManageBtn = document.getElementById("planManageBtn");
+  var planLoading = document.getElementById("planLoading");
+  var planCurrentFree = document.getElementById("planCurrentFree");
+  var planFreeCard = document.getElementById("planFreeCard");
+  var planPremiumCard = document.getElementById("planPremiumCard");
+
+  var SUBSCRIPTION_CACHE_KEY = "rotina_tdah_sub_v1";
+
+  function getCachedSubscription() {
+    try {
+      var raw = localStorage.getItem(SUBSCRIPTION_CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
+  function cacheSubscription(sub) {
+    if (sub) localStorage.setItem(SUBSCRIPTION_CACHE_KEY, JSON.stringify(sub));
+  }
+
+  function updatePremiumBadge(sub) {
+    if (!premiumBadge) return;
+    var plan = sub && sub.plan === "premium" ? "Premium" : "Free";
+    premiumBadge.textContent = plan;
+    premiumBadge.classList.toggle("is-premium", plan === "Premium");
+  }
+
+  function openPlans() {
+    plansOverlay.classList.add("show");
+    planSubscribeBtn.style.display = "";
+    planManageBtn.style.display = "none";
+    planLoading.style.display = "none";
+
+    if (Api.isLoggedIn()) {
+      Api.fetch("/subscriptions/me").then(function (sub) {
+        cacheSubscription(sub);
+        updatePremiumBadge(sub);
+        if (sub && sub.plan === "premium") {
+          planCurrentFree.textContent = "Faça upgrade ou gerencie";
+          planSubscribeBtn.textContent = "Mudar para Premium";
+          planSubscribeBtn.style.display = "none"; // já é premium
+          planManageBtn.style.display = "";
+        } else {
+          planCurrentFree.textContent = "Seu plano atual";
+          planSubscribeBtn.textContent = "Assinar Premium";
+          planSubscribeBtn.style.display = "";
+          planManageBtn.style.display = "none";
+        }
+      }).catch(function () {
+        // Se falhar, usa cache
+        var cached = getCachedSubscription();
+        if (cached) updatePremiumBadge(cached);
+      });
+    } else {
+      planCurrentFree.textContent = "Faça login para assinar";
+      planSubscribeBtn.textContent = "Fazer login";
+    }
+  }
+
+  function closePlans() {
+    plansOverlay.classList.remove("show");
+  }
+
+  premiumBadge.addEventListener("click", openPlans);
+  plansCloseBtn.addEventListener("click", closePlans);
+  plansOverlay.addEventListener("click", function (ev) {
+    if (ev.target === plansOverlay) closePlans();
+  });
+
+  planSubscribeBtn.addEventListener("click", function () {
+    if (!Api.isLoggedIn()) {
+      closePlans();
+      openAuth();
+      return;
+    }
+
+    planSubscribeBtn.style.display = "none";
+    planManageBtn.style.display = "none";
+    planLoading.style.display = "";
+    planLoading.textContent = "Preparando pagamento...";
+
+    Api.fetch("/subscriptions/checkout", {
+      method: "POST",
+      body: {
+        priceId: "price_premium", // será substituído pelo STRIPE_PREMIUM_PRICE_ID
+        successUrl: window.location.href,
+        cancelUrl: window.location.href,
+      }
+    }).then(function (data) {
+      if (data && data.url) {
+        planLoading.textContent = "Redirecionando...";
+        // Em WebView/Capacitor, abrir no navegador
+        window.location.href = data.url;
+      } else {
+        throw new Error("Resposta invalida");
+      }
+    }).catch(function (err) {
+      planLoading.style.display = "none";
+      planSubscribeBtn.style.display = "";
+      showToast("Erro ao iniciar pagamento. Tente novamente.");
+    });
+  });
+
+  planManageBtn.addEventListener("click", function () {
+    planManageBtn.style.display = "none";
+    planLoading.style.display = "";
+    planLoading.textContent = "Abrindo gerenciamento...";
+
+    Api.fetch("/subscriptions/portal", {
+      method: "POST",
+      body: { returnUrl: window.location.href }
+    }).then(function (data) {
+      if (data && data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Resposta invalida");
+      }
+    }).catch(function (err) {
+      planLoading.style.display = "none";
+      planManageBtn.style.display = "";
+      showToast("Erro ao abrir gerenciamento.");
+    });
+  });
+
+  // Carrega subscription ao iniciar
+  if (Api.isLoggedIn()) {
+    Api.fetch("/subscriptions/me").then(function (sub) {
+      cacheSubscription(sub);
+      updatePremiumBadge(sub);
+    }).catch(function () {
+      var cached = getCachedSubscription();
+      if (cached) updatePremiumBadge(cached);
+    });
+  }
+
+  // Esc fecha o modal de planos também
+  var _origKeydown = document.addEventListener("keydown", function (ev) {});
+  // Override: adicionar plansOverlay no handler de Escape
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    if (plansOverlay.classList.contains("show")) closePlans();
+    else if (authOverlay.classList.contains("show")) closeAuth();
+    else if (editOverlay.classList.contains("show")) closeEditor();
+  });
 
   /* ========================================================================
    * FASE 6 — Sincronização cliente: migração one-time + outbox + status.
