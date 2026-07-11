@@ -115,48 +115,82 @@ npm run e2e       # dois usuários; prova que A não acessa dados de B em nenhum
 
 ---
 
-## 4. Deploy (Render)
+## 4. Deploy no Render
 
-O Render tem free tier e faz deploy direto do repositório Git. Passos:
+O Render tem free tier e faz deploy direto do repositório Git. Este repo já
+inclui um **Blueprint** (`render.yaml` na raiz do repositório) com a
+configuração do serviço pronta — o Render lê esse arquivo automaticamente e
+monta o serviço, faltando só colar os valores das env vars sensíveis.
 
-1. **Suba o repositório** para GitHub (o `.env` não vai junto — está no
-   `.gitignore`; só o `.env.example` é versionado).
+### Passo a passo
 
-2. No [dashboard do Render](https://dashboard.render.com/) → **New → Web Service**
-   → conecte o repositório.
+1. **Suba o repositório** para o GitHub, se ainda não estiver (o `.env` não
+   vai junto — está no `.gitignore`; só o `.env.example` é versionado).
 
-3. Configure o serviço:
-   - **Root Directory:** `server`
-   - **Runtime:** Node
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-   - **Health Check Path:** `/health`
+2. No [dashboard do Render](https://dashboard.render.com/):
+   - Opção A (recomendada, usa o `render.yaml`): **New → Blueprint** → conecte
+     o repositório `RafaelEliasIoppi/rotina-tdah-api` → o Render detecta o
+     `render.yaml` e propõe o serviço `rotina-tdah-api` automaticamente.
+   - Opção B (manual, sem Blueprint): **New → Web Service** → conecte o
+     repositório e configure:
+     - **Root Directory:** `server`
+     - **Runtime:** Node
+     - **Build Command:** `npm install`
+     - **Start Command:** `npm start`
+     - **Health Check Path:** `/health`
 
-4. **Environment Variables** (aba Environment) — replique o `.env`, com valores
-   de produção:
+3. **Preencha as Environment Variables** (aba Environment do serviço) com os
+   valores de produção — ver a tabela completa abaixo para a origem de cada
+   um:
 
-   | Chave | Valor |
-   |---|---|
-   | `NODE_ENV` | `production` |
-   | `DATABASE_URL` | string do Neon com `?sslmode=require` |
-   | `DB_SSL` | `true` |
-   | `JWT_SECRET` | segredo único gerado (novo, só de produção) |
-   | `JWT_REFRESH_SECRET` | outro segredo único gerado |
-   | `CORS_ORIGIN` | origem(ns) do cliente, ex.: `https://meu-app.com` |
-   | `GOOGLE_CLIENT_ID` | (opcional) client id do Google |
+   | Chave | Obrigatória | De onde vem o valor |
+   |---|---|---|
+   | `NODE_ENV` | sim | Fixo: `production` (já vem preenchido pelo `render.yaml`) |
+   | `DATABASE_URL` | sim | Painel do **Neon** → Connection string do banco de produção (inclua `?sslmode=require`) |
+   | `DB_SSL` | sim | Fixo: `true` (já vem preenchido pelo `render.yaml`) |
+   | `JWT_SECRET` | sim | Gerar **novo e único** para produção — nunca reaproveitar o de dev. Ver comando abaixo |
+   | `JWT_REFRESH_SECRET` | sim | Gerar **outro** segredo novo e único (diferente do `JWT_SECRET`) |
+   | `JWT_ACCESS_TTL` | não | Fixo: `15m` (já vem preenchido; ajuste se quiser outro TTL) |
+   | `REFRESH_TTL_DAYS` | não | Fixo: `30` (já vem preenchido; ajuste se quiser outro prazo) |
+   | `CORS_ORIGIN` | recomendada | Domínio(s) público(s) do cliente/app, ex.: `https://meu-app.com`. Deixar vazio só em teste |
+   | `GOOGLE_CLIENT_ID` | opcional | Painel do **Google Cloud Console** (OAuth Client ID web). Se ausente, `/auth/google` responde 501 sem quebrar o boot |
+   | `GOOGLE_ANDROID_CLIENT_ID` | opcional | Painel do **Google Cloud Console** (OAuth Client ID Android) |
+   | `STRIPE_SECRET_KEY` | opcional* | Painel da **Stripe** → Developers → API keys (chave `sk_live_...` em produção) |
+   | `STRIPE_WEBHOOK_SECRET` | opcional* | Painel da **Stripe** → Developers → Webhooks → endpoint criado para esta API (`whsec_...`) |
+   | `STRIPE_PREMIUM_PRICE_ID` | opcional* | Painel da **Stripe** → Product catalog → Price ID do plano Premium (`price_...`) |
+
+   \* As três variáveis do Stripe são opcionais para o boot da API (o schema
+   de env aceita ausência), mas **obrigatórias** para o módulo de pagamentos
+   funcionar. Preencha assim que as credenciais Stripe de produção estiverem
+   disponíveis.
+
+   Gerar os segredos JWT (rode duas vezes, um valor para cada variável):
+
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
+   ```
 
    > `PORT` é injetada pelo Render automaticamente — não precisa setar.
 
-5. **Rodar as migrations** uma vez contra o banco de produção. Opções:
-   - Localmente, com o `.env` apontando para o Neon de produção: `npm run migrate`; **ou**
-   - No Render, use o **Shell** do serviço e rode `npm run migrate`.
+4. **Rodar as migrations** uma vez contra o banco de produção, após o primeiro
+   deploy. Opções:
+   - No Render, abra o **Shell** do serviço (aba Shell) e rode `npm run migrate`; **ou**
+   - Localmente, com um `.env` temporário apontando para o Neon de produção: `npm run migrate`.
 
-6. Após o deploy, o Render fornece uma **URL pública HTTPS**
+5. **Testar** a API em produção:
+
+   ```bash
+   curl https://rotina-tdah-api.onrender.com/health
+   # esperado: {"status":"ok","db":true}
+   ```
+
+6. O Render fornece uma **URL pública HTTPS**
    (ex.: `https://rotina-tdah-api.onrender.com`). O TLS já vem pronto.
 
 > **Railway** funciona de forma equivalente: crie o serviço a partir do repo,
 > Root Directory `server`, Start Command `npm start`, e configure as mesmas
-> variáveis de ambiente.
+> variáveis de ambiente (o `render.yaml` é específico do Render e não se aplica
+> ao Railway).
 
 ### Apontar o cliente para a API pública
 

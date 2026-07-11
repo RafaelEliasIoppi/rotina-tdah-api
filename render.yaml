@@ -1,0 +1,63 @@
+# Render Blueprint (Infra as Code) — Backend "Rotina TDAH"
+#
+# Como usar:
+#   1. No dashboard do Render (https://dashboard.render.com/), escolha
+#      "New → Blueprint" e conecte o repositório GitHub
+#      RafaelEliasIoppi/rotina-tdah-api (ou o nome atual do repo).
+#   2. O Render detecta este arquivo automaticamente e propõe o serviço abaixo.
+#   3. Preencha manualmente (no painel, aba Environment) as variáveis marcadas
+#      com `sync: false` — nenhum valor sensível fica neste arquivo.
+#   4. Após o primeiro deploy, rode `npm run migrate` no Shell do serviço.
+#
+# Ver server/README.md, seção "Deploy no Render", para o passo a passo completo
+# e a origem de cada valor de env var.
+
+services:
+  - type: web
+    name: rotina-tdah-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      # ---- Aplicação ----
+      - key: NODE_ENV
+        value: production
+      # PORT é injetada automaticamente pelo Render — não precisa declarar.
+
+      # ---- Banco de dados (Neon) ----
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "true"
+
+      # ---- Segredos de autenticação (obrigatórios) ----
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: JWT_ACCESS_TTL
+        value: 15m
+      - key: REFRESH_TTL_DAYS
+        value: "30"
+
+      # ---- CORS (recomendado em produção) ----
+      - key: CORS_ORIGIN
+        sync: false
+
+      # ---- Google OAuth (opcional) ----
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_ANDROID_CLIENT_ID
+        sync: false
+
+      # ---- Stripe (opcional até a Fase 8.4 ser concluída) ----
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PREMIUM_PRICE_ID
+        sync: false
