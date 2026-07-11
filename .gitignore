@@ -16,3 +16,5 @@ app-mobile/android/gradle.properties
 app-mobile/android/*.jks
 app-mobile/android/*.keystore
 server/certs/
+app-mobile/test-results/
+app-mobile/playwright-report/
