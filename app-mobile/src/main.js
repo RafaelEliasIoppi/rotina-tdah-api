@@ -3,10 +3,8 @@ import { renderDayTabs, renderBlocks, setSyncHook as setRenderSyncHook } from ".
 import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook } from "./notifications.js";
 import { initEditor, closeEditor } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
-import { initSubscriptions, updateSubscribeButtonAvailability, closePlans } from "./subscriptions.js";
 import { initEducation, closeTdahInfo } from "./education.js";
 import { Sync } from "./sync.js";
-import { API_BASE } from "./api.js";
 
 (function () {
   "use strict";
@@ -79,30 +77,18 @@ import { API_BASE } from "./api.js";
   // Auth (login/cadastro/Google) + splash de boas-vindas.
   initAuth();
 
-  // Busca config do Stripe (priceId do plano Premium) para não hardcodar no frontend.
-  window.stripeConfig = { priceId: "" };
-  fetch(API_BASE + "/subscriptions/config").then(function (r) { return r.json(); }).then(function (cfg) {
-    window.stripeConfig.priceId = (cfg && cfg.priceId) || "";
-    updateSubscribeButtonAvailability();
-  }).catch(function () { /* servidor offline, priceId permanece vazio */ });
-
-  // Premium / planos (Stripe checkout/portal).
-  initSubscriptions();
-
   // Modal "Entenda o TDAH".
   initEducation();
 
-  // Esc fecha o modal de planos também (mesma checagem central do arquivo
-  // único original: tdahInfo > plans > auth > editor, por cima do handler
-  // de auth+editor já registrado em initAuth()).
+  // Esc fecha o modal aberto (mesma checagem central do arquivo único
+  // original: tdahInfo > auth > editor, por cima do handler de auth+editor
+  // já registrado em initAuth()).
   document.addEventListener("keydown", function (ev) {
     if (ev.key !== "Escape") return;
     var tdahInfoOverlay = document.getElementById("tdahInfoOverlay");
-    var plansOverlay = document.getElementById("plansOverlay");
     var authOverlay = document.getElementById("authOverlay");
     var editOverlay = document.getElementById("editOverlay");
     if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
-    else if (plansOverlay.classList.contains("show")) closePlans();
     else if (authOverlay.classList.contains("show")) closeAuth();
     else if (editOverlay.classList.contains("show")) closeEditor();
   });

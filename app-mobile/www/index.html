@@ -78,7 +78,6 @@
     <div class="brand">Rotina Diária<small>Apoio prático · TDAH</small></div>
     <div class="session-chip" id="sessionChip">
       <span class="sync-status" id="syncStatus" title="" hidden></span>
-      <button class="premium-badge" id="premiumBadge" type="button" title="Seu plano">Free</button>
       <div class="clock" id="clock">--:--</div>
     </div>
   </div>
@@ -197,43 +196,6 @@
 
       <div class="auth-offline-note">
         O login é opcional. O app funciona normalmente sem conta e offline — sincronização entre dispositivos chega em breve.
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="plansOverlay">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="plansTitle">
-    <div class="modal-header">
-      <h2 id="plansTitle">Planos</h2>
-      <button class="modal-close" id="plansCloseBtn" type="button" aria-label="Fechar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-    <div class="modal-body" id="plansBody">
-      <div class="plan-card plan-free" id="planFreeCard">
-        <div class="plan-name">Grátis</div>
-        <div class="plan-price">R$ 0</div>
-        <ul class="plan-features">
-          <li>Rotina completa</li>
-          <li>1 dispositivo</li>
-          <li>Progresso diário</li>
-        </ul>
-        <div class="plan-current" id="planCurrentFree">Seu plano atual</div>
-      </div>
-      <div class="plan-card plan-premium" id="planPremiumCard">
-        <div class="plan-name">Premium</div>
-        <div class="plan-price">R$ 9,90<span>/mês</span></div>
-        <ul class="plan-features">
-          <li>Tudo do Grátis</li>
-          <li>Sincronia multi-dispositivo</li>
-          <li>Relatórios de adesão</li>
-          <li>Temas personalizados</li>
-          <li>Prioridade em novas funcionalidades</li>
-        </ul>
-        <button class="btn btn-primary" id="planSubscribeBtn" type="button">Assinar Premium</button>
-        <button class="btn" id="planManageBtn" type="button" style="display:none;">Gerenciar assinatura</button>
-        <div class="plan-loading" id="planLoading" style="display:none;">Abrindo pagamento...</div>
       </div>
     </div>
   </div>

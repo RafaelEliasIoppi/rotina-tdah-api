@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1024px; height: 500px; overflow: hidden; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 64px;
+  }
+  .bg-dots {
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
+    background-image: radial-gradient(circle, #ffffff 2px, transparent 2px);
+    background-size: 28px 28px;
+  }
+  .left {
+    position: relative;
+    z-index: 1;
+    color: #ffffff;
+    max-width: 560px;
+  }
+  .eyebrow {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: Charter, 'Iowan Old Style', Georgia, serif;
+    font-size: 56px;
+    line-height: 1.08;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  p {
+    font-size: 24px;
+    line-height: 1.4;
+    opacity: 0.92;
+    font-weight: 400;
+  }
+  .right {
+    position: relative;
+    z-index: 1;
+    width: 340px;
+    height: 340px;
+    border-radius: 64px;
+    background: rgba(255,255,255,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+  }
+  .right img {
+    width: 260px;
+    height: 260px;
+    border-radius: 48px;
+  }
+</style>
+</head>
+<body>
+  <div class="bg-dots"></div>
+  <div class="left">
+    <div class="eyebrow">Rotina TDAH</div>
+    <h1>Sua cabeça não precisa lembrar de tudo</h1>
+    <p>Rotina diária, lembretes e progresso visual — apoio prático para o dia a dia com TDAH.</p>
+  </div>
+  <div class="right">
+    <img src="ICON_DATA_URI" />
+  </div>
+</body>
+</html>
