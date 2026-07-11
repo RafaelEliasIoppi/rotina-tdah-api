@@ -661,8 +661,8 @@
 
     <div class="splash-actions">
       <button class="splash-google" id="splashGoogleBtn" type="button">
-        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.58v2.98h3.93c2.3-2.12 3.62-5.24 3.62-8.8z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.92l-3.93-2.98c-1.09.73-2.48 1.16-4 1.16-3.08 0-5.68-2.08-6.61-4.87H1.34v3.07C3.31 21.3 7.35 24 12 24z"/><path fill="#FBBC05" d="M5.39 14.39A7.2 7.2 0 015 12c0-.83.14-1.64.39-2.39V6.54H1.34A11.98 11.98 0 000 12c0 1.93.46 3.76 1.34 5.46l4.05-3.07z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.94 1.19 15.23 0 12 0 7.35 0 3.31 2.7 1.34 6.54l4.05 3.07C6.32 6.85 8.92 4.77 12 4.77z"/></svg>
-        <span>Continuar com Google</span>
+        <svg viewBox="0 0 24 24" id="splashGoogleIcon"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.43 3.58v2.98h3.93c2.3-2.12 3.62-5.24 3.62-8.8z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.92l-3.93-2.98c-1.09.73-2.48 1.16-4 1.16-3.08 0-5.68-2.08-6.61-4.87H1.34v3.07C3.31 21.3 7.35 24 12 24z"/><path fill="#FBBC05" d="M5.39 14.39A7.2 7.2 0 015 12c0-.83.14-1.64.39-2.39V6.54H1.34A11.98 11.98 0 000 12c0 1.93.46 3.76 1.34 5.46l4.05-3.07z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.34.6 4.58 1.79l3.44-3.44C17.94 1.19 15.23 0 12 0 7.35 0 3.31 2.7 1.34 6.54l4.05 3.07C6.32 6.85 8.92 4.77 12 4.77z"/></svg>
+        <span id="splashGoogleLabel">Continuar com Google</span>
       </button>
       <button class="splash-secondary" id="splashSkipBtn" type="button">Continuar sem conta</button>
     </div>
@@ -2011,14 +2011,34 @@
   /* ---------- Tela de boas-vindas (splash, exibida sempre ao abrir o app) ---------- */
   var splashScreen = document.getElementById("splashScreen");
   var splashGoogleBtn = document.getElementById("splashGoogleBtn");
+  var splashGoogleLabel = document.getElementById("splashGoogleLabel");
+  var splashGoogleIcon = document.getElementById("splashGoogleIcon");
   var splashSkipBtn = document.getElementById("splashSkipBtn");
 
   function dismissSplash() {
     splashScreen.setAttribute("hidden", "");
   }
 
+  function applySplashSessionState() {
+    var s = Api.getSession();
+    if (s && s.user) {
+      var who = s.user.displayName || s.user.email || "";
+      splashGoogleLabel.textContent = who ? "Continuar como " + who : "Continuar";
+      splashGoogleIcon.style.display = "none";
+    } else {
+      splashGoogleLabel.textContent = "Continuar com Google";
+      splashGoogleIcon.style.display = "";
+    }
+  }
+  applySplashSessionState();
+
   splashSkipBtn.addEventListener("click", dismissSplash);
   splashGoogleBtn.addEventListener("click", function () {
+    if (Api.isLoggedIn()) {
+      // Sessao ja existe: so entra no app, sem pedir login de novo.
+      dismissSplash();
+      return;
+    }
     doGoogleLogin(function (success) {
       if (success) dismissSplash();
     });
