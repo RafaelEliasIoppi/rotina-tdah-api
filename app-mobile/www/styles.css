@@ -684,15 +684,27 @@
       radial-gradient(circle at 18% -8%, var(--accent-soft) 0%, transparent 46%),
       radial-gradient(circle at 92% 108%, var(--accent-soft) 0%, transparent 40%),
       var(--bg);
-    overflow-y: auto;
+    overflow: hidden;
     animation: splashIn 0.5s ease both;
   }
   .splash[hidden] { display: none; }
   @keyframes splashIn { from { opacity: 0; } to { opacity: 1; } }
+  /* Faixa fixa cobrindo a área da status bar do sistema, com o mesmo fundo
+     da splash — evita que texto role por trás do relógio/ícones do Android
+     ao dar scroll no conteúdo (WebView não empurra a status bar, então sem
+     essa faixa sólida o conteúdo passa visualmente por trás dela). */
+  .splash-status-cover {
+    flex: none;
+    height: env(safe-area-inset-top, 0px);
+    min-height: 12px;
+    background: var(--bg);
+  }
   .splash-inner {
     max-width: 480px; width: 100%; margin: 0 auto;
-    padding: max(28px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom));
+    padding: 16px 24px max(28px, env(safe-area-inset-bottom));
     display: flex; flex-direction: column; flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .splash-art { display: flex; justify-content: center; margin: 12px 0 20px; }
   .splash-art svg { width: 148px; height: 148px; }

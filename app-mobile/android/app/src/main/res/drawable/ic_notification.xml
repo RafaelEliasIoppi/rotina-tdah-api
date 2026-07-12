@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icone monocromatico para a barra de notificacoes (silhueta branca, sem
+     cor de fundo), convencao do Android desde a versao 5.0. NotificationCompat
+     usa so o canal alfa do drawable para desenhar a notificacao, entao cores
+     aqui sao ignoradas. Mesmo desenho do launcher (anel quase fechado, ponto
+     de encaixe), sem o retangulo de fundo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192"
+    android:tint="#FFFFFF">
+    <path
+        android:pathData="M 96 46 A 50 50 0 1 1 60.2 137.8"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="15"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000" />
+    <path
+        android:pathData="M 83 146 m -14, 0 a 14,14 0 1,0 28,0 a 14,14 0 1,0 -28,0"
+        android:fillColor="#FFFFFF" />
+</vector>
