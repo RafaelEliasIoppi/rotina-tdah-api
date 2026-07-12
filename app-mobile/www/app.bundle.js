@@ -1371,25 +1371,26 @@
     return socialLoginInitPromise;
   }
   var sessionChip = document.getElementById("sessionChip");
-  var clockEl2 = document.getElementById("clock");
   function renderSessionChip() {
     Array.prototype.slice.call(sessionChip.querySelectorAll("[data-session]")).forEach(function(el) {
       sessionChip.removeChild(el);
     });
     var s = Api.getSession();
     if (s && s.user) {
+      var fullLabel = s.user.displayName || s.user.email || "Conta";
       var name = document.createElement("span");
       name.className = "session-name";
       name.setAttribute("data-session", "");
-      name.textContent = s.user.displayName || s.user.email || "Conta";
+      name.textContent = fullLabel;
+      name.title = fullLabel;
       var out = document.createElement("button");
       out.className = "session-logout";
       out.type = "button";
       out.setAttribute("data-session", "");
       out.textContent = "Sair";
       out.addEventListener("click", handleLogout);
-      sessionChip.insertBefore(out, clockEl2);
-      sessionChip.insertBefore(name, out);
+      sessionChip.appendChild(name);
+      sessionChip.appendChild(out);
     } else {
       var btn = document.createElement("button");
       btn.className = "session-btn";
@@ -1397,7 +1398,7 @@
       btn.setAttribute("data-session", "");
       btn.textContent = "Entrar";
       btn.addEventListener("click", openAuth);
-      sessionChip.insertBefore(btn, clockEl2);
+      sessionChip.appendChild(btn);
     }
   }
   function handleLogout() {
