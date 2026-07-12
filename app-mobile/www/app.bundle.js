@@ -836,13 +836,18 @@
     toggleBtn.className = "place-toggle-btn";
     var panel = document.createElement("div");
     panel.className = "place-panel";
+    var subtitle = document.createElement("div");
+    subtitle.className = "place-toggle-subtitle";
+    subtitle.textContent = "Al\xE9m do hor\xE1rio, seja avisado ao entrar ou sair de um lugar (ex: casa, farm\xE1cia, trabalho)";
     function renderToggle() {
       if (task.location) {
         toggleBtn.innerHTML = pinIconSmall() + " Lembrete por lugar: " + escapeHtmlLocal(task.location.label || "Local") + " (" + (task.location.trigger === "exit" ? "ao sair" : "ao chegar") + ")";
         toggleBtn.classList.add("active");
+        subtitle.style.display = "none";
       } else {
         toggleBtn.innerHTML = pinIconSmall() + " Lembrar por lugar";
         toggleBtn.classList.remove("active");
+        subtitle.style.display = "";
       }
     }
     renderToggle();
@@ -872,6 +877,10 @@
         panel.appendChild(removeBtn);
         return;
       }
+      var explainer = document.createElement("p");
+      explainer.className = "place-explainer";
+      explainer.innerHTML = '<strong>Exemplo:</strong> busque "Casa", escolha "Ao sair" \u2014 voc\xEA recebe este lembrete toda vez que sair de casa, em qualquer hor\xE1rio.';
+      panel.appendChild(explainer);
       var searchInput = document.createElement("input");
       searchInput.type = "text";
       searchInput.placeholder = "Buscar endere\xE7o (ex: Rua X, 123, Cidade)";
@@ -997,6 +1006,7 @@
       });
     }
     wrap.appendChild(toggleBtn);
+    wrap.appendChild(subtitle);
     wrap.appendChild(panel);
     return wrap;
   }

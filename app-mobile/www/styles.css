@@ -493,11 +493,19 @@
   .place-toggle-btn.active {
     color: var(--accent); border-style: solid; border-color: var(--accent); background: var(--accent-soft);
   }
+  .place-toggle-subtitle {
+    font-size: 0.72rem; line-height: 1.35; color: var(--ink-faint);
+    padding: 4px 2px 0 2px;
+  }
   .place-panel {
     display: none; flex-direction: column; gap: 8px;
     margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg);
   }
   .place-panel.show { display: flex; }
+  .place-explainer {
+    font-size: 0.78rem; line-height: 1.4; color: var(--ink-soft);
+    margin: 0 0 2px 0;
+  }
   .place-panel input[type="text"] {
     font-family: var(--font-body); font-size: 0.82rem; color: var(--ink);
     background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;

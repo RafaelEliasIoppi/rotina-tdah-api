@@ -123,14 +123,20 @@ function buildPlaceSection(task, onChanged) {
   var panel = document.createElement("div");
   panel.className = "place-panel";
 
+  var subtitle = document.createElement("div");
+  subtitle.className = "place-toggle-subtitle";
+  subtitle.textContent = "Além do horário, seja avisado ao entrar ou sair de um lugar (ex: casa, farmácia, trabalho)";
+
   function renderToggle() {
     if (task.location) {
       toggleBtn.innerHTML = pinIconSmall() + " Lembrete por lugar: " + escapeHtmlLocal(task.location.label || "Local") +
         " (" + (task.location.trigger === "exit" ? "ao sair" : "ao chegar") + ")";
       toggleBtn.classList.add("active");
+      subtitle.style.display = "none";
     } else {
       toggleBtn.innerHTML = pinIconSmall() + " Lembrar por lugar";
       toggleBtn.classList.remove("active");
+      subtitle.style.display = "";
     }
   }
   renderToggle();
@@ -164,6 +170,12 @@ function buildPlaceSection(task, onChanged) {
       panel.appendChild(removeBtn);
       return;
     }
+
+    var explainer = document.createElement("p");
+    explainer.className = "place-explainer";
+    explainer.innerHTML = "<strong>Exemplo:</strong> busque \"Casa\", escolha \"Ao sair\" — " +
+      "você recebe este lembrete toda vez que sair de casa, em qualquer horário.";
+    panel.appendChild(explainer);
 
     var searchInput = document.createElement("input");
     searchInput.type = "text";
@@ -294,6 +306,7 @@ function buildPlaceSection(task, onChanged) {
   }
 
   wrap.appendChild(toggleBtn);
+  wrap.appendChild(subtitle);
   wrap.appendChild(panel);
   return wrap;
 }
