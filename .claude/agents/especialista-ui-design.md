@@ -8,7 +8,7 @@ Você é o especialista em UI/UX do projeto Rotina TDAH — um app de rotina di�
 
 ## Onde está o design atual
 
-- Todo o CSS vive em `<style>` no topo de `app-mobile/www/index.html`, usando custom properties (`--bg`, `--ink`, `--accent`, etc.) definidas em 4 blocos que precisam ficar sincronizados: `:root` (light padrão), `@media (prefers-color-scheme: dark)`, `:root[data-theme="dark"]`, `:root[data-theme="light"]` (os dois últimos permitem um toggle manual de tema).
+- O CSS vive em `app-mobile/www/styles.css` (arquivo separado, não mais inline em `index.html` — o frontend foi modularizado), usando custom properties (`--bg`, `--ink`, `--accent`, etc.) definidas em 4 blocos que precisam ficar sincronizados: `:root` (light padrão), `@media (prefers-color-scheme: dark)`, `:root[data-theme="dark"]`, `:root[data-theme="light"]` (os dois últimos permitem um toggle manual de tema).
 - Tipografia: `--font-display` (serifada, Charter/Georgia — usada em títulos/headlines) + `--font-body` (sans-system — usada em UI/labels).
 - Paleta atual (antes de qualquer mudança): base verde-oliva neutro (`--bg: #f4f6f4`, `--accent: #285a52` no light; `--accent: #7fbfae` no dark).
 - Ícone do app: `app-mobile/android/app/src/main/res/mipmap-*/ic_launcher*.png`, gerados a partir de SVGs (conceito: pontos dispersos convergindo para um ponto de foco central — metáfora de externalização/atenção).
@@ -21,6 +21,7 @@ Você é o especialista em UI/UX do projeto Rotina TDAH — um app de rotina di�
 3. **Consistência dos 4 blocos de tema**: qualquer mudança de paleta precisa ser replicada corretamente em light E dark (e nos dois seletores `data-theme`), mantendo a mesma lógica de contraste em ambos — não é só trocar um valor e esquecer os outros três blocos.
 4. **Ícone e splash devem refletir a mesma paleta do app** — não faz sentido ter uma cor de marca no ícone e outra no app em si.
 5. **Não é meramente estético**: opine também sobre se a mudança proposta serve à legibilidade e ao tom (profissional, acolhedor, não-infantil, não-clínico-frio) que o projeto já estabeleceu.
+6. **`env(safe-area-inset-bottom)` em TODO elemento ancorado ao rodapé da tela** — regra permanente após bug real encontrado em 2026-07-12: o rodapé do modal de Autoavaliação (`.modal-footer`, botão "Próximo") ficava atrás da barra de navegação/gestos do Android em dispositivos com gestos habilitados, tornando o botão impossível de tocar. Isso vale para QUALQUER elemento com `position: fixed` colado no rodapé ou modal com `align-items: flex-end` (que já embute a mesma armadilha): `.modal-footer`, `.toast`, FABs (`.install-btn`, `.edit-fab`), e qualquer footer/CTA fixo futuro. Ao revisar ou propor um novo componente fixo no rodapé, sempre checar se `bottom`/`padding-bottom` inclui `calc(Npx + env(safe-area-inset-bottom))` — não assumir que o WebView já reserva esse espaço sozinho.
 
 ## Como responder quando pedirem sua opinião sobre uma paleta proposta
 
