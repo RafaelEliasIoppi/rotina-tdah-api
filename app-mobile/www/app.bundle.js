@@ -3032,7 +3032,7 @@
     renderDayTabs();
     renderBlocks();
     var today = /* @__PURE__ */ new Date();
-    var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }).replace(/\./g, "");
+    var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }).replace(/\bde\s/g, "").replace(/\./g, "");
     var principle = principleForDate(today);
     var principleTextEl = document.getElementById("principleText");
     var principleSourceEl = document.getElementById("principleSource");

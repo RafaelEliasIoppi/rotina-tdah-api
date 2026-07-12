@@ -36,7 +36,11 @@ import { Api } from "./api.js";
   var today = new Date();
   // Formato curto ("sáb, 11 jul") em vez de por extenso — evita truncamento
   // por ellipsis em telas estreitas e reduz a disputa visual com o label.
-  var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }).replace(/\./g, "");
+  // toLocaleDateString com month:"short" inclui "de" em pt-BR ("11 de jul.");
+  // removemos esse conector e o ponto para caber melhor no cabeçalho.
+  var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" })
+    .replace(/\bde\s/g, "")
+    .replace(/\./g, "");
 
   var principle = principleForDate(today);
   var principleTextEl = document.getElementById("principleText");
