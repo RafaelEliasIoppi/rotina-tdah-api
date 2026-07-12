@@ -303,6 +303,28 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="placesPrivacyOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placesPrivacyTitle">
+    <div class="modal-header">
+      <h2 id="placesPrivacyTitle">Lembretes por lugar</h2>
+      <button class="modal-close" id="placesPrivacyCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <ul class="places-privacy-list">
+        <li>O app vai te lembrar quando você chegar ou sair de um lugar que você escolher.</li>
+        <li>Isso funciona só no seu aparelho.</li>
+        <li>O app <strong>não guarda histórico</strong> de onde você esteve — só compara sua posição atual com os locais que você cadastrou.</li>
+      </ul>
+      <div class="places-privacy-actions">
+        <button class="btn" id="placesPrivacySkipBtn" type="button">Agora não</button>
+        <button class="btn btn-primary" id="placesPrivacyAllowBtn" type="button">Permitir localização</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="app.bundle.js"></script>
 </body>
 </html>

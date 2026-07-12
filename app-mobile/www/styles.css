@@ -481,6 +481,40 @@
   }
   .add-task-btn:hover { background: var(--accent-soft); }
 
+  /* ---------- Lembretes por lugar (Fase G3) ---------- */
+  .place-section { margin-top: 4px; }
+  .place-toggle-btn {
+    display: flex; align-items: center; gap: 6px; width: 100%;
+    font-family: var(--font-body); font-size: 0.78rem; font-weight: 600; text-align: left;
+    color: var(--ink-soft); background: var(--bg-elevated); border: 1px dashed var(--border);
+    border-radius: 8px; padding: 8px 10px; cursor: pointer;
+  }
+  .place-toggle-btn svg { flex: none; }
+  .place-toggle-btn.active {
+    color: var(--accent); border-style: solid; border-color: var(--accent); background: var(--accent-soft);
+  }
+  .place-panel {
+    display: none; flex-direction: column; gap: 8px;
+    margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg);
+  }
+  .place-panel.show { display: flex; }
+  .place-panel input[type="text"] {
+    font-family: var(--font-body); font-size: 0.82rem; color: var(--ink);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 8px; width: 100%;
+  }
+  .place-results { display: flex; flex-direction: column; gap: 4px; font-size: 0.76rem; color: var(--ink-faint); }
+  .place-result-item {
+    text-align: left; font-family: var(--font-body); font-size: 0.78rem; color: var(--ink);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 8px; cursor: pointer;
+  }
+  .place-result-item:hover { background: var(--accent-soft); }
+  .place-selected { font-size: 0.78rem; color: var(--ink-soft); min-height: 1em; }
+  .place-current { font-size: 0.8rem; color: var(--ink-soft); }
+  .place-trigger-row { display: flex; gap: 16px; font-size: 0.82rem; color: var(--ink-soft); }
+  .place-trigger-row label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
   .btn {
     font-size: 0.78rem; font-weight: 700; border-radius: 8px; padding: 9px 13px;
     cursor: pointer; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--ink-soft);
@@ -581,6 +615,14 @@
   .auth-offline-note {
     font-size: 0.72rem; color: var(--ink-faint); margin-top: 14px; line-height: 1.5; text-align: center;
   }
+
+  /* ---------- Disclosure de privacidade: Lembretes por lugar (Fase G3) ---------- */
+  .places-privacy-list {
+    margin: 0 0 16px; padding-left: 20px; display: flex; flex-direction: column; gap: 10px;
+    font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5;
+  }
+  .places-privacy-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .places-privacy-actions .btn { flex: 1; }
 
   /* ===== Tela de boas-vindas (splash) ===== */
   .splash {

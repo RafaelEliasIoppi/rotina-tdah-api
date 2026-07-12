@@ -1,10 +1,22 @@
 import { getTasksByDay, setTasksByDay, saveTasksByDay } from "./tasks.js";
+import { AppStorage } from "./storage.js";
 
 // Hook para o módulo Sync (mesmo padrão de tasks.js/notifications.js/render.js).
 var _Sync = null;
 function setSyncHook(syncModule) {
   _Sync = syncModule;
 }
+
+// Hook para o módulo Api (evita import circular: api.js não depende de
+// geofencing.js, mas mantemos o mesmo padrão de hook usado nos demais
+// módulos para não acoplar geofencing.js diretamente a auth/rede).
+var _Api = null;
+function setApiHook(apiModule) {
+  _Api = apiModule;
+}
+
+/** Limite de locais no plano grátis (espelha server/src/modules/places/places.service.js). */
+var FREE_PLACES_LIMIT = 3;
 
 var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 var Geofence = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geofence;
@@ -53,7 +65,8 @@ function registerPlaceForTask(taskId, place, trigger) {
     label: place.label || ""
   };
 
-  // TODO(G3): enforcement do limite de 3 locais fica na camada de UI.
+  // Enforcement do limite de 3 locais no plano grátis é feito na camada de UI
+  // (editor.js, Fase G3) antes de chamar esta função — ver countPlacesInUse().
 
   var applyToModel = function () {
     if (task) {
@@ -104,6 +117,49 @@ function removePlaceForTask(taskId) {
   }
 
   return Geofence.removeGeofence({ id: taskId }).then(applyToModel);
+}
+
+/**
+ * Conta quantos locais distintos já estão em uso (para enforcement do limite
+ * de 3 locais no plano grátis — seção 3/9 do PLANO_GEOLOCALIZACAO.md).
+ *
+ * Fonte de verdade preferida: backend `GET /places` (server/src/modules/places),
+ * que já sabe se o usuário é premium (sem limite) ou free. Se o usuário não
+ * está logado, ou a chamada falha (offline/servidor fora — app é
+ * offline-first), cai para contagem local de `task.location` distintos por
+ * `label+lat+lng`, que é aproximada mas não bloqueia o app sem rede.
+ *
+ * @returns {Promise<{count:number, limit:number, premium:boolean, source:"api"|"local"}>}
+ */
+function countPlacesInUse() {
+  if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
+    return _Api.fetch("/places", { method: "GET" }).then(function (data) {
+      var places = (data && data.places) || [];
+      // Se o backend já devolveu <= limite de qualquer forma sem 403, não dá
+      // pra saber "premium" só pela lista; usamos o tamanho da lista contra
+      // o limite conhecido (o backend é quem de fato bloqueia o POST).
+      return { count: places.length, limit: FREE_PLACES_LIMIT, source: "api" };
+    }, function () {
+      return { count: countPlacesLocally(), limit: FREE_PLACES_LIMIT, source: "local" };
+    });
+  }
+  return Promise.resolve({ count: countPlacesLocally(), limit: FREE_PLACES_LIMIT, source: "local" });
+}
+
+function countPlacesLocally() {
+  var tasksByDay = getTasksByDay();
+  var seen = {};
+  var count = 0;
+  Object.keys(tasksByDay).forEach(function (dayKey) {
+    (tasksByDay[dayKey] || []).forEach(function (t) {
+      if (!t.location) return;
+      var key = (t.location.label || "") + "|" + t.location.lat + "|" + t.location.lng;
+      if (seen[key]) return;
+      seen[key] = true;
+      count++;
+    });
+  });
+  return count;
 }
 
 function findTaskById(taskId) {
@@ -172,5 +228,8 @@ export {
   geocodeAddress,
   requestLocationPermissions,
   geofencingSupported,
-  setSyncHook
+  countPlacesInUse,
+  FREE_PLACES_LIMIT,
+  setSyncHook,
+  setApiHook
 };

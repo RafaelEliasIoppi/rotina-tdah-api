@@ -1,11 +1,12 @@
 import { setSyncHook as setTasksSyncHook } from "./tasks.js";
 import { renderDayTabs, renderBlocks, setSyncHook as setRenderSyncHook } from "./render.js";
 import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook } from "./notifications.js";
-import { initEditor, closeEditor } from "./editor.js";
+import { initEditor, closeEditor, closePlacesPrivacy } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
 import { initEducation, closeTdahInfo } from "./education.js";
-import { initGeofencing, setSyncHook as setGeofencingSyncHook } from "./geofencing.js";
+import { initGeofencing, setSyncHook as setGeofencingSyncHook, setApiHook as setGeofencingApiHook } from "./geofencing.js";
 import { Sync } from "./sync.js";
+import { Api } from "./api.js";
 
 (function () {
   "use strict";
@@ -16,6 +17,7 @@ import { Sync } from "./sync.js";
   setRenderSyncHook(Sync);
   setNotificationsSyncHook(Sync);
   setGeofencingSyncHook(Sync);
+  setGeofencingApiHook(Api);
 
   /* ---------- Init ---------- */
   renderDayTabs();
@@ -94,7 +96,9 @@ import { Sync } from "./sync.js";
     var tdahInfoOverlay = document.getElementById("tdahInfoOverlay");
     var authOverlay = document.getElementById("authOverlay");
     var editOverlay = document.getElementById("editOverlay");
-    if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
+    var placesPrivacyOverlay = document.getElementById("placesPrivacyOverlay");
+    if (placesPrivacyOverlay.classList.contains("show")) closePlacesPrivacy();
+    else if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
     else if (authOverlay.classList.contains("show")) closeAuth();
     else if (editOverlay.classList.contains("show")) closeEditor();
   });

@@ -8,7 +8,8 @@
       ALARMS: "rotina_tdah_alarms_v1",
       SUBSCRIPTION: "rotina_tdah_sub_v1",
       OUTBOX: "rotina_tdah_outbox_v1",
-      MIGRATED: "rotina_tdah_migrated_v1"
+      MIGRATED: "rotina_tdah_migrated_v1",
+      PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1"
     };
     function read(key, fallback) {
       try {
@@ -98,6 +99,12 @@
       },
       setMigratedUserId: function(uid) {
         writeRaw(KEYS.MIGRATED, String(uid));
+      },
+      getPlacesDisclosureSeen: function() {
+        return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1";
+      },
+      setPlacesDisclosureSeen: function() {
+        writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1");
       }
     };
   })();
@@ -591,6 +598,142 @@
     renderBlocks();
   });
 
+  // src/geofencing.js
+  var _Sync4 = null;
+  function setSyncHook4(syncModule) {
+    _Sync4 = syncModule;
+  }
+  var _Api = null;
+  function setApiHook(apiModule) {
+    _Api = apiModule;
+  }
+  var FREE_PLACES_LIMIT = 3;
+  var isNative2 = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var Geofence = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geofence;
+  function geofencingSupported() {
+    return isNative2 && !!Geofence;
+  }
+  function initGeofencing() {
+  }
+  function registerPlaceForTask(taskId, place, trigger) {
+    if (!place || typeof place.lat !== "number" || typeof place.lng !== "number") {
+      return Promise.reject(new Error("place inv\xE1lido: obrigat\xF3rio { lat, lng, radius, label }"));
+    }
+    var radius = place.radius || 150;
+    var normalizedTrigger = trigger === "exit" || trigger === "both" ? trigger : "enter";
+    var task = findTaskById(taskId);
+    var taskLabel = task ? task.label : "";
+    var location = {
+      lat: place.lat,
+      lng: place.lng,
+      radius,
+      trigger: normalizedTrigger,
+      label: place.label || ""
+    };
+    var applyToModel = function() {
+      if (task) {
+        task.location = location;
+        saveTasksByDay(getTasksByDay());
+      }
+      if (_Sync4) _Sync4.onRoutineChanged();
+    };
+    if (!geofencingSupported()) {
+      applyToModel();
+      return Promise.resolve();
+    }
+    return Geofence.addGeofence({
+      id: taskId,
+      lat: location.lat,
+      lng: location.lng,
+      radius: location.radius,
+      trigger: location.trigger,
+      label: location.label,
+      taskLabel
+    }).then(applyToModel);
+  }
+  function removePlaceForTask(taskId) {
+    var task = findTaskById(taskId);
+    var applyToModel = function() {
+      if (task) {
+        delete task.location;
+        saveTasksByDay(getTasksByDay());
+      }
+      if (_Sync4) _Sync4.onRoutineChanged();
+    };
+    if (!geofencingSupported()) {
+      applyToModel();
+      return Promise.resolve();
+    }
+    return Geofence.removeGeofence({ id: taskId }).then(applyToModel);
+  }
+  function countPlacesInUse() {
+    if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
+      return _Api.fetch("/places", { method: "GET" }).then(function(data) {
+        var places = data && data.places || [];
+        return { count: places.length, limit: FREE_PLACES_LIMIT, source: "api" };
+      }, function() {
+        return { count: countPlacesLocally(), limit: FREE_PLACES_LIMIT, source: "local" };
+      });
+    }
+    return Promise.resolve({ count: countPlacesLocally(), limit: FREE_PLACES_LIMIT, source: "local" });
+  }
+  function countPlacesLocally() {
+    var tasksByDay2 = getTasksByDay();
+    var seen = {};
+    var count = 0;
+    Object.keys(tasksByDay2).forEach(function(dayKey) {
+      (tasksByDay2[dayKey] || []).forEach(function(t) {
+        if (!t.location) return;
+        var key = (t.location.label || "") + "|" + t.location.lat + "|" + t.location.lng;
+        if (seen[key]) return;
+        seen[key] = true;
+        count++;
+      });
+    });
+    return count;
+  }
+  function findTaskById(taskId) {
+    var tasksByDay2 = getTasksByDay();
+    var dayKeys = Object.keys(tasksByDay2);
+    for (var i = 0; i < dayKeys.length; i++) {
+      var list = tasksByDay2[dayKeys[i]] || [];
+      for (var j = 0; j < list.length; j++) {
+        if (list[j].id === taskId) return list[j];
+      }
+    }
+    return null;
+  }
+  function geocodeAddress(query) {
+    if (!query || !query.trim()) return Promise.resolve([]);
+    var url = "https://nominatim.openstreetmap.org/search?format=json&limit=5&q=" + encodeURIComponent(query.trim());
+    return fetch(url, {
+      headers: {
+        "User-Agent": "RotinaTDAH-App (contato: rafaelioppi@gmail.com)",
+        "Accept": "application/json"
+      }
+    }).then(function(res) {
+      if (!res.ok) throw new Error("Falha na busca de endere\xE7o (" + res.status + ")");
+      return res.json();
+    }).then(function(results) {
+      return (results || []).map(function(r) {
+        return {
+          label: r.display_name,
+          lat: parseFloat(r.lat),
+          lng: parseFloat(r.lon)
+        };
+      });
+    });
+  }
+  function requestLocationPermissions() {
+    if (!geofencingSupported()) {
+      return Promise.resolve({ location: "denied", backgroundLocation: "denied" });
+    }
+    return Geofence.checkPermissions().then(function(res) {
+      if (res.location === "granted" && res.backgroundLocation === "granted") return res;
+      return Geofence.requestPermissions();
+    });
+  }
+
   // src/editor.js
   var editOverlay = document.getElementById("editOverlay");
   var editDayTabsEl = document.getElementById("editDayTabs");
@@ -654,6 +797,214 @@
     saveTasksByDay(tasksByDay2);
     showToast("Copiada para " + target.label);
   }
+  var placesPrivacyOverlay = document.getElementById("placesPrivacyOverlay");
+  var pendingPlacesAction = null;
+  function pinIconSmall() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0112 2a7 7 0 017 7.5C19 14.8 12 21 12 21z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
+  }
+  function openPlacesPrivacy(onAllow, onSkip) {
+    pendingPlacesAction = { onAllow, onSkip };
+    placesPrivacyOverlay.classList.add("show");
+  }
+  function closePlacesPrivacy() {
+    placesPrivacyOverlay.classList.remove("show");
+    pendingPlacesAction = null;
+  }
+  function ensureLocationPermission() {
+    if (AppStorage.getPlacesDisclosureSeen()) {
+      return requestLocationPermissions();
+    }
+    return new Promise(function(resolve, reject) {
+      openPlacesPrivacy(
+        function() {
+          AppStorage.setPlacesDisclosureSeen();
+          closePlacesPrivacy();
+          requestLocationPermissions().then(resolve, reject);
+        },
+        function() {
+          closePlacesPrivacy();
+          reject(new Error("Usu\xE1rio optou por n\xE3o permitir localiza\xE7\xE3o agora"));
+        }
+      );
+    });
+  }
+  function buildPlaceSection(task, onChanged) {
+    var wrap = document.createElement("div");
+    wrap.className = "place-section";
+    var toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "place-toggle-btn";
+    var panel = document.createElement("div");
+    panel.className = "place-panel";
+    function renderToggle() {
+      if (task.location) {
+        toggleBtn.innerHTML = pinIconSmall() + " Lembrete por lugar: " + escapeHtmlLocal(task.location.label || "Local") + " (" + (task.location.trigger === "exit" ? "ao sair" : "ao chegar") + ")";
+        toggleBtn.classList.add("active");
+      } else {
+        toggleBtn.innerHTML = pinIconSmall() + " Lembrar por lugar";
+        toggleBtn.classList.remove("active");
+      }
+    }
+    renderToggle();
+    toggleBtn.addEventListener("click", function() {
+      panel.classList.toggle("show");
+      if (panel.classList.contains("show")) renderPanel();
+    });
+    function renderPanel() {
+      panel.innerHTML = "";
+      if (task.location) {
+        var current = document.createElement("div");
+        current.className = "place-current";
+        current.textContent = "Local atual: " + (task.location.label || "Local") + " \xB7 " + (task.location.trigger === "exit" ? "ao sair" : "ao chegar");
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn btn-danger";
+        removeBtn.textContent = "Remover local desta tarefa";
+        removeBtn.addEventListener("click", function() {
+          removePlaceForTask(task.id).then(function() {
+            renderToggle();
+            panel.classList.remove("show");
+            showToast("Local removido");
+            if (onChanged) onChanged();
+          });
+        });
+        panel.appendChild(current);
+        panel.appendChild(removeBtn);
+        return;
+      }
+      var searchInput = document.createElement("input");
+      searchInput.type = "text";
+      searchInput.placeholder = "Buscar endere\xE7o (ex: Rua X, 123, Cidade)";
+      panel.appendChild(searchInput);
+      var resultsEl = document.createElement("div");
+      resultsEl.className = "place-results";
+      panel.appendChild(resultsEl);
+      var currentLocBtn = document.createElement("button");
+      currentLocBtn.type = "button";
+      currentLocBtn.className = "btn";
+      currentLocBtn.textContent = "Usar minha localiza\xE7\xE3o atual";
+      panel.appendChild(currentLocBtn);
+      var selected = null;
+      var selectedInfo = document.createElement("div");
+      selectedInfo.className = "place-selected";
+      panel.appendChild(selectedInfo);
+      var triggerRow = document.createElement("div");
+      triggerRow.className = "place-trigger-row";
+      var enterLabel = document.createElement("label");
+      var enterRadio = document.createElement("input");
+      enterRadio.type = "radio";
+      enterRadio.name = "place-trigger-" + task.id;
+      enterRadio.value = "enter";
+      enterRadio.checked = true;
+      enterLabel.appendChild(enterRadio);
+      enterLabel.appendChild(document.createTextNode(" Ao chegar"));
+      var exitLabel = document.createElement("label");
+      var exitRadio = document.createElement("input");
+      exitRadio.type = "radio";
+      exitRadio.name = "place-trigger-" + task.id;
+      exitRadio.value = "exit";
+      exitLabel.appendChild(exitRadio);
+      exitLabel.appendChild(document.createTextNode(" Ao sair"));
+      triggerRow.appendChild(enterLabel);
+      triggerRow.appendChild(exitLabel);
+      panel.appendChild(triggerRow);
+      var confirmBtn = document.createElement("button");
+      confirmBtn.type = "button";
+      confirmBtn.className = "btn btn-primary";
+      confirmBtn.textContent = "Confirmar local";
+      confirmBtn.disabled = true;
+      panel.appendChild(confirmBtn);
+      function selectPlace(place) {
+        selected = place;
+        selectedInfo.textContent = "Selecionado: " + place.label;
+        confirmBtn.disabled = false;
+      }
+      var searchTimer = null;
+      searchInput.addEventListener("input", function() {
+        clearTimeout(searchTimer);
+        var q = searchInput.value;
+        searchTimer = setTimeout(function() {
+          if (!q.trim()) {
+            resultsEl.innerHTML = "";
+            return;
+          }
+          resultsEl.textContent = "Buscando...";
+          geocodeAddress(q).then(function(results) {
+            resultsEl.innerHTML = "";
+            if (!results.length) {
+              resultsEl.textContent = "Nenhum endere\xE7o encontrado.";
+              return;
+            }
+            results.forEach(function(r) {
+              var item = document.createElement("button");
+              item.type = "button";
+              item.className = "place-result-item";
+              item.textContent = r.label;
+              item.addEventListener("click", function() {
+                selectPlace(r);
+                resultsEl.innerHTML = "";
+                searchInput.value = r.label;
+              });
+              resultsEl.appendChild(item);
+            });
+          }).catch(function() {
+            resultsEl.textContent = "Falha na busca de endere\xE7o. Tente novamente.";
+          });
+        }, 500);
+      });
+      currentLocBtn.addEventListener("click", function() {
+        if (!navigator.geolocation) {
+          showToast("Localiza\xE7\xE3o n\xE3o dispon\xEDvel neste dispositivo");
+          return;
+        }
+        currentLocBtn.disabled = true;
+        currentLocBtn.textContent = "Obtendo localiza\xE7\xE3o...";
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          currentLocBtn.disabled = false;
+          currentLocBtn.textContent = "Usar minha localiza\xE7\xE3o atual";
+          selectPlace({
+            label: task.label || "Meu local",
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          });
+        }, function() {
+          currentLocBtn.disabled = false;
+          currentLocBtn.textContent = "Usar minha localiza\xE7\xE3o atual";
+          showToast("N\xE3o foi poss\xEDvel obter sua localiza\xE7\xE3o");
+        }, { enableHighAccuracy: true, timeout: 1e4 });
+      });
+      confirmBtn.addEventListener("click", function() {
+        if (!selected) return;
+        countPlacesInUse().then(function(info) {
+          if (!task.location && info.count >= (info.limit || FREE_PLACES_LIMIT)) {
+            showToast("Limite de 3 locais no plano gratuito atingido.");
+            return;
+          }
+          var trigger = exitRadio.checked ? "exit" : "enter";
+          ensureLocationPermission().then(function() {
+            return registerPlaceForTask(task.id, selected, trigger);
+          }, function() {
+            return registerPlaceForTask(task.id, selected, trigger);
+          }).then(function() {
+            renderToggle();
+            panel.classList.remove("show");
+            showToast("Lembrete por lugar salvo");
+            if (onChanged) onChanged();
+          }).catch(function() {
+            showToast("N\xE3o foi poss\xEDvel salvar o local. Tente novamente.");
+          });
+        });
+      });
+    }
+    wrap.appendChild(toggleBtn);
+    wrap.appendChild(panel);
+    return wrap;
+  }
+  function escapeHtmlLocal(s) {
+    return String(s || "").replace(/[&<>"']/g, function(c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
   function renderEditRows() {
     var tasksByDay2 = getTasksByDay();
     var list = (tasksByDay2[editDay] || []).slice().sort(function(a, b) {
@@ -705,6 +1056,9 @@
       fields.appendChild(labelInput);
       fields.appendChild(fieldsRow);
       fields.appendChild(detailInput);
+      fields.appendChild(buildPlaceSection(t, function() {
+        persistTasks();
+      }));
       var dupBtn = document.createElement("button");
       dupBtn.className = "del-btn";
       dupBtn.type = "button";
@@ -783,6 +1137,21 @@
     document.getElementById("editDoneBtn").addEventListener("click", closeEditor);
     editOverlay.addEventListener("click", function(ev) {
       if (ev.target === editOverlay) closeEditor();
+    });
+    document.getElementById("placesPrivacyCloseBtn").addEventListener("click", function() {
+      if (pendingPlacesAction && pendingPlacesAction.onSkip) pendingPlacesAction.onSkip();
+      else closePlacesPrivacy();
+    });
+    document.getElementById("placesPrivacySkipBtn").addEventListener("click", function() {
+      if (pendingPlacesAction && pendingPlacesAction.onSkip) pendingPlacesAction.onSkip();
+    });
+    document.getElementById("placesPrivacyAllowBtn").addEventListener("click", function() {
+      if (pendingPlacesAction && pendingPlacesAction.onAllow) pendingPlacesAction.onAllow();
+    });
+    placesPrivacyOverlay.addEventListener("click", function(ev) {
+      if (ev.target === placesPrivacyOverlay && pendingPlacesAction && pendingPlacesAction.onSkip) {
+        pendingPlacesAction.onSkip();
+      }
     });
     document.getElementById("addTaskBtn").addEventListener("click", function() {
       var tasksByDay2 = getTasksByDay();
@@ -1263,16 +1632,6 @@
     });
   }
 
-  // src/geofencing.js
-  var _Sync4 = null;
-  function setSyncHook4(syncModule) {
-    _Sync4 = syncModule;
-  }
-  var isNative2 = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-  var Geofence = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geofence;
-  function initGeofencing() {
-  }
-
   // src/sync.js
   var Sync = (function() {
     var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
@@ -1708,6 +2067,7 @@
     setSyncHook3(Sync);
     setSyncHook2(Sync);
     setSyncHook4(Sync);
+    setApiHook(Api);
     renderDayTabs();
     renderBlocks();
     var manifest = {
@@ -1769,7 +2129,9 @@
       var tdahInfoOverlay2 = document.getElementById("tdahInfoOverlay");
       var authOverlay2 = document.getElementById("authOverlay");
       var editOverlay2 = document.getElementById("editOverlay");
-      if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
+      var placesPrivacyOverlay2 = document.getElementById("placesPrivacyOverlay");
+      if (placesPrivacyOverlay2.classList.contains("show")) closePlacesPrivacy();
+      else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();
       else if (editOverlay2.classList.contains("show")) closeEditor();
     });

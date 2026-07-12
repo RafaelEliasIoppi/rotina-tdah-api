@@ -11,7 +11,8 @@ var AppStorage = (function () {
     ALARMS: "rotina_tdah_alarms_v1",
     SUBSCRIPTION: "rotina_tdah_sub_v1",
     OUTBOX: "rotina_tdah_outbox_v1",
-    MIGRATED: "rotina_tdah_migrated_v1"
+    MIGRATED: "rotina_tdah_migrated_v1",
+    PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1"
   };
 
   function read(key, fallback) {
@@ -73,7 +74,10 @@ var AppStorage = (function () {
     setOutbox: function (arr) { write(KEYS.OUTBOX, arr); },
 
     getMigratedUserId: function () { return readRaw(KEYS.MIGRATED, null); },
-    setMigratedUserId: function (uid) { writeRaw(KEYS.MIGRATED, String(uid)); }
+    setMigratedUserId: function (uid) { writeRaw(KEYS.MIGRATED, String(uid)); },
+
+    getPlacesDisclosureSeen: function () { return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1"; },
+    setPlacesDisclosureSeen: function () { writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1"); }
   };
 })();
 

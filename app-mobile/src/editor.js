@@ -5,6 +5,11 @@ import {
 } from "./tasks.js";
 import { renderDayTabs, renderBlocks } from "./render.js";
 import { showToast } from "./notifications.js";
+import { AppStorage } from "./storage.js";
+import {
+  registerPlaceForTask, removePlaceForTask, geocodeAddress,
+  requestLocationPermissions, countPlacesInUse, FREE_PLACES_LIMIT
+} from "./geofencing.js";
 
 /* ---------- Editor: cada pessoa monta seus próprios horários ---------- */
 var editOverlay = document.getElementById("editOverlay");
@@ -65,6 +70,240 @@ function openDuplicateMenu(anchorBtn, task) {
   showToast('Copiada para ' + target.label);
 }
 
+/* ---------- Lembretes por lugar (Fase G3) ---------- */
+var placesPrivacyOverlay = document.getElementById("placesPrivacyOverlay");
+var pendingPlacesAction = null; // callback a rodar após decisão na tela de disclosure
+
+function pinIconSmall() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0112 2a7 7 0 017 7.5C19 14.8 12 21 12 21z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
+}
+
+function openPlacesPrivacy(onAllow, onSkip) {
+  pendingPlacesAction = { onAllow: onAllow, onSkip: onSkip };
+  placesPrivacyOverlay.classList.add("show");
+}
+function closePlacesPrivacy() {
+  placesPrivacyOverlay.classList.remove("show");
+  pendingPlacesAction = null;
+}
+
+// Garante que a disclosure de privacidade já foi vista antes de pedir
+// permissão de localização pela 1ª vez (obrigatório — seção 6 do plano).
+// Se já foi vista, segue direto para requestLocationPermissions().
+function ensureLocationPermission() {
+  if (AppStorage.getPlacesDisclosureSeen()) {
+    return requestLocationPermissions();
+  }
+  return new Promise(function (resolve, reject) {
+    openPlacesPrivacy(
+      function () {
+        AppStorage.setPlacesDisclosureSeen();
+        closePlacesPrivacy();
+        requestLocationPermissions().then(resolve, reject);
+      },
+      function () {
+        closePlacesPrivacy();
+        reject(new Error("Usuário optou por não permitir localização agora"));
+      }
+    );
+  });
+}
+
+// Constrói a seção "Lembrar por lugar" de uma linha de tarefa: botão de
+// alternância, e quando expandido, busca de endereço + "minha localização
+// atual" + chegar/sair + confirmar/remover.
+function buildPlaceSection(task, onChanged) {
+  var wrap = document.createElement("div");
+  wrap.className = "place-section";
+
+  var toggleBtn = document.createElement("button");
+  toggleBtn.type = "button";
+  toggleBtn.className = "place-toggle-btn";
+
+  var panel = document.createElement("div");
+  panel.className = "place-panel";
+
+  function renderToggle() {
+    if (task.location) {
+      toggleBtn.innerHTML = pinIconSmall() + " Lembrete por lugar: " + escapeHtmlLocal(task.location.label || "Local") +
+        " (" + (task.location.trigger === "exit" ? "ao sair" : "ao chegar") + ")";
+      toggleBtn.classList.add("active");
+    } else {
+      toggleBtn.innerHTML = pinIconSmall() + " Lembrar por lugar";
+      toggleBtn.classList.remove("active");
+    }
+  }
+  renderToggle();
+
+  toggleBtn.addEventListener("click", function () {
+    panel.classList.toggle("show");
+    if (panel.classList.contains("show")) renderPanel();
+  });
+
+  function renderPanel() {
+    panel.innerHTML = "";
+
+    if (task.location) {
+      var current = document.createElement("div");
+      current.className = "place-current";
+      current.textContent = "Local atual: " + (task.location.label || "Local") +
+        " · " + (task.location.trigger === "exit" ? "ao sair" : "ao chegar");
+      var removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "btn btn-danger";
+      removeBtn.textContent = "Remover local desta tarefa";
+      removeBtn.addEventListener("click", function () {
+        removePlaceForTask(task.id).then(function () {
+          renderToggle();
+          panel.classList.remove("show");
+          showToast("Local removido");
+          if (onChanged) onChanged();
+        });
+      });
+      panel.appendChild(current);
+      panel.appendChild(removeBtn);
+      return;
+    }
+
+    var searchInput = document.createElement("input");
+    searchInput.type = "text";
+    searchInput.placeholder = "Buscar endereço (ex: Rua X, 123, Cidade)";
+    panel.appendChild(searchInput);
+
+    var resultsEl = document.createElement("div");
+    resultsEl.className = "place-results";
+    panel.appendChild(resultsEl);
+
+    var currentLocBtn = document.createElement("button");
+    currentLocBtn.type = "button";
+    currentLocBtn.className = "btn";
+    currentLocBtn.textContent = "Usar minha localização atual";
+    panel.appendChild(currentLocBtn);
+
+    var selected = null; // {label, lat, lng}
+    var selectedInfo = document.createElement("div");
+    selectedInfo.className = "place-selected";
+    panel.appendChild(selectedInfo);
+
+    var triggerRow = document.createElement("div");
+    triggerRow.className = "place-trigger-row";
+    var enterLabel = document.createElement("label");
+    var enterRadio = document.createElement("input");
+    enterRadio.type = "radio";
+    enterRadio.name = "place-trigger-" + task.id;
+    enterRadio.value = "enter";
+    enterRadio.checked = true;
+    enterLabel.appendChild(enterRadio);
+    enterLabel.appendChild(document.createTextNode(" Ao chegar"));
+    var exitLabel = document.createElement("label");
+    var exitRadio = document.createElement("input");
+    exitRadio.type = "radio";
+    exitRadio.name = "place-trigger-" + task.id;
+    exitRadio.value = "exit";
+    exitLabel.appendChild(exitRadio);
+    exitLabel.appendChild(document.createTextNode(" Ao sair"));
+    triggerRow.appendChild(enterLabel);
+    triggerRow.appendChild(exitLabel);
+    panel.appendChild(triggerRow);
+
+    var confirmBtn = document.createElement("button");
+    confirmBtn.type = "button";
+    confirmBtn.className = "btn btn-primary";
+    confirmBtn.textContent = "Confirmar local";
+    confirmBtn.disabled = true;
+    panel.appendChild(confirmBtn);
+
+    function selectPlace(place) {
+      selected = place;
+      selectedInfo.textContent = "Selecionado: " + place.label;
+      confirmBtn.disabled = false;
+    }
+
+    var searchTimer = null;
+    searchInput.addEventListener("input", function () {
+      clearTimeout(searchTimer);
+      var q = searchInput.value;
+      searchTimer = setTimeout(function () {
+        if (!q.trim()) { resultsEl.innerHTML = ""; return; }
+        resultsEl.textContent = "Buscando...";
+        geocodeAddress(q).then(function (results) {
+          resultsEl.innerHTML = "";
+          if (!results.length) { resultsEl.textContent = "Nenhum endereço encontrado."; return; }
+          results.forEach(function (r) {
+            var item = document.createElement("button");
+            item.type = "button";
+            item.className = "place-result-item";
+            item.textContent = r.label;
+            item.addEventListener("click", function () {
+              selectPlace(r);
+              resultsEl.innerHTML = "";
+              searchInput.value = r.label;
+            });
+            resultsEl.appendChild(item);
+          });
+        }).catch(function () {
+          resultsEl.textContent = "Falha na busca de endereço. Tente novamente.";
+        });
+      }, 500);
+    });
+
+    currentLocBtn.addEventListener("click", function () {
+      if (!navigator.geolocation) { showToast("Localização não disponível neste dispositivo"); return; }
+      currentLocBtn.disabled = true;
+      currentLocBtn.textContent = "Obtendo localização...";
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        currentLocBtn.disabled = false;
+        currentLocBtn.textContent = "Usar minha localização atual";
+        selectPlace({
+          label: task.label || "Meu local",
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude
+        });
+      }, function () {
+        currentLocBtn.disabled = false;
+        currentLocBtn.textContent = "Usar minha localização atual";
+        showToast("Não foi possível obter sua localização");
+      }, { enableHighAccuracy: true, timeout: 10000 });
+    });
+
+    confirmBtn.addEventListener("click", function () {
+      if (!selected) return;
+      countPlacesInUse().then(function (info) {
+        if (!task.location && info.count >= (info.limit || FREE_PLACES_LIMIT)) {
+          showToast("Limite de 3 locais no plano gratuito atingido.");
+          return;
+        }
+        var trigger = exitRadio.checked ? "exit" : "enter";
+        ensureLocationPermission().then(function () {
+          return registerPlaceForTask(task.id, selected, trigger);
+        }, function () {
+          // Usuário recusou na tela de disclosure ou negou a permissão do SO:
+          // ainda assim salvamos o local (web/dev fallback já trata isso;
+          // em Android nativo sem permissão, addGeofence falha e cai no catch).
+          return registerPlaceForTask(task.id, selected, trigger);
+        }).then(function () {
+          renderToggle();
+          panel.classList.remove("show");
+          showToast("Lembrete por lugar salvo");
+          if (onChanged) onChanged();
+        }).catch(function () {
+          showToast("Não foi possível salvar o local. Tente novamente.");
+        });
+      });
+    });
+  }
+
+  wrap.appendChild(toggleBtn);
+  wrap.appendChild(panel);
+  return wrap;
+}
+
+function escapeHtmlLocal(s) {
+  return String(s || "").replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
 function renderEditRows() {
   var tasksByDay = getTasksByDay();
   var list = (tasksByDay[editDay] || []).slice().sort(function (a, b) { return a.time.localeCompare(b.time); });
@@ -112,6 +351,7 @@ function renderEditRows() {
     fields.appendChild(labelInput);
     fields.appendChild(fieldsRow);
     fields.appendChild(detailInput);
+    fields.appendChild(buildPlaceSection(t, function () { persistTasks(); }));
 
     var dupBtn = document.createElement("button");
     dupBtn.className = "del-btn";
@@ -192,6 +432,22 @@ function initEditor() {
     if (ev.target === editOverlay) closeEditor();
   });
 
+  document.getElementById("placesPrivacyCloseBtn").addEventListener("click", function () {
+    if (pendingPlacesAction && pendingPlacesAction.onSkip) pendingPlacesAction.onSkip();
+    else closePlacesPrivacy();
+  });
+  document.getElementById("placesPrivacySkipBtn").addEventListener("click", function () {
+    if (pendingPlacesAction && pendingPlacesAction.onSkip) pendingPlacesAction.onSkip();
+  });
+  document.getElementById("placesPrivacyAllowBtn").addEventListener("click", function () {
+    if (pendingPlacesAction && pendingPlacesAction.onAllow) pendingPlacesAction.onAllow();
+  });
+  placesPrivacyOverlay.addEventListener("click", function (ev) {
+    if (ev.target === placesPrivacyOverlay && pendingPlacesAction && pendingPlacesAction.onSkip) {
+      pendingPlacesAction.onSkip();
+    }
+  });
+
   document.getElementById("addTaskBtn").addEventListener("click", function () {
     var tasksByDay = getTasksByDay();
     var list = tasksByDay[editDay] || (tasksByDay[editDay] = []);
@@ -247,4 +503,4 @@ function initEditor() {
   });
 }
 
-export { openEditor, closeEditor, initEditor };
+export { openEditor, closeEditor, initEditor, closePlacesPrivacy };
