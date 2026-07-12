@@ -1,5 +1,6 @@
 import { setSyncHook as setTasksSyncHook } from "./tasks.js";
-import { renderDayTabs, renderBlocks, setSyncHook as setRenderSyncHook } from "./render.js";
+import { renderDayTabs, renderBlocks, setSyncHook as setRenderSyncHook, setPomodoroHook } from "./render.js";
+import { initPomodoro, openPomodoro, closePomodoro, pomodoroOverlay } from "./pomodoro.js";
 import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook } from "./notifications.js";
 import { initEditor, closeEditor, closePlacesPrivacy, setPlacesOverlayHook } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
@@ -24,6 +25,7 @@ import { Api } from "./api.js";
   setGeofencingSyncHook(Sync);
   setGeofencingApiHook(Api);
   setPlacesOverlayHook(PlacesOverlay);
+  setPomodoroHook(openPomodoro);
 
   /* ---------- Init ---------- */
   renderDayTabs();
@@ -122,6 +124,9 @@ import { Api } from "./api.js";
   // Modal "Autoavaliação · TDAH em adultos" (questionário de triagem).
   initSelfAssessment();
 
+  // Timer Pomodoro adaptativo (bloco de foco por tarefa).
+  initPomodoro();
+
   // Lembretes por lugar (geofencing) — Fase G2: cadastro/dados; UI de
   // cadastro (busca de endereço, disclosure de privacidade) é a Fase G3.
   initGeofencing();
@@ -142,6 +147,7 @@ import { Api } from "./api.js";
     var placesPrivacyOverlay = document.getElementById("placesPrivacyOverlay");
     if (placesPrivacyOverlay.classList.contains("show")) closePlacesPrivacy();
     else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
+    else if (pomodoroOverlay.classList.contains("show")) closePomodoro();
     else if (saOverlay.classList.contains("show")) closeSelfAssessment();
     else if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
     else if (authOverlay.classList.contains("show")) closeAuth();

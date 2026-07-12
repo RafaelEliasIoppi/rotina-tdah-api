@@ -12,6 +12,13 @@ function setSyncHook(syncModule) {
   _Sync = syncModule;
 }
 
+// Hook para o módulo pomodoro.js (mesmo padrão: evita import circular, já
+// que pomodoro.js não precisa importar nada de render.js de volta).
+var _openPomodoro = null;
+function setPomodoroHook(openFn) {
+  _openPomodoro = openFn;
+}
+
 /* ---------- Rendering ---------- */
 var dayTabsEl = document.getElementById("dayTabs");
 var blocksEl = document.getElementById("blocksContainer");
@@ -59,6 +66,9 @@ function bellIcon(filled) {
 function pinIcon() {
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11.5A7 7 0 005 9.5C5 14.9 12 21 12 21z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
 }
+function timerIcon() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
 
 function renderBlocks() {
   var currentDay = getCurrentDay();
@@ -93,6 +103,7 @@ function renderBlocks() {
 
       var detailHtml = t.detail ? '<div class="task-detail">' + escapeHtml(t.detail) + "</div>" : "";
       var ruleHtml = t.rule ? '<span class="task-rule">' + escapeHtml(t.rule) + "</span>" : "";
+      var ifThenHtml = t.ifThen ? '<div class="task-if-then">' + escapeHtml(t.ifThen) + "</div>" : "";
 
       var timeHtml = t.time ? '<span class="task-time">' + escapeHtml(t.time) + '</span>' : "";
       var locationHtml = t.location
@@ -103,8 +114,9 @@ function renderBlocks() {
         '<div class="check">' + checkIcon() + '</div>' +
         '<div class="task-body">' +
           '<div class="task-top">' + timeHtml + locationHtml + '<span class="task-label">' + escapeHtml(t.label) + '</span></div>' +
-          detailHtml + ruleHtml +
+          detailHtml + ifThenHtml + ruleHtml +
         '</div>' +
+        '<button class="alarm-btn pomodoro-trigger" type="button" aria-label="Bloco de foco" data-task-label="' + escapeHtml(t.label) + '">' + timerIcon() + '</button>' +
         '<button class="alarm-btn' + (alarms[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms[alarmKey]) + '</button>';
 
       card.addEventListener("click", function (ev) {
@@ -120,10 +132,16 @@ function renderBlocks() {
     blocksEl.appendChild(section);
   });
 
-  blocksEl.querySelectorAll(".alarm-btn").forEach(function (btn) {
+  blocksEl.querySelectorAll(".alarm-btn:not(.pomodoro-trigger)").forEach(function (btn) {
     btn.addEventListener("click", function (ev) {
       ev.stopPropagation();
       toggleAlarm(btn.dataset.alarm, btn.dataset.time, btn.dataset.label);
+    });
+  });
+  blocksEl.querySelectorAll(".pomodoro-trigger").forEach(function (btn) {
+    btn.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      if (_openPomodoro) _openPomodoro(btn.dataset.taskLabel);
     });
   });
 
@@ -199,4 +217,4 @@ document.getElementById("resetBtn").addEventListener("click", function () {
   renderBlocks();
 });
 
-export { renderDayTabs, renderBlocks, updateProgress, renderStreak, toggleTask, escapeHtml, checkIcon, bellIcon, pinIcon, setSyncHook };
+export { renderDayTabs, renderBlocks, updateProgress, renderStreak, toggleTask, escapeHtml, checkIcon, bellIcon, pinIcon, timerIcon, setSyncHook, setPomodoroHook };

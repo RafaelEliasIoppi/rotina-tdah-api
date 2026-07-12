@@ -366,6 +366,34 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="pomodoroOverlay">
+  <div class="modal pomodoro-modal" role="dialog" aria-modal="true" aria-labelledby="pomodoroTitle">
+    <div class="modal-header">
+      <h2 id="pomodoroTitle">Bloco de foco</h2>
+      <button class="modal-close" id="pomodoroCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body pomodoro-body">
+      <div class="pomodoro-task" id="pomodoroTaskLabel"></div>
+      <div class="pomodoro-ring-wrap">
+        <svg viewBox="0 0 120 120" class="pomodoro-ring">
+          <circle cx="60" cy="60" r="54" class="pomodoro-ring-bg" />
+          <circle cx="60" cy="60" r="54" class="pomodoro-ring-fill" id="pomodoroRingFill" />
+        </svg>
+        <div class="pomodoro-time" id="pomodoroTime">10:00</div>
+      </div>
+      <div class="pomodoro-phase" id="pomodoroPhase">Bloco curto para começar</div>
+      <div class="pomodoro-controls">
+        <button class="btn" id="pomodoroStartBtn" type="button">Começar</button>
+        <button class="btn" id="pomodoroPauseBtn" type="button" style="display:none;">Pausar</button>
+        <button class="btn" id="pomodoroExtendBtn" type="button" style="display:none;">Ainda produtivo, +10 min</button>
+      </div>
+      <p class="pomodoro-hint">Começa curto (10 min) para reduzir a fricção de iniciar. Se você ainda estiver rendendo quando o tempo acabar, pode estender — o timer se adapta ao seu ritmo em vez de cortar o hiperfoco no meio.</p>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="placesPrivacyOverlay">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placesPrivacyTitle">
     <div class="modal-header">

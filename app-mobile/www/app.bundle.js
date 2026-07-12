@@ -458,6 +458,10 @@
   function setSyncHook3(syncModule) {
     _Sync3 = syncModule;
   }
+  var _openPomodoro = null;
+  function setPomodoroHook(openFn) {
+    _openPomodoro = openFn;
+  }
   var dayTabsEl = document.getElementById("dayTabs");
   var blocksEl = document.getElementById("blocksContainer");
   var ringFill = document.getElementById("ringFill");
@@ -495,6 +499,9 @@
   function pinIcon() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11.5A7 7 0 005 9.5C5 14.9 12 21 12 21z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
   }
+  function timerIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
   function renderBlocks() {
     var currentDay2 = getCurrentDay();
     var tasks = buildTasks(currentDay2);
@@ -524,9 +531,10 @@
         card.tabIndex = 0;
         var detailHtml = t.detail ? '<div class="task-detail">' + escapeHtml(t.detail) + "</div>" : "";
         var ruleHtml = t.rule ? '<span class="task-rule">' + escapeHtml(t.rule) + "</span>" : "";
+        var ifThenHtml = t.ifThen ? '<div class="task-if-then">' + escapeHtml(t.ifThen) + "</div>" : "";
         var timeHtml = t.time ? '<span class="task-time">' + escapeHtml(t.time) + "</span>" : "";
         var locationHtml = t.location ? '<span class="task-time task-place" title="Lembrete por local: ' + escapeHtml(t.location.label || "") + '">' + pinIcon() + escapeHtml(t.location.label || "Local") + "</span>" : "";
-        card.innerHTML = '<div class="check">' + checkIcon() + '</div><div class="task-body"><div class="task-top">' + timeHtml + locationHtml + '<span class="task-label">' + escapeHtml(t.label) + "</span></div>" + detailHtml + ruleHtml + '</div><button class="alarm-btn' + (alarms2[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms2[alarmKey]) + "</button>";
+        card.innerHTML = '<div class="check">' + checkIcon() + '</div><div class="task-body"><div class="task-top">' + timeHtml + locationHtml + '<span class="task-label">' + escapeHtml(t.label) + "</span></div>" + detailHtml + ifThenHtml + ruleHtml + '</div><button class="alarm-btn pomodoro-trigger" type="button" aria-label="Bloco de foco" data-task-label="' + escapeHtml(t.label) + '">' + timerIcon() + '</button><button class="alarm-btn' + (alarms2[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms2[alarmKey]) + "</button>";
         card.addEventListener("click", function(ev) {
           if (ev.target.closest(".alarm-btn")) return;
           toggleTask(t.id);
@@ -541,10 +549,16 @@
       });
       blocksEl.appendChild(section);
     });
-    blocksEl.querySelectorAll(".alarm-btn").forEach(function(btn) {
+    blocksEl.querySelectorAll(".alarm-btn:not(.pomodoro-trigger)").forEach(function(btn) {
       btn.addEventListener("click", function(ev) {
         ev.stopPropagation();
         toggleAlarm(btn.dataset.alarm, btn.dataset.time, btn.dataset.label);
+      });
+    });
+    blocksEl.querySelectorAll(".pomodoro-trigger").forEach(function(btn) {
+      btn.addEventListener("click", function(ev) {
+        ev.stopPropagation();
+        if (_openPomodoro) _openPomodoro(btn.dataset.taskLabel);
       });
     });
     updateProgress();
@@ -618,6 +632,110 @@
     saveState(state2);
     renderBlocks();
   });
+
+  // src/pomodoro.js
+  var START_MINUTES = 10;
+  var EXTEND_MINUTES = 10;
+  var RING_CIRC2 = 2 * Math.PI * 54;
+  var pomodoroOverlay = document.getElementById("pomodoroOverlay");
+  var pomodoroCloseBtn = document.getElementById("pomodoroCloseBtn");
+  var pomodoroTaskLabel = document.getElementById("pomodoroTaskLabel");
+  var pomodoroRingFill = document.getElementById("pomodoroRingFill");
+  var pomodoroTimeEl = document.getElementById("pomodoroTime");
+  var pomodoroPhaseEl = document.getElementById("pomodoroPhase");
+  var pomodoroStartBtn = document.getElementById("pomodoroStartBtn");
+  var pomodoroPauseBtn = document.getElementById("pomodoroPauseBtn");
+  var pomodoroExtendBtn = document.getElementById("pomodoroExtendBtn");
+  var totalSeconds = START_MINUTES * 60;
+  var remainingSeconds = totalSeconds;
+  var tickHandle = null;
+  var running = false;
+  var extensions = 0;
+  function formatTime(s) {
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0");
+  }
+  function renderPomodoroState() {
+    pomodoroTimeEl.textContent = formatTime(remainingSeconds);
+    var pct = totalSeconds ? remainingSeconds / totalSeconds : 0;
+    pomodoroRingFill.style.strokeDasharray = String(RING_CIRC2);
+    pomodoroRingFill.style.strokeDashoffset = String(RING_CIRC2 * (1 - pct));
+    pomodoroPhaseEl.textContent = extensions === 0 ? "Bloco curto para come\xE7ar" : "Estendido " + extensions + "x \u2014 ainda no ritmo";
+  }
+  function tick() {
+    remainingSeconds -= 1;
+    if (remainingSeconds <= 0) {
+      remainingSeconds = 0;
+      renderPomodoroState();
+      stopTicking();
+      pomodoroPhaseEl.textContent = "Tempo esgotado \u2014 ainda produtivo?";
+      pomodoroStartBtn.style.display = "none";
+      pomodoroPauseBtn.style.display = "none";
+      pomodoroExtendBtn.style.display = "";
+      showToast("\u23F1\uFE0F Bloco de foco encerrado. Continuar? Estenda +10 min ou feche.");
+      if (navigator.vibrate) {
+        try {
+          navigator.vibrate([120, 60, 120]);
+        } catch (e) {
+        }
+      }
+      return;
+    }
+    renderPomodoroState();
+  }
+  function startTicking() {
+    if (tickHandle) return;
+    running = true;
+    tickHandle = setInterval(tick, 1e3);
+    pomodoroStartBtn.style.display = "none";
+    pomodoroPauseBtn.style.display = "";
+    pomodoroExtendBtn.style.display = "none";
+  }
+  function stopTicking() {
+    running = false;
+    if (tickHandle) {
+      clearInterval(tickHandle);
+      tickHandle = null;
+    }
+  }
+  pomodoroStartBtn.addEventListener("click", function() {
+    startTicking();
+  });
+  pomodoroPauseBtn.addEventListener("click", function() {
+    stopTicking();
+    pomodoroStartBtn.style.display = "";
+    pomodoroPauseBtn.style.display = "none";
+  });
+  pomodoroExtendBtn.addEventListener("click", function() {
+    extensions += 1;
+    remainingSeconds = EXTEND_MINUTES * 60;
+    totalSeconds = EXTEND_MINUTES * 60;
+    renderPomodoroState();
+    startTicking();
+  });
+  function openPomodoro(taskLabel) {
+    pomodoroTaskLabel.textContent = taskLabel || "Bloco de foco";
+    totalSeconds = START_MINUTES * 60;
+    remainingSeconds = totalSeconds;
+    extensions = 0;
+    stopTicking();
+    renderPomodoroState();
+    pomodoroStartBtn.style.display = "";
+    pomodoroPauseBtn.style.display = "none";
+    pomodoroExtendBtn.style.display = "none";
+    pomodoroOverlay.classList.add("show");
+  }
+  function closePomodoro() {
+    stopTicking();
+    pomodoroOverlay.classList.remove("show");
+  }
+  function initPomodoro() {
+    pomodoroCloseBtn.addEventListener("click", closePomodoro);
+    pomodoroOverlay.addEventListener("click", function(ev) {
+      if (ev.target === pomodoroOverlay) closePomodoro();
+    });
+  }
 
   // src/geofencing.js
   var _Sync4 = null;
@@ -853,7 +971,7 @@
     var tasksByDay2 = getTasksByDay();
     var list = tasksByDay2[target.key] || (tasksByDay2[target.key] = []);
     var newId = uniqueId(target.key, task.id);
-    list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule });
+    list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule, ifThen: task.ifThen });
     saveTasksByDay(tasksByDay2);
     showToast("Copiada para " + target.label);
   }
@@ -887,6 +1005,48 @@
         }
       );
     });
+  }
+  function buildIfThenSection(task, onChanged) {
+    var wrap = document.createElement("div");
+    wrap.className = "if-then-section";
+    var label = document.createElement("div");
+    label.className = "if-then-label";
+    label.textContent = "Se-Ent\xE3o (opcional)";
+    wrap.appendChild(label);
+    var row = document.createElement("div");
+    row.className = "if-then-row";
+    var current = parseIfThen(task.ifThen);
+    var triggerInput = document.createElement("input");
+    triggerInput.type = "text";
+    triggerInput.placeholder = 'Se... (gatilho: "eu chegar em casa")';
+    triggerInput.value = current.trigger;
+    triggerInput.className = "if-then-input";
+    var actionInput = document.createElement("input");
+    actionInput.type = "text";
+    actionInput.placeholder = 'ent\xE3o... (a\xE7\xE3o: "guardo as chaves no gancho")';
+    actionInput.value = current.action;
+    actionInput.className = "if-then-input";
+    function sync() {
+      var trigger = triggerInput.value.trim();
+      var action = actionInput.value.trim();
+      task.ifThen = trigger || action ? "Se " + trigger + ", ent\xE3o " + action : "";
+      onChanged();
+    }
+    triggerInput.addEventListener("input", sync);
+    actionInput.addEventListener("input", sync);
+    row.appendChild(triggerInput);
+    row.appendChild(actionInput);
+    wrap.appendChild(row);
+    var hint = document.createElement("div");
+    hint.className = "if-then-hint";
+    hint.textContent = 'Pr\xE9-planejar um gatilho situacional espec\xEDfico ("se X, ent\xE3o Y") ajuda o c\xE9rebro a agir quase no autom\xE1tico, sem depender de lembrar por conta pr\xF3pria.';
+    wrap.appendChild(hint);
+    return wrap;
+  }
+  function parseIfThen(text) {
+    var m = /^Se (.*), então (.*)$/.exec(text || "");
+    if (!m) return { trigger: "", action: "" };
+    return { trigger: m[1], action: m[2] };
   }
   function buildPlaceSection(task, onChanged) {
     var wrap = document.createElement("div");
@@ -1135,6 +1295,9 @@
       fields.appendChild(labelInput);
       fields.appendChild(fieldsRow);
       fields.appendChild(detailInput);
+      fields.appendChild(buildIfThenSection(t, function() {
+        persistTasks(true);
+      }));
       fields.appendChild(buildPlaceSection(t, function() {
         persistTasks();
       }));
@@ -1202,10 +1365,11 @@
         var label = String(item.label || "Tarefa").slice(0, 140);
         var detail = String(item.detail || "").slice(0, 500);
         var rule = String(item.rule || "").slice(0, 80);
+        var ifThen = String(item.ifThen || "").slice(0, 220);
         var id = String(item.id || "").replace(/[^a-z0-9-]/gi, "").slice(0, 60) || "tarefa-" + idx;
         if (seenIds[id]) id = id + "-" + idx;
         seenIds[id] = true;
-        return { id, time, block, label, detail, rule };
+        return { id, time, block, label, detail, rule, ifThen };
       }).filter(Boolean);
     });
     return clean;
@@ -3036,6 +3200,7 @@
     setSyncHook4(Sync);
     setApiHook(Api);
     setPlacesOverlayHook(places_overlay_exports);
+    setPomodoroHook(openPomodoro);
     renderDayTabs();
     renderBlocks();
     var today = /* @__PURE__ */ new Date();
@@ -3108,6 +3273,7 @@
     initAuth();
     initEducation();
     initSelfAssessment();
+    initPomodoro();
     initGeofencing();
     initPlacesOverlay();
     document.addEventListener("keydown", function(ev) {
@@ -3118,6 +3284,7 @@
       var placesPrivacyOverlay2 = document.getElementById("placesPrivacyOverlay");
       if (placesPrivacyOverlay2.classList.contains("show")) closePlacesPrivacy();
       else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
+      else if (pomodoroOverlay.classList.contains("show")) closePomodoro();
       else if (saOverlay.classList.contains("show")) closeSelfAssessment();
       else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();

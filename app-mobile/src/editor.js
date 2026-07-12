@@ -73,7 +73,7 @@ function openDuplicateMenu(anchorBtn, task) {
   var tasksByDay = getTasksByDay();
   var list = tasksByDay[target.key] || (tasksByDay[target.key] = []);
   var newId = uniqueId(target.key, task.id);
-  list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule });
+  list.push({ id: newId, time: task.time, block: task.block, label: task.label, detail: task.detail, rule: task.rule, ifThen: task.ifThen });
   saveTasksByDay(tasksByDay);
   showToast('Copiada para ' + target.label);
 }
@@ -120,6 +120,67 @@ function ensureLocationPermission() {
 // Constrói a seção "Lembrar por lugar" de uma linha de tarefa: botão de
 // alternância, e quando expandido, busca de endereço + "minha localização
 // atual" + chegar/sair + confirmar/remover.
+// "Se-Então" (implementation intentions): pré-compromisso com um gatilho
+// situacional específico automatiza a ação, compensando o déficit de
+// inibição/memória de trabalho do TDAH (Gollwitzer & Sheeran, meta-análise
+// de 94 estudos). Guardado como texto único (t.ifThen) para manter
+// compatível com o formato de tarefa já existente (mesmo padrão de
+// t.detail/t.rule — string simples, sem objeto aninhado).
+function buildIfThenSection(task, onChanged) {
+  var wrap = document.createElement("div");
+  wrap.className = "if-then-section";
+
+  var label = document.createElement("div");
+  label.className = "if-then-label";
+  label.textContent = "Se-Então (opcional)";
+  wrap.appendChild(label);
+
+  var row = document.createElement("div");
+  row.className = "if-then-row";
+
+  var current = parseIfThen(task.ifThen);
+
+  var triggerInput = document.createElement("input");
+  triggerInput.type = "text";
+  triggerInput.placeholder = "Se... (gatilho: \"eu chegar em casa\")";
+  triggerInput.value = current.trigger;
+  triggerInput.className = "if-then-input";
+
+  var actionInput = document.createElement("input");
+  actionInput.type = "text";
+  actionInput.placeholder = "então... (ação: \"guardo as chaves no gancho\")";
+  actionInput.value = current.action;
+  actionInput.className = "if-then-input";
+
+  function sync() {
+    var trigger = triggerInput.value.trim();
+    var action = actionInput.value.trim();
+    task.ifThen = (trigger || action) ? ("Se " + trigger + ", então " + action) : "";
+    onChanged();
+  }
+  triggerInput.addEventListener("input", sync);
+  actionInput.addEventListener("input", sync);
+
+  row.appendChild(triggerInput);
+  row.appendChild(actionInput);
+  wrap.appendChild(row);
+
+  var hint = document.createElement("div");
+  hint.className = "if-then-hint";
+  hint.textContent = "Pré-planejar um gatilho situacional específico (\"se X, então Y\") ajuda o cérebro a agir quase no automático, sem depender de lembrar por conta própria.";
+  wrap.appendChild(hint);
+
+  return wrap;
+}
+
+// Extrai {trigger, action} de uma string "Se X, então Y" já salva, para
+// popular os dois campos de edição separadamente.
+function parseIfThen(text) {
+  var m = /^Se (.*), então (.*)$/.exec(text || "");
+  if (!m) return { trigger: "", action: "" };
+  return { trigger: m[1], action: m[2] };
+}
+
 function buildPlaceSection(task, onChanged) {
   var wrap = document.createElement("div");
   wrap.className = "place-section";
@@ -386,6 +447,7 @@ function renderEditRows() {
     fields.appendChild(labelInput);
     fields.appendChild(fieldsRow);
     fields.appendChild(detailInput);
+    fields.appendChild(buildIfThenSection(t, function () { persistTasks(true); }));
     fields.appendChild(buildPlaceSection(t, function () { persistTasks(); }));
 
     var dupBtn = document.createElement("button");
@@ -450,10 +512,11 @@ function sanitizeImportedTasksByDay(raw) {
       var label = String(item.label || "Tarefa").slice(0, 140);
       var detail = String(item.detail || "").slice(0, 500);
       var rule = String(item.rule || "").slice(0, 80);
+      var ifThen = String(item.ifThen || "").slice(0, 220);
       var id = String(item.id || "").replace(/[^a-z0-9-]/gi, "").slice(0, 60) || ("tarefa-" + idx);
       if (seenIds[id]) id = id + "-" + idx;
       seenIds[id] = true;
-      return { id: id, time: time, block: block, label: label, detail: detail, rule: rule };
+      return { id: id, time: time, block: block, label: label, detail: detail, rule: rule, ifThen: ifThen };
     }).filter(Boolean);
   });
   return clean;

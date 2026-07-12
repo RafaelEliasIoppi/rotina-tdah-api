@@ -278,6 +278,38 @@
     font-size: 0.68rem; font-weight: 600; color: var(--ink-faint);
     background: var(--bg-sunken); padding: 2px 7px; border-radius: 6px;
   }
+  .task-if-then {
+    font-size: 0.78rem; color: var(--accent); margin-top: 4px; line-height: 1.4;
+    font-style: italic;
+  }
+
+  .if-then-section { margin-top: 4px; }
+  .if-then-label { font-size: 0.7rem; font-weight: 700; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .if-then-row { display: flex; flex-direction: column; gap: 6px; }
+  .if-then-input {
+    font-family: var(--font-body); font-size: 0.8rem; color: var(--ink);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 7px;
+    padding: 7px 8px; width: 100%;
+  }
+  .if-then-hint { font-size: 0.7rem; color: var(--ink-faint); margin-top: 4px; line-height: 1.4; }
+
+  /* ---------- Pomodoro adaptativo ---------- */
+  .pomodoro-body { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 24px 16px; }
+  .pomodoro-task { font-family: var(--font-display); font-size: 1rem; color: var(--ink); margin-bottom: 4px; }
+  .pomodoro-ring-wrap { position: relative; width: 180px; height: 180px; }
+  .pomodoro-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .pomodoro-ring-bg { fill: none; stroke: var(--bg-sunken); stroke-width: 8; }
+  .pomodoro-ring-fill {
+    fill: none; stroke: var(--accent); stroke-width: 8; stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+  .pomodoro-time {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--ink);
+  }
+  .pomodoro-phase { font-size: 0.84rem; color: var(--ink-soft); }
+  .pomodoro-controls { display: flex; gap: 8px; margin-top: 6px; }
+  .pomodoro-hint { font-size: 0.76rem; color: var(--ink-faint); line-height: 1.5; margin-top: 8px; max-width: 320px; }
   .alarm-btn {
     flex: none; width: 30px; height: 30px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--bg-elevated);
