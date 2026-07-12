@@ -16,6 +16,21 @@
 # e a origem de cada valor de env var.
 
 services:
+  # Frontend (PWA) — publica app-mobile/www como site estático, mesmo conteúdo
+  # que é empacotado no APK Android via Capacitor. Acesso via navegador para
+  # quem não instalou o app, ou para testar rápido sem precisar de adb/APK.
+  - type: web
+    name: rotina-tdah-app
+    runtime: static
+    rootDir: app-mobile/www
+    buildCommand: ""
+    staticPublishPath: .
+    autoDeploy: true
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
   - type: web
     name: rotina-tdah-api
     runtime: node
