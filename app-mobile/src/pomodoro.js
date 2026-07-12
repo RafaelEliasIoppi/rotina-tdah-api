@@ -1,4 +1,5 @@
 import { showToast } from "./notifications.js";
+import { startFocusPresence, stopFocusPresence } from "./social.js";
 
 // Timer Pomodoro adaptativo: começa curto (10 min) para reduzir a fricção
 // de início de tarefa — um dos maiores obstáculos citados no Manual Barkley
@@ -21,6 +22,20 @@ var pomodoroPhaseEl = document.getElementById("pomodoroPhase");
 var pomodoroStartBtn = document.getElementById("pomodoroStartBtn");
 var pomodoroPauseBtn = document.getElementById("pomodoroPauseBtn");
 var pomodoroExtendBtn = document.getElementById("pomodoroExtendBtn");
+var pomodoroPresenceEl = document.getElementById("pomodoroPresence");
+
+// Body doubling assíncrono: presença social (mesmo estando sozinho fisicamente)
+// ativa recompensa dopaminérgica e funciona como "executivo externo" — evidência
+// 2025 de body doubling mostra +27-33% em atenção sustentada. Aqui é a versão
+// mínima: contagem agregada de quantas pessoas estão em bloco de foco agora,
+// sem vídeo/chat/identificação de ninguém.
+function updatePresence(count) {
+  if (count === null || count === undefined) { pomodoroPresenceEl.style.display = "none"; return; }
+  pomodoroPresenceEl.style.display = "";
+  pomodoroPresenceEl.textContent = count <= 1
+    ? "Você está em foco agora."
+    : "👥 " + count + " pessoas em bloco de foco agora, junto com você.";
+}
 
 var totalSeconds = START_MINUTES * 60;
 var remainingSeconds = totalSeconds;
@@ -56,6 +71,8 @@ function tick() {
     pomodoroExtendBtn.style.display = "";
     showToast("⏱️ Bloco de foco encerrado. Continuar? Estenda +10 min ou feche.");
     if (navigator.vibrate) { try { navigator.vibrate([120, 60, 120]); } catch (e) {} }
+    stopFocusPresence();
+    pomodoroPresenceEl.style.display = "none";
     return;
   }
   renderPomodoroState();
@@ -76,9 +93,12 @@ function stopTicking() {
 
 pomodoroStartBtn.addEventListener("click", function () {
   startTicking();
+  startFocusPresence(updatePresence);
 });
 pomodoroPauseBtn.addEventListener("click", function () {
   stopTicking();
+  stopFocusPresence();
+  pomodoroPresenceEl.style.display = "none";
   pomodoroStartBtn.style.display = "";
   pomodoroPauseBtn.style.display = "none";
 });
@@ -88,6 +108,7 @@ pomodoroExtendBtn.addEventListener("click", function () {
   totalSeconds = EXTEND_MINUTES * 60;
   renderPomodoroState();
   startTicking();
+  startFocusPresence(updatePresence);
 });
 
 function openPomodoro(taskLabel) {
@@ -100,11 +121,14 @@ function openPomodoro(taskLabel) {
   pomodoroStartBtn.style.display = "";
   pomodoroPauseBtn.style.display = "none";
   pomodoroExtendBtn.style.display = "none";
+  pomodoroPresenceEl.style.display = "none";
   pomodoroOverlay.classList.add("show");
 }
 
 function closePomodoro() {
+  var wasRunning = running;
   stopTicking();
+  if (wasRunning) stopFocusPresence();
   pomodoroOverlay.classList.remove("show");
 }
 

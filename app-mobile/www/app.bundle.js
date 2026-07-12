@@ -633,6 +633,116 @@
     renderBlocks();
   });
 
+  // src/social.js
+  var _Api = null;
+  function setApiHook(apiModule) {
+    _Api = apiModule;
+  }
+  var socialOverlay = document.getElementById("socialOverlay");
+  var socialBtn = document.getElementById("socialBtn");
+  var socialCloseBtn = document.getElementById("socialCloseBtn");
+  var socialBody = document.getElementById("socialBody");
+  function apiAvailable() {
+    return !!(_Api && _Api.isLoggedIn && _Api.isLoggedIn());
+  }
+  function renderLoggedOut() {
+    socialBody.innerHTML = '<p class="social-hint">Entre com sua conta para convidar um parceiro de responsabiliza\xE7\xE3o \u2014 a pessoa que v\xEA seu progresso do dia (s\xF3 a contagem, nunca suas tarefas) e vice-versa.</p><div class="social-source">Fonte: Regra 6 de "Vencendo o TDAH Adulto" (Barkley) \u2014 presta\xE7\xE3o de contas a terceiros eleva conclus\xE3o de metas de 65% para 95% segundo estudos citados na literatura cl\xEDnica de TDAH.</div>';
+  }
+  function renderNoPartner() {
+    socialBody.innerHTML = '<p class="social-hint">Convide algu\xE9m de confian\xE7a para ser seu parceiro de responsabiliza\xE7\xE3o. Voc\xEAs veem s\xF3 o progresso um do outro hoje (quantas tarefas conclu\xEDdas de quantas no total) \u2014 nunca o conte\xFAdo da rotina.</p><button class="btn btn-primary" id="socialCreateInviteBtn" type="button">Gerar c\xF3digo de convite</button><div class="social-divider">ou</div><div class="social-accept-row"><input type="text" id="socialCodeInput" class="social-code-input" placeholder="C\xF3digo recebido" maxlength="6"><button class="btn" id="socialAcceptBtn" type="button">Entrar com c\xF3digo</button></div><div id="socialInviteResult"></div>';
+    document.getElementById("socialCreateInviteBtn").addEventListener("click", handleCreateInvite);
+    document.getElementById("socialAcceptBtn").addEventListener("click", handleAcceptInvite);
+  }
+  function handleCreateInvite() {
+    _Api.fetch("/social/invite", { method: "POST" }).then(function(data) {
+      var el = document.getElementById("socialInviteResult");
+      el.innerHTML = '<div class="social-invite-code">Seu c\xF3digo: <strong>' + data.code + "</strong><br>Compartilhe com a pessoa \u2014 v\xE1lido por 7 dias.</div>";
+    }).catch(function(err) {
+      showToast(err.message || "N\xE3o foi poss\xEDvel gerar o convite.");
+    });
+  }
+  function handleAcceptInvite() {
+    var code = document.getElementById("socialCodeInput").value.trim();
+    if (!code) return;
+    _Api.fetch("/social/invite/accept", { method: "POST", body: { code } }).then(function() {
+      showToast("Parceiro conectado!");
+      renderPartnerStatus();
+    }).catch(function(err) {
+      showToast(err.message || "C\xF3digo inv\xE1lido ou expirado.");
+    });
+  }
+  function renderPartnerStatus(data) {
+    if (!data) {
+      _Api.fetch("/social/partner", { method: "GET" }).then(renderPartnerStatus).catch(function() {
+        renderNoPartner();
+      });
+      return;
+    }
+    if (!data.partner) {
+      renderNoPartner();
+      return;
+    }
+    var mePct = data.me.total ? Math.round(data.me.done / data.me.total * 100) : 0;
+    var partnerPct = data.partnerProgress.total ? Math.round(data.partnerProgress.done / data.partnerProgress.total * 100) : 0;
+    socialBody.innerHTML = '<div class="social-partner-card"><div class="social-partner-name">Parceiro: ' + escapeHtml2(data.partner.displayName) + '</div><div class="social-progress-row"><span>Voc\xEA</span><div class="social-progress-track"><div class="social-progress-fill" style="width:' + mePct + '%"></div></div><span>' + data.me.done + "/" + data.me.total + '</span></div><div class="social-progress-row"><span>' + escapeHtml2(data.partner.displayName) + '</span><div class="social-progress-track"><div class="social-progress-fill" style="width:' + partnerPct + '%"></div></div><span>' + data.partnerProgress.done + "/" + data.partnerProgress.total + '</span></div></div><button class="btn" id="socialRemovePartnerBtn" type="button">Desfazer parceria</button>';
+    document.getElementById("socialRemovePartnerBtn").addEventListener("click", function() {
+      if (!confirm("Desfazer a parceria de responsabiliza\xE7\xE3o?")) return;
+      _Api.fetch("/social/partner", { method: "DELETE" }).then(function() {
+        showToast("Parceria desfeita.");
+        renderNoPartner();
+      }).catch(function(err) {
+        showToast(err.message || "N\xE3o foi poss\xEDvel desfazer.");
+      });
+    });
+  }
+  function escapeHtml2(s) {
+    return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function openSocial() {
+    socialOverlay.classList.add("show");
+    if (!apiAvailable()) {
+      renderLoggedOut();
+      return;
+    }
+    socialBody.innerHTML = '<p class="social-hint">Carregando...</p>';
+    renderPartnerStatus();
+  }
+  function closeSocial() {
+    socialOverlay.classList.remove("show");
+  }
+  var heartbeatTimer = null;
+  function startFocusPresence(onCountUpdate) {
+    if (!apiAvailable()) {
+      if (onCountUpdate) onCountUpdate(null);
+      return;
+    }
+    function beat() {
+      _Api.fetch("/social/focus/heartbeat", { method: "POST" }).then(function(data) {
+        if (onCountUpdate) onCountUpdate(data.activeCount);
+      }).catch(function() {
+      });
+    }
+    beat();
+    heartbeatTimer = setInterval(beat, 6e4);
+  }
+  function stopFocusPresence() {
+    if (heartbeatTimer) {
+      clearInterval(heartbeatTimer);
+      heartbeatTimer = null;
+    }
+    if (apiAvailable()) {
+      _Api.fetch("/social/focus/heartbeat", { method: "DELETE" }).catch(function() {
+      });
+    }
+  }
+  function initSocial() {
+    socialBtn.addEventListener("click", openSocial);
+    socialCloseBtn.addEventListener("click", closeSocial);
+    socialOverlay.addEventListener("click", function(ev) {
+      if (ev.target === socialOverlay) closeSocial();
+    });
+  }
+
   // src/pomodoro.js
   var START_MINUTES = 10;
   var EXTEND_MINUTES = 10;
@@ -646,6 +756,15 @@
   var pomodoroStartBtn = document.getElementById("pomodoroStartBtn");
   var pomodoroPauseBtn = document.getElementById("pomodoroPauseBtn");
   var pomodoroExtendBtn = document.getElementById("pomodoroExtendBtn");
+  var pomodoroPresenceEl = document.getElementById("pomodoroPresence");
+  function updatePresence(count) {
+    if (count === null || count === void 0) {
+      pomodoroPresenceEl.style.display = "none";
+      return;
+    }
+    pomodoroPresenceEl.style.display = "";
+    pomodoroPresenceEl.textContent = count <= 1 ? "Voc\xEA est\xE1 em foco agora." : "\u{1F465} " + count + " pessoas em bloco de foco agora, junto com voc\xEA.";
+  }
   var totalSeconds = START_MINUTES * 60;
   var remainingSeconds = totalSeconds;
   var tickHandle = null;
@@ -680,6 +799,8 @@
         } catch (e) {
         }
       }
+      stopFocusPresence();
+      pomodoroPresenceEl.style.display = "none";
       return;
     }
     renderPomodoroState();
@@ -701,9 +822,12 @@
   }
   pomodoroStartBtn.addEventListener("click", function() {
     startTicking();
+    startFocusPresence(updatePresence);
   });
   pomodoroPauseBtn.addEventListener("click", function() {
     stopTicking();
+    stopFocusPresence();
+    pomodoroPresenceEl.style.display = "none";
     pomodoroStartBtn.style.display = "";
     pomodoroPauseBtn.style.display = "none";
   });
@@ -713,6 +837,7 @@
     totalSeconds = EXTEND_MINUTES * 60;
     renderPomodoroState();
     startTicking();
+    startFocusPresence(updatePresence);
   });
   function openPomodoro(taskLabel) {
     pomodoroTaskLabel.textContent = taskLabel || "Bloco de foco";
@@ -724,10 +849,13 @@
     pomodoroStartBtn.style.display = "";
     pomodoroPauseBtn.style.display = "none";
     pomodoroExtendBtn.style.display = "none";
+    pomodoroPresenceEl.style.display = "none";
     pomodoroOverlay.classList.add("show");
   }
   function closePomodoro() {
+    var wasRunning = running;
     stopTicking();
+    if (wasRunning) stopFocusPresence();
     pomodoroOverlay.classList.remove("show");
   }
   function initPomodoro() {
@@ -742,9 +870,9 @@
   function setSyncHook4(syncModule) {
     _Sync4 = syncModule;
   }
-  var _Api = null;
-  function setApiHook(apiModule) {
-    _Api = apiModule;
+  var _Api2 = null;
+  function setApiHook2(apiModule) {
+    _Api2 = apiModule;
   }
   var FREE_PLACES_LIMIT = 3;
   var isNative2 = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
@@ -806,8 +934,8 @@
     return Geofence.removeGeofence({ id: taskId }).then(applyToModel);
   }
   function countPlacesInUse() {
-    if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
-      return _Api.fetch("/places", { method: "GET" }).then(function(data) {
+    if (_Api2 && _Api2.isLoggedIn && _Api2.isLoggedIn()) {
+      return _Api2.fetch("/places", { method: "GET" }).then(function(data) {
         var places = data && data.places || [];
         return { count: places.length, limit: FREE_PLACES_LIMIT, source: "api" };
       }, function() {
@@ -832,8 +960,8 @@
     return count;
   }
   function listPlacesInUse() {
-    if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
-      return _Api.fetch("/places", { method: "GET" }).then(function(data) {
+    if (_Api2 && _Api2.isLoggedIn && _Api2.isLoggedIn()) {
+      return _Api2.fetch("/places", { method: "GET" }).then(function(data) {
         var places = data && data.places || [];
         if (!places.length) return listPlacesLocally();
         return places.map(function(p) {
@@ -3198,9 +3326,10 @@
     setSyncHook3(Sync);
     setSyncHook2(Sync);
     setSyncHook4(Sync);
-    setApiHook(Api);
+    setApiHook2(Api);
     setPlacesOverlayHook(places_overlay_exports);
     setPomodoroHook(openPomodoro);
+    setApiHook(Api);
     renderDayTabs();
     renderBlocks();
     var today = /* @__PURE__ */ new Date();
@@ -3274,6 +3403,7 @@
     initEducation();
     initSelfAssessment();
     initPomodoro();
+    initSocial();
     initGeofencing();
     initPlacesOverlay();
     document.addEventListener("keydown", function(ev) {
@@ -3285,6 +3415,7 @@
       if (placesPrivacyOverlay2.classList.contains("show")) closePlacesPrivacy();
       else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
       else if (pomodoroOverlay.classList.contains("show")) closePomodoro();
+      else if (socialOverlay.classList.contains("show")) closeSocial();
       else if (saOverlay.classList.contains("show")) closeSelfAssessment();
       else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();

@@ -12,6 +12,7 @@ import { createRoutinesRouter } from './modules/routines/routines.router.js';
 import { createCompletionsRouter } from './modules/completions/completions.router.js';
 import { createRemindersRouter } from './modules/reminders/reminders.router.js';
 import { createPlacesRouter } from './modules/places/places.router.js';
+import { createSocialRouter } from './modules/social/social.router.js';
 import { createSyncRouter } from './modules/sync/sync.router.js';
 import subscriptionsRouter from './modules/subscriptions/subscriptions.router.js';
 import subscriptionsWebhookRouter from './modules/subscriptions/subscriptions.webhook.router.js';
@@ -106,6 +107,7 @@ export function createApp() {
   app.use('/completions', createCompletionsRouter());
   app.use('/reminders', createRemindersRouter());
   app.use('/places', createPlacesRouter());      // /places (locais salvos, Fase G4)
+  app.use('/social', createSocialRouter());      // /social (accountability partner + body doubling)
   app.use('/sync', createSyncRouter());          // /sync/pull, /sync/push
 
   // Assinaturas (Stripe).

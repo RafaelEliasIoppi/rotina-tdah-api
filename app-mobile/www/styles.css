@@ -310,6 +310,30 @@
   .pomodoro-phase { font-size: 0.84rem; color: var(--ink-soft); }
   .pomodoro-controls { display: flex; gap: 8px; margin-top: 6px; }
   .pomodoro-hint { font-size: 0.76rem; color: var(--ink-faint); line-height: 1.5; margin-top: 8px; max-width: 320px; }
+  .pomodoro-presence { font-size: 0.8rem; color: var(--accent); font-weight: 600; }
+
+  /* ---------- Parceiro de responsabilização (social.js) ---------- */
+  .social-hint { font-size: 0.84rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 14px; }
+  .social-source { font-size: 0.72rem; color: var(--ink-faint); font-style: italic; margin-top: 12px; line-height: 1.4; }
+  .social-divider { text-align: center; font-size: 0.76rem; color: var(--ink-faint); margin: 14px 0; }
+  .social-accept-row { display: flex; gap: 8px; }
+  .social-code-input {
+    flex: 1; font-family: var(--font-body); font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 10px;
+  }
+  .social-invite-code {
+    margin-top: 14px; padding: 12px; border-radius: 10px; background: var(--accent-soft);
+    font-size: 0.86rem; color: var(--ink); text-align: center; line-height: 1.6;
+  }
+  .social-invite-code strong { font-size: 1.1rem; letter-spacing: 0.06em; color: var(--accent); }
+  .social-partner-card { padding: 14px; border-radius: 12px; background: var(--bg-sunken); border: 1px solid var(--border); }
+  .social-partner-name { font-family: var(--font-display); font-size: 1rem; color: var(--ink); margin-bottom: 12px; }
+  .social-progress-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 8px; }
+  .social-progress-row span:first-child { flex: 0 0 70px; }
+  .social-progress-row span:last-child { flex: 0 0 40px; text-align: right; }
+  .social-progress-track { flex: 1; height: 8px; border-radius: 999px; background: var(--bg-elevated); overflow: hidden; }
+  .social-progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
   .alarm-btn {
     flex: none; width: 30px; height: 30px; border-radius: 8px;
     border: 1px solid var(--border); background: var(--bg-elevated);
