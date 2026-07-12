@@ -1654,6 +1654,47 @@
     });
   }
 
+  // src/principles.js
+  var PRINCIPLES = [
+    'O c\xE9rebro com TDAH n\xE3o sustenta bem informa\xE7\xE3o, tempo e motiva\xE7\xE3o internamente \u2014 a solu\xE7\xE3o n\xE3o \xE9 "tentar mais", \xE9 externalizar. Este checklist \xE9 isso aplicado \xE0 sua rotina real.',
+    'Prazo que s\xF3 existe na sua cabe\xE7a \xE9 prazo que n\xE3o existe. Coloque hora, alarme ou lembrete vis\xEDvel \u2014 o c\xE9rebro com TDAH reage muito mais ao que v\xEA do que ao que "sabe".',
+    "TDAH tem raiz gen\xE9tica forte, n\xE3o \xE9 resultado de falta de car\xE1ter ou de m\xE1 cria\xE7\xE3o. Cobrar mais for\xE7a de vontade de quem j\xE1 est\xE1 se esfor\xE7ando s\xF3 aumenta a frustra\xE7\xE3o sem mudar o resultado.",
+    'A dificuldade n\xE3o \xE9 "prestar aten\xE7\xE3o" em geral \u2014 \xE9 sustentar aten\xE7\xE3o quando a tarefa n\xE3o \xE9 interessante nem tem recompensa imediata. Torne a tarefa chata mais curta, mais vis\xEDvel ou com um pr\xEAmio pequeno no final.',
+    'Mem\xF3ria de trabalho fraca significa que a informa\xE7\xE3o "escorrega" antes de virar a\xE7\xE3o. Anotar n\xE3o \xE9 frescura nem falta de intelig\xEAncia \u2014 \xE9 a pr\xF3tese que substitui um sistema que naturalmente falha.',
+    'TDAH costuma vir com "miopia temporal": o futuro parece distante e pouco real, ent\xE3o o presente sempre ganha. Trazer a consequ\xEAncia futura para perto \u2014 visualiz\xE1-la, escrev\xEA-la, antecip\xE1-la \u2014 ajuda a competir com o impulso do agora.',
+    "Antes de reagir, existe uma fra\xE7\xE3o de segundo em que era poss\xEDvel pausar. Treinar essa pausa \u2014 contar at\xE9 tr\xEAs, respirar, sair da sala \u2014 \xE9 treinar o m\xFAsculo que o TDAH deixa mais fraco.",
+    'Dificuldade para regular emo\xE7\xE3o faz parte do TDAH, n\xE3o \xE9 "drama" ou instabilidade de car\xE1ter. Nomear o que voc\xEA sente antes de agir j\xE1 reduz a intensidade da resposta.',
+    "Recompensa que demora n\xE3o segura a aten\xE7\xE3o de um c\xE9rebro com TDAH tanto quanto recompensa imediata. Quebrar uma meta grande em pequenas vit\xF3rias com retorno r\xE1pido n\xE3o \xE9 fraqueza, \xE9 estrat\xE9gia.",
+    "Rotina fixa n\xE3o \xE9 sobre disciplina moral \u2014 \xE9 sobre reduzir decis\xF5es. Cada decis\xE3o nova gasta energia que o c\xE9rebro com TDAH j\xE1 tem em menor reserva.",
+    "Come\xE7ar uma tarefa costuma ser mais dif\xEDcil do que execut\xE1-la. Se travar antes de iniciar, tente negociar consigo mesmo s\xF3 os primeiros dois minutos \u2014 o resto costuma vir mais f\xE1cil depois.",
+    "Hiperfoco \xE9 a outra face do TDAH: a mesma dificuldade de regular aten\xE7\xE3o que atrapalha em tarefas chatas pode prender voc\xEA por horas em algo que engancha. Use alarmes tamb\xE9m para sair de tarefas boas demais, n\xE3o s\xF3 para lembrar das chatas.",
+    'Trocar de atividade exige uma fun\xE7\xE3o executiva que o TDAH enfraquece: desligar de uma coisa para ligar em outra. Um aviso de "faltam 5 minutos" antes da transi\xE7\xE3o facilita esse desligamento.',
+    'TDAH raramente vem sozinho \u2014 ansiedade, transtorno opositor, altera\xE7\xF5es de humor e uso de subst\xE2ncias s\xE3o comorbidades frequentes. Se algo al\xE9m da desaten\xE7\xE3o/impulsividade estiver pesando, vale investigar separadamente, n\xE3o s\xF3 rotular tudo como "TDAH".',
+    "Sono ruim piora sintomas de TDAH, e TDAH tamb\xE9m dificulta manter um sono regular \u2014 \xE9 uma via de m\xE3o dupla. Proteger hor\xE1rio fixo de dormir \xE9 t\xE3o parte do manejo quanto qualquer lista de tarefas.",
+    'Adultos com TDAH costumam ter sido crian\xE7as com TDAH que aprenderam a mascarar sintomas, n\xE3o pessoas que "curaram" o transtorno. Estrat\xE9gias de organiza\xE7\xE3o continuam necess\xE1rias mesmo quando a hiperatividade vis\xEDvel diminuiu com a idade.',
+    "Muita gente com TDAH subestima o pr\xF3prio n\xEDvel de dificuldade \u2014 \xE9 um vi\xE9s conhecido, n\xE3o falta de autocr\xEDtica. Pedir feedback de algu\xE9m pr\xF3ximo sobre prazos e combinados pode revelar padr\xF5es que passam despercebidos por dentro.",
+    "Planejar um passo de cada vez \xE9 mais realista do que tentar visualizar o caminho inteiro de uma vez. Divida a tarefa em partes pequenas o suficiente para caber na mem\xF3ria de trabalho.",
+    "Custo de resposta \u2014 perder algo j\xE1 conquistado por n\xE3o cumprir um combinado \u2014 costuma funcionar melhor do que s\xF3 prometer recompensa por bom comportamento. Pequenas perdas imediatas comunicam mais do que promessas distantes.",
+    'Impulsividade n\xE3o \xE9 "falta de educa\xE7\xE3o", \xE9 um freio que engata mais devagar. Ambientes com menos est\xEDmulo e menos tenta\xE7\xE3o por perto reduzem a necessidade de exercer esse freio o tempo todo.',
+    "Lista de tarefas na cabe\xE7a compete com tudo que est\xE1 acontecendo agora, e quase sempre perde. Colocar a lista fora da cabe\xE7a \u2014 papel, app, quadro \u2014 tira essa disputa e libera espa\xE7o mental.",
+    'O tratamento eficaz do TDAH costuma combinar abordagem comportamental com acompanhamento profissional \u2014 n\xE3o \xE9 escolher entre "for\xE7a de vontade" ou "rem\xE9dio", \xE9 somar estrat\xE9gias que sustentam umas \xE0s outras.',
+    "Um ambiente bagun\xE7ado ou barulhento pesa mais sobre um c\xE9rebro com TDAH do que sobre outros, porque ele j\xE1 gasta mais energia filtrando est\xEDmulos. Reduzir bagun\xE7a visual ao redor da tarefa \xE9 reduzir a carga que a aten\xE7\xE3o precisa carregar.",
+    'Autoinstru\xE7\xE3o verbal \u2014 "falar" o pr\xF3ximo passo em voz alta ou por escrito \u2014 supre uma fun\xE7\xE3o interna que no TDAH tende a ser mais fraca: a voz que guia o pr\xF3prio comportamento. Narrar a tarefa em voz alta pode parecer bobo, mas ajuda a manter o rumo.',
+    "TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 inven\xE7\xE3o recente nem efeito colateral de tela ou tecnologia moderna. Isso n\xE3o significa que telas n\xE3o atrapalhem foco \u2014 significa que o transtorno j\xE1 existia muito antes delas.",
+    "Comemorar o progresso pequeno junto com o grande \xE9 importante: c\xE9rebros com TDAH respondem melhor a refor\xE7o frequente do que a uma \xFAnica recompensa distante no fim de um grande projeto. Marque as vit\xF3rias intermedi\xE1rias, n\xE3o s\xF3 a linha de chegada.",
+    "Colocar objetos-chave sempre no mesmo lugar vis\xEDvel (chaves, carteira, rem\xE9dio) elimina uma decis\xE3o e uma busca que, de outra forma, consomem aten\xE7\xE3o todos os dias. Ambiente previs\xEDvel poupa fun\xE7\xE3o executiva para o que realmente importa.",
+    'Errar um prazo ou esquecer um compromisso n\xE3o \xE9 evid\xEAncia de "personalidade desorganizada" \u2014 \xE9 sintoma esperado de um transtorno reconhecido, com explica\xE7\xE3o neurobiol\xF3gica. Isso n\xE3o tira sua responsabilidade sobre buscar apoio, mas tira o peso da culpa moral.',
+    "Em crian\xE7as, TDAH costuma aparecer mais como agita\xE7\xE3o vis\xEDvel; em adultos, mais como inquieta\xE7\xE3o interna, procrastina\xE7\xE3o e dificuldade de organiza\xE7\xE3o. O transtorno muda de forma ao longo da vida, n\xE3o desaparece sozinho.",
+    "Dividir uma tarefa grande em etapas com prazos parciais imita, de fora, a fun\xE7\xE3o de planejamento que o TDAH dificulta por dentro. Cada etapa pequena vira um novo ponto de checagem e de ajuste de rota.",
+    "TDAH \xE9 tratado melhor como uma condi\xE7\xE3o cont\xEDnua a manejar, n\xE3o como um problema a resolver de uma vez. Ajustar estrat\xE9gias com o tempo \u2014 n\xE3o desistir na primeira que falhou \u2014 \xE9 parte esperada do processo, n\xE3o sinal de fracasso."
+  ];
+  function principleForDate(date) {
+    var d = date || /* @__PURE__ */ new Date();
+    var dayOfMonth = d.getDate();
+    var index = (dayOfMonth - 1) % PRINCIPLES.length;
+    return PRINCIPLES[index];
+  }
+
   // src/sync.js
   var Sync = (function() {
     var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
@@ -2092,6 +2133,8 @@
     setApiHook(Api);
     renderDayTabs();
     renderBlocks();
+    var principleTextEl = document.getElementById("principleText");
+    if (principleTextEl) principleTextEl.textContent = principleForDate();
     var manifest = {
       name: "Rotina Di\xE1ria \u2014 Apoio TDAH",
       short_name: "Rotina TDAH",

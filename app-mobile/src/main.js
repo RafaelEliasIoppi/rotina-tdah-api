@@ -5,6 +5,7 @@ import { initEditor, closeEditor, closePlacesPrivacy } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
 import { initEducation, closeTdahInfo } from "./education.js";
 import { initGeofencing, setSyncHook as setGeofencingSyncHook, setApiHook as setGeofencingApiHook } from "./geofencing.js";
+import { principleForDate } from "./principles.js";
 import { Sync } from "./sync.js";
 import { Api } from "./api.js";
 
@@ -22,6 +23,10 @@ import { Api } from "./api.js";
   /* ---------- Init ---------- */
   renderDayTabs();
   renderBlocks();
+
+  // "Princípio do dia": texto muda conforme o dia do mês (31 variações).
+  var principleTextEl = document.getElementById("principleText");
+  if (principleTextEl) principleTextEl.textContent = principleForDate();
 
   /* ---------- PWA: manifest + service worker (installability + offline) ---------- */
   var manifest = {
