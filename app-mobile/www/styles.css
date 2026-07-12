@@ -301,6 +301,16 @@
   .tdah-info-link .chev { flex: none; color: var(--ink-faint); }
   .tdah-info-link .chev svg { width: 16px; height: 16px; }
 
+  /* ---------- Descoberta de "Lembretes por lugar" na tela principal ---------- */
+  .places-discovery-empty {
+    display: block; width: 100%; text-align: left; background: none; border: none;
+    font-family: var(--font-body); font-size: 0.76rem; color: var(--ink-faint);
+    padding: 6px 4px; margin-top: 10px; cursor: pointer;
+  }
+  .places-discovery-empty:hover { color: var(--ink-soft); }
+  .places-discovery-card { margin-top: 10px; }
+  .places-discovery-card .ico svg { width: 19px; height: 19px; }
+
   .tdah-topics { display: flex; flex-direction: column; gap: 8px; }
   .tdah-topic {
     border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--bg-elevated);
@@ -493,6 +503,9 @@
   .place-toggle-btn.active {
     color: var(--accent); border-style: solid; border-color: var(--accent); background: var(--accent-soft);
   }
+  .place-toggle-btn.discovery-highlight {
+    border-style: solid; border-color: var(--accent);
+  }
   .place-toggle-subtitle {
     font-size: 0.72rem; line-height: 1.35; color: var(--ink-faint);
     padding: 4px 2px 0 2px;
@@ -630,6 +643,32 @@
   }
 
   /* ---------- Disclosure de privacidade: Lembretes por lugar (Fase G3) ---------- */
+  /* ---------- Tela "Meus locais" ---------- */
+  .places-count {
+    font-size: 0.8rem; font-weight: 700; color: var(--ink-soft);
+    background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; margin-bottom: 10px; text-align: center;
+  }
+  .places-empty {
+    font-size: 0.82rem; line-height: 1.5; color: var(--ink-soft);
+    text-align: center; padding: 18px 8px;
+  }
+  .places-item {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elevated);
+    padding: 10px 12px; margin-bottom: 8px;
+  }
+  .places-item .ico {
+    flex: none; width: 32px; height: 32px; border-radius: 9px;
+    background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .places-item .ico svg { width: 17px; height: 17px; }
+  .places-item .txt { flex: 1; min-width: 0; }
+  .places-item .txt h4 { font-size: 0.84rem; font-weight: 700; color: var(--ink); margin: 0 0 2px; }
+  .places-item .txt p { font-size: 0.74rem; color: var(--ink-soft); margin: 0; }
+  .places-item .btn-danger { flex: none; }
+
   .places-privacy-list {
     margin: 0 0 16px; padding-left: 20px; display: flex; flex-direction: column; gap: 10px;
     font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5;

@@ -162,6 +162,59 @@ function countPlacesLocally() {
   return count;
 }
 
+/**
+ * Lista os locais em uso, um item por tarefa que tem `location` (não
+ * deduplicado por local — cada linha carrega o `taskId` necessário para
+ * permitir remoção via removePlaceForTask, já que hoje a associação é
+ * sempre local->tarefa, nunca local "solto"). Usado pela tela "Meus
+ * locais" (visão central/descoberta da feature — ver card na tela
+ * principal em main.js/index.html).
+ *
+ * Fonte de verdade preferida: backend `GET /places` (mesma API usada por
+ * countPlacesInUse), que devolve os locais com o rótulo da tarefa
+ * associada. Se offline/deslogado ou a chamada falhar, cai para a leitura
+ * local de `task.location` em tasksByDay (mesmo fallback de
+ * countPlacesLocally).
+ *
+ * @returns {Promise<Array<{taskId:string, taskLabel:string, location:object}>>}
+ */
+function listPlacesInUse() {
+  if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
+    return _Api.fetch("/places", { method: "GET" }).then(function (data) {
+      var places = (data && data.places) || [];
+      if (!places.length) return listPlacesLocally();
+      return places.map(function (p) {
+        return {
+          taskId: p.taskId || p.task_id || "",
+          taskLabel: p.taskLabel || p.task_label || "",
+          location: {
+            lat: p.lat,
+            lng: p.lng,
+            radius: p.radius,
+            trigger: p.trigger,
+            label: p.label || ""
+          }
+        };
+      });
+    }, function () {
+      return listPlacesLocally();
+    });
+  }
+  return Promise.resolve(listPlacesLocally());
+}
+
+function listPlacesLocally() {
+  var tasksByDay = getTasksByDay();
+  var out = [];
+  Object.keys(tasksByDay).forEach(function (dayKey) {
+    (tasksByDay[dayKey] || []).forEach(function (t) {
+      if (!t.location) return;
+      out.push({ taskId: t.id, taskLabel: t.label || "", location: t.location });
+    });
+  });
+  return out;
+}
+
 function findTaskById(taskId) {
   var tasksByDay = getTasksByDay();
   var dayKeys = Object.keys(tasksByDay);
@@ -229,6 +282,7 @@ export {
   requestLocationPermissions,
   geofencingSupported,
   countPlacesInUse,
+  listPlacesInUse,
   FREE_PLACES_LIMIT,
   setSyncHook,
   setApiHook

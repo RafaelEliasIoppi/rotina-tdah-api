@@ -199,4 +199,4 @@ document.getElementById("resetBtn").addEventListener("click", function () {
   renderBlocks();
 });
 
-export { renderDayTabs, renderBlocks, updateProgress, renderStreak, toggleTask, escapeHtml, checkIcon, bellIcon, setSyncHook };
+export { renderDayTabs, renderBlocks, updateProgress, renderStreak, toggleTask, escapeHtml, checkIcon, bellIcon, pinIcon, setSyncHook };

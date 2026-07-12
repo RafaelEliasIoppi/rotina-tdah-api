@@ -1,4 +1,10 @@
 (() => {
+  var __defProp = Object.defineProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+
   // src/storage.js
   var AppStorage = /* @__PURE__ */ (function() {
     var KEYS = {
@@ -9,7 +15,8 @@
       SUBSCRIPTION: "rotina_tdah_sub_v1",
       OUTBOX: "rotina_tdah_outbox_v1",
       MIGRATED: "rotina_tdah_migrated_v1",
-      PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1"
+      PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
+      PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1"
     };
     function read(key, fallback) {
       try {
@@ -105,6 +112,12 @@
       },
       setPlacesDisclosureSeen: function() {
         writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1");
+      },
+      getPlaceFeatureDiscoverySeen: function() {
+        return readRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, null) === "1";
+      },
+      setPlaceFeatureDiscoverySeen: function() {
+        writeRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, "1");
       }
     };
   })();
@@ -692,6 +705,41 @@
     });
     return count;
   }
+  function listPlacesInUse() {
+    if (_Api && _Api.isLoggedIn && _Api.isLoggedIn()) {
+      return _Api.fetch("/places", { method: "GET" }).then(function(data) {
+        var places = data && data.places || [];
+        if (!places.length) return listPlacesLocally();
+        return places.map(function(p) {
+          return {
+            taskId: p.taskId || p.task_id || "",
+            taskLabel: p.taskLabel || p.task_label || "",
+            location: {
+              lat: p.lat,
+              lng: p.lng,
+              radius: p.radius,
+              trigger: p.trigger,
+              label: p.label || ""
+            }
+          };
+        });
+      }, function() {
+        return listPlacesLocally();
+      });
+    }
+    return Promise.resolve(listPlacesLocally());
+  }
+  function listPlacesLocally() {
+    var tasksByDay2 = getTasksByDay();
+    var out = [];
+    Object.keys(tasksByDay2).forEach(function(dayKey) {
+      (tasksByDay2[dayKey] || []).forEach(function(t) {
+        if (!t.location) return;
+        out.push({ taskId: t.id, taskLabel: t.label || "", location: t.location });
+      });
+    });
+    return out;
+  }
   function findTaskById(taskId) {
     var tasksByDay2 = getTasksByDay();
     var dayKeys = Object.keys(tasksByDay2);
@@ -735,6 +783,10 @@
   }
 
   // src/editor.js
+  var _PlacesOverlay = null;
+  function setPlacesOverlayHook(placesOverlayModule) {
+    _PlacesOverlay = placesOverlayModule;
+  }
   var editOverlay = document.getElementById("editOverlay");
   var editDayTabsEl = document.getElementById("editDayTabs");
   var editRowsEl = document.getElementById("editRows");
@@ -851,7 +903,14 @@
       }
     }
     renderToggle();
+    if (!task.location && !AppStorage.getPlaceFeatureDiscoverySeen()) {
+      toggleBtn.classList.add("discovery-highlight");
+    }
     toggleBtn.addEventListener("click", function() {
+      if (!AppStorage.getPlaceFeatureDiscoverySeen()) {
+        AppStorage.setPlaceFeatureDiscoverySeen();
+        toggleBtn.classList.remove("discovery-highlight");
+      }
       panel.classList.toggle("show");
       if (panel.classList.contains("show")) renderPanel();
     });
@@ -871,6 +930,7 @@
             panel.classList.remove("show");
             showToast("Local removido");
             if (onChanged) onChanged();
+            if (_PlacesOverlay) _PlacesOverlay.refreshPlacesDiscovery();
           });
         });
         panel.appendChild(current);
@@ -999,6 +1059,7 @@
             panel.classList.remove("show");
             showToast("Lembrete por lugar salvo");
             if (onChanged) onChanged();
+            if (_PlacesOverlay) _PlacesOverlay.refreshPlacesDiscovery();
           }).catch(function() {
             showToast("N\xE3o foi poss\xEDvel salvar o local. Tente novamente.");
           });
@@ -1664,6 +1725,127 @@
     });
   }
 
+  // src/places-overlay.js
+  var places_overlay_exports = {};
+  __export(places_overlay_exports, {
+    closePlacesOverlay: () => closePlacesOverlay,
+    initPlacesOverlay: () => initPlacesOverlay,
+    openPlacesOverlay: () => openPlacesOverlay,
+    placesOverlay: () => placesOverlay,
+    refreshPlacesDiscovery: () => refreshPlacesDiscovery
+  });
+  var placesOverlay = document.getElementById("placesOverlay");
+  var placesDiscoveryEmpty = document.getElementById("placesDiscoveryEmpty");
+  var placesDiscoveryCard = document.getElementById("placesDiscoveryCard");
+  var placesDiscoveryIco = document.getElementById("placesDiscoveryIco");
+  var placesDiscoverySub = document.getElementById("placesDiscoverySub");
+  var placesCountEl = document.getElementById("placesCount");
+  var placesListEl = document.getElementById("placesList");
+  function pinIconLarge() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke-linejoin="round"/><path d="M9 8h4M9 12h6M9 16h6" stroke-linecap="round"/></svg>';
+  }
+  function refreshPlacesDiscovery() {
+    return countPlacesInUse().then(function(info) {
+      if (!info.count) {
+        placesDiscoveryEmpty.style.display = "";
+        placesDiscoveryCard.style.display = "none";
+        return info;
+      }
+      placesDiscoveryEmpty.style.display = "none";
+      placesDiscoveryCard.style.display = "";
+      placesDiscoveryIco.innerHTML = pinIconLarge();
+      return listPlacesInUse().then(function(places) {
+        var names = places.map(function(p) {
+          return p.location.label || p.taskLabel || "Local";
+        }).slice(0, 3);
+        var extra = places.length > names.length ? " e mais " + (places.length - names.length) : "";
+        placesDiscoverySub.textContent = info.count + "/" + (info.limit || FREE_PLACES_LIMIT) + " locais usados \xB7 " + names.join(", ") + extra;
+        return info;
+      });
+    }).catch(function() {
+    });
+  }
+  function openPlacesOverlay() {
+    renderPlacesList();
+    placesOverlay.classList.add("show");
+  }
+  function closePlacesOverlay() {
+    placesOverlay.classList.remove("show");
+    refreshPlacesDiscovery();
+  }
+  function renderPlacesList() {
+    placesCountEl.textContent = "Carregando...";
+    placesListEl.innerHTML = "";
+    Promise.all([countPlacesInUse(), listPlacesInUse()]).then(function(results) {
+      var info = results[0];
+      var places = results[1];
+      placesCountEl.textContent = info.count + " de " + (info.limit || FREE_PLACES_LIMIT) + " locais usados";
+      placesListEl.innerHTML = "";
+      if (!places.length) {
+        var empty = document.createElement("div");
+        empty.className = "places-empty";
+        empty.textContent = "Voc\xEA ainda n\xE3o tem lembretes por lugar. Toque em uma tarefa na edi\xE7\xE3o de rotina para configurar.";
+        placesListEl.appendChild(empty);
+        return;
+      }
+      places.forEach(function(p) {
+        var item = document.createElement("div");
+        item.className = "places-item";
+        var ico = document.createElement("div");
+        ico.className = "ico";
+        ico.innerHTML = pinIcon();
+        var txt = document.createElement("div");
+        txt.className = "txt";
+        var h4 = document.createElement("h4");
+        h4.textContent = p.location.label || "Local";
+        var pEl = document.createElement("p");
+        pEl.textContent = (p.taskLabel || "Tarefa") + " \xB7 " + (p.location.trigger === "exit" ? "ao sair" : "ao chegar");
+        txt.appendChild(h4);
+        txt.appendChild(pEl);
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn btn-danger";
+        removeBtn.textContent = "Remover";
+        removeBtn.addEventListener("click", function() {
+          if (!p.taskId) {
+            showToast("N\xE3o foi poss\xEDvel remover este local.");
+            return;
+          }
+          removePlaceForTask(p.taskId).then(function() {
+            showToast("Local removido");
+            renderPlacesList();
+          }).catch(function() {
+            showToast("N\xE3o foi poss\xEDvel remover o local. Tente novamente.");
+          });
+        });
+        item.appendChild(ico);
+        item.appendChild(txt);
+        item.appendChild(removeBtn);
+        placesListEl.appendChild(item);
+      });
+    }).catch(function() {
+      placesCountEl.textContent = "";
+      var errEl = document.createElement("div");
+      errEl.className = "places-empty";
+      errEl.textContent = "N\xE3o foi poss\xEDvel carregar seus locais agora.";
+      placesListEl.appendChild(errEl);
+    });
+  }
+  function initPlacesOverlay() {
+    placesDiscoveryEmpty.addEventListener("click", openPlacesOverlay);
+    placesDiscoveryCard.addEventListener("click", openPlacesOverlay);
+    document.getElementById("placesOverlayCloseBtn").addEventListener("click", closePlacesOverlay);
+    placesOverlay.addEventListener("click", function(ev) {
+      if (ev.target === placesOverlay) closePlacesOverlay();
+    });
+    document.getElementById("placesAddBtn").addEventListener("click", function() {
+      closePlacesOverlay();
+      openEditor();
+      showToast('Escolha a tarefa que vai receber esse lembrete e toque em "Lembrar por lugar"');
+    });
+    refreshPlacesDiscovery();
+  }
+
   // src/principles.js
   var PRINCIPLES = [
     'O c\xE9rebro com TDAH n\xE3o sustenta bem informa\xE7\xE3o, tempo e motiva\xE7\xE3o internamente \u2014 a solu\xE7\xE3o n\xE3o \xE9 "tentar mais", \xE9 externalizar. Este checklist \xE9 isso aplicado \xE0 sua rotina real.',
@@ -1703,6 +1885,47 @@
     var dayOfMonth = d.getDate();
     var index = (dayOfMonth - 1) % PRINCIPLES.length;
     return PRINCIPLES[index];
+  }
+
+  // src/exercises.js
+  var EXERCISES = [
+    'Antes de abrir qualquer aplicativo hoje, escreva \xE0 m\xE3o em um papel vis\xEDvel as 3 tarefas mais importantes do dia \u2014 n\xE3o mais que 3. Externalizar a prioridade compensa a dificuldade de manter isso "na cabe\xE7a".',
+    'Escolha uma tarefa que voc\xEA vem adiando e divida-a em pelo menos 4 passos bem pequenos, cada um com verbo de a\xE7\xE3o ("abrir o documento", "escrever o primeiro par\xE1grafo"). Passos pequenos e concretos s\xE3o mais f\xE1ceis de iniciar.',
+    'Configure um timer vis\xEDvel (celular, rel\xF3gio, ou at\xE9 um copo com \xE1gua) para uma tarefa que voc\xEA vai fazer agora. Ver o tempo passando substitui o "sentido de tempo" interno que costuma falhar no TDAH.',
+    "Quando sentir vontade de responder algo com raiva ou impulsividade hoje, conte at\xE9 10 antes de agir ou espere ler de novo depois de 5 minutos. A pausa \xE9 um substituto externo para a inibi\xE7\xE3o que n\xE3o vem automaticamente.",
+    'Escolha um objeto que voc\xEA usa todos os dias (chaves, carteira, \xF3culos) e defina um \xFAnico lugar fixo para ele. Deixe-o l\xE1 hoje mesmo. Um "lar" fixo reduz a carga de mem\xF3ria para lembrar onde as coisas est\xE3o.',
+    "Ao terminar uma tarefa hoje, d\xEA a si mesmo uma recompensa pequena e imediata (um caf\xE9, 5 minutos de algo que gosta) antes de passar para a pr\xF3xima. Recompensa atrasada tem pouco efeito \u2014 o refor\xE7o precisa ser r\xE1pido.",
+    'Escolha uma transi\xE7\xE3o do seu dia (sair de casa, come\xE7ar a trabalhar, ir dormir) e crie um alerta sonoro ou visual 10 minutos antes dela. Transi\xE7\xF5es s\xE3o pontos de risco de "travar"; um aviso externo ajuda a se preparar.',
+    "Antes de come\xE7ar a trabalhar hoje, guarde fisicamente (numa gaveta, outro c\xF4modo) uma fonte de distra\xE7\xE3o espec\xEDfica. Reduzir est\xEDmulos concorrentes no ambiente \xE9 mais eficaz do que s\xF3 confiar na for\xE7a de vontade.",
+    'Escolha uma tarefa chata de hoje e diga em voz alta, para si mesmo, o pr\xF3ximo passo antes de faz\xEA-lo. Verbalizar o passo imita a "fala interna" que orienta o comportamento e que costuma ser menos eficaz no TDAH.',
+    "Hoje, ao perceber que est\xE1 enrolando com uma tarefa, anote a hora em que come\xE7ou a enrolar e a hora em que efetivamente come\xE7ou. S\xF3 observar essa diferen\xE7a j\xE1 ajuda a construir no\xE7\xE3o real de tempo, sem se julgar.",
+    "Escolha um compromisso que costuma esquecer e cadastre agora um alarme ou lembrete com o texto exato do que fazer. Lembretes autom\xE1ticos substituem a mem\xF3ria prospectiva, um ponto fraco comum no TDAH.",
+    "Antes de dormir hoje, deixe vis\xEDvel, perto da porta, os itens que precisa levar amanh\xE3. Preparar \xE0 noite tira a decis\xE3o de cima da manh\xE3, quando a autorregula\xE7\xE3o costuma estar mais fragilizada.",
+    "Se hoje voc\xEA perceber que est\xE1 prestes a interromper algu\xE9m no meio da fala, tente segurar por 3 segundos antes de falar. Esse intervalo \xE9 treino direto de inibi\xE7\xE3o de resposta.",
+    "Escolha uma tarefa longa e use um bloco curto de tempo (15\u201325 minutos) com um intervalo garantido depois. Blocos curtos com pausa reduzem a fadiga da aten\xE7\xE3o sustentada, que se esgota mais r\xE1pido no TDAH.",
+    'Hoje, ao sentir uma emo\xE7\xE3o forte, nomeie-a em voz alta ou por escrito ("estou irritado porque isso demorou") antes de reagir. Nomear a emo\xE7\xE3o ativa uma pausa entre sentir e agir.',
+    'Escolha um c\xF4modo ou mesa de trabalho e remova, s\xF3 por hoje, tudo que n\xE3o \xE9 necess\xE1rio para a tarefa atual. Menos objetos no campo visual, menos "ganchos" para a aten\xE7\xE3o sair do lugar.',
+    'Antes de sair de casa hoje, fa\xE7a uma checagem verbal em voz alta dos itens essenciais ("chave, carteira, celular"). Rotinas verbais fixas reduzem esquecimentos recorrentes sem exigir mem\xF3ria perfeita.',
+    'Escolha uma tarefa chata e negocie consigo mesmo um "custo" se n\xE3o a fizer at\xE9 um hor\xE1rio combinado (ex: n\xE3o checar redes sociais at\xE9 terminar). Perder algo de valor costuma motivar mais do que s\xF3 "tentar lembrar".',
+    "Hoje, ao acordar, evite checar o celular nos primeiros 10 minutos e escreva uma frase sobre como quer que o dia comece. Adiar o est\xEDmulo mais absorvente do dia d\xE1 espa\xE7o para autorregula\xE7\xE3o antes da sobrecarga.",
+    'Escolha uma tarefa que voc\xEA tende a fazer de forma impulsiva e escreva 2 linhas antes de come\xE7ar: "o que eu quero no final" e "primeiro passo". Isso \xE9 um exerc\xEDcio direto de planejamento.',
+    'Se hoje surgir um pensamento do tipo "eu devia conseguir fazer isso sem ajuda", anote-o e responda por escrito com um fato: TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 falta de esfor\xE7o. Contestar o mito por escrito ajuda a lembrar que isso n\xE3o \xE9 uma falha pessoal.',
+    'Escolha um hor\xE1rio fixo para dormir hoje e configure um alarme "hora de desligar telas" 30 minutos antes. Sono irregular piora diretamente aten\xE7\xE3o e controle de impulsos no dia seguinte.',
+    "Hoje, ao iniciar uma tarefa, deixe vis\xEDvel s\xF3 o material daquela tarefa espec\xEDfica na mesa. Reduzir pistas de outras tarefas evita a troca constante de foco.",
+    "Escolha uma pessoa (parceiro, amigo, familiar, colega) e pe\xE7a a ela para te lembrar de um compromisso espec\xEDfico hoje. Apoio social como lembrete externo \xE9 uma forma leg\xEDtima de compensar d\xE9ficits de mem\xF3ria.",
+    'Se hoje voc\xEA perceber que uma tarefa est\xE1 tomando muito mais tempo do que devia, pare e pergunte por escrito: "isso ainda \xE9 necess\xE1rio ou eu travei em detalhe?". Essa pausa quebra o padr\xE3o de hiperfoco improdutivo.',
+    'Escolha uma meta pequena de hoje e, assim que cumprir, marque com um "X" vis\xEDvel em um papel ou aplicativo. Ver o progresso registrado d\xE1 um refor\xE7o visual imediato que a mente por si s\xF3 n\xE3o ret\xE9m bem.',
+    'Antes de uma reuni\xE3o, compromisso ou conversa importante hoje, escreva 2 ou 3 pontos que quer lembrar de dizer. Isso externaliza o "roteiro mental" que costuma se perder no meio da fala espont\xE2nea.',
+    'Hoje, ao sentir o impulso de come\xE7ar uma tarefa nova antes de terminar a atual, escreva a nova ideia numa lista de "depois" em vez de trocar de tarefa na hora. A lista captura o impulso sem exigir for\xE7a de vontade.',
+    "Escolha um momento do dia para se mover fisicamente por 5 minutos (caminhar, alongar, subir escada) antes de uma tarefa que exige concentra\xE7\xE3o. Atividade f\xEDsica breve ajuda a regular o estado de alerta.",
+    "Hoje, ao terminar o dia, escreva uma coisa que deu certo, mesmo pequena \u2014 n\xE3o o que faltou fazer. Fechar o dia notando progresso contraria o vi\xE9s de autocr\xEDtica comum em quem convive com TDAH h\xE1 anos.",
+    "Escolha uma regra ou combinado que voc\xEA tem com algu\xE9m e, hoje, transforme-a em um lembrete visual f\xEDsico (post-it, cartaz, nota na porta) em vez de depender de lembrar sozinho. Regras vis\xEDveis no ambiente funcionam melhor."
+  ];
+  function exerciseForDate(date) {
+    var d = date || /* @__PURE__ */ new Date();
+    var dayOfMonth = d.getDate();
+    var index = (dayOfMonth - 1) % EXERCISES.length;
+    return EXERCISES[index];
   }
 
   // src/sync.js
@@ -2141,10 +2364,13 @@
     setSyncHook2(Sync);
     setSyncHook4(Sync);
     setApiHook(Api);
+    setPlacesOverlayHook(places_overlay_exports);
     renderDayTabs();
     renderBlocks();
     var principleTextEl = document.getElementById("principleText");
     if (principleTextEl) principleTextEl.textContent = principleForDate();
+    var exerciseTextEl = document.getElementById("exerciseText");
+    if (exerciseTextEl) exerciseTextEl.textContent = exerciseForDate();
     var manifest = {
       name: "Rotina Di\xE1ria \u2014 Apoio TDAH",
       short_name: "Rotina TDAH",
@@ -2199,6 +2425,7 @@
     initAuth();
     initEducation();
     initGeofencing();
+    initPlacesOverlay();
     document.addEventListener("keydown", function(ev) {
       if (ev.key !== "Escape") return;
       var tdahInfoOverlay2 = document.getElementById("tdahInfoOverlay");
@@ -2206,6 +2433,7 @@
       var editOverlay2 = document.getElementById("editOverlay");
       var placesPrivacyOverlay2 = document.getElementById("placesPrivacyOverlay");
       if (placesPrivacyOverlay2.classList.contains("show")) closePlacesPrivacy();
+      else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
       else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();
       else if (editOverlay2.classList.contains("show")) closeEditor();

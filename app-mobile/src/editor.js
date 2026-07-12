@@ -11,6 +11,14 @@ import {
   requestLocationPermissions, countPlacesInUse, FREE_PLACES_LIMIT
 } from "./geofencing.js";
 
+// Hook para o módulo places-overlay.js (evita import circular: places-overlay.js
+// já importa editor.js para poder abrir o editor a partir do botão "+ Adicionar
+// lembrete por lugar" — ver PLANO da descoberta central de locais).
+var _PlacesOverlay = null;
+function setPlacesOverlayHook(placesOverlayModule) {
+  _PlacesOverlay = placesOverlayModule;
+}
+
 /* ---------- Editor: cada pessoa monta seus próprios horários ---------- */
 var editOverlay = document.getElementById("editOverlay");
 var editDayTabsEl = document.getElementById("editDayTabs");
@@ -141,7 +149,19 @@ function buildPlaceSection(task, onChanged) {
   }
   renderToggle();
 
+  // Reforço leve de descoberta: na primeira vez que o usuário abre o editor
+  // de qualquer tarefa (flag por dispositivo), destaca visualmente o botão
+  // "Lembrar por lugar" para chamar atenção pra feature. Some assim que o
+  // usuário abre o painel pela 1a vez (não fica destacado para sempre).
+  if (!task.location && !AppStorage.getPlaceFeatureDiscoverySeen()) {
+    toggleBtn.classList.add("discovery-highlight");
+  }
+
   toggleBtn.addEventListener("click", function () {
+    if (!AppStorage.getPlaceFeatureDiscoverySeen()) {
+      AppStorage.setPlaceFeatureDiscoverySeen();
+      toggleBtn.classList.remove("discovery-highlight");
+    }
     panel.classList.toggle("show");
     if (panel.classList.contains("show")) renderPanel();
   });
@@ -164,6 +184,7 @@ function buildPlaceSection(task, onChanged) {
           panel.classList.remove("show");
           showToast("Local removido");
           if (onChanged) onChanged();
+          if (_PlacesOverlay) _PlacesOverlay.refreshPlacesDiscovery();
         });
       });
       panel.appendChild(current);
@@ -298,6 +319,7 @@ function buildPlaceSection(task, onChanged) {
           panel.classList.remove("show");
           showToast("Lembrete por lugar salvo");
           if (onChanged) onChanged();
+          if (_PlacesOverlay) _PlacesOverlay.refreshPlacesDiscovery();
         }).catch(function () {
           showToast("Não foi possível salvar o local. Tente novamente.");
         });
@@ -516,4 +538,4 @@ function initEditor() {
   });
 }
 
-export { openEditor, closeEditor, initEditor, closePlacesPrivacy };
+export { openEditor, closeEditor, initEditor, closePlacesPrivacy, setPlacesOverlayHook };

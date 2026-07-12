@@ -12,7 +12,8 @@ var AppStorage = (function () {
     SUBSCRIPTION: "rotina_tdah_sub_v1",
     OUTBOX: "rotina_tdah_outbox_v1",
     MIGRATED: "rotina_tdah_migrated_v1",
-    PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1"
+    PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
+    PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1"
   };
 
   function read(key, fallback) {
@@ -77,7 +78,10 @@ var AppStorage = (function () {
     setMigratedUserId: function (uid) { writeRaw(KEYS.MIGRATED, String(uid)); },
 
     getPlacesDisclosureSeen: function () { return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1"; },
-    setPlacesDisclosureSeen: function () { writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1"); }
+    setPlacesDisclosureSeen: function () { writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1"); },
+
+    getPlaceFeatureDiscoverySeen: function () { return readRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, null) === "1"; },
+    setPlaceFeatureDiscoverySeen: function () { writeRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, "1"); }
   };
 })();
 

@@ -114,11 +114,29 @@
     <p id="principleText">O cérebro com TDAH não sustenta bem informação, tempo e motivação internamente — a solução não é "tentar mais", é <strong>externalizar</strong>. Este checklist é isso aplicado à sua rotina real.</p>
   </div>
 
+  <div class="principle exercise">
+    <div class="label">Exercício do dia</div>
+    <p id="exerciseText"></p>
+  </div>
+
   <button class="tdah-info-link" id="tdahInfoBtn" type="button">
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke-linejoin="round"/><path d="M9 8h4M9 12h6M9 16h6" stroke-linecap="round"/></svg></div>
     <div class="txt">
       <h3>Entenda o TDAH</h3>
       <p>Resumos sobre diagnóstico, tratamento e funções executivas</p>
+    </div>
+    <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </button>
+
+  <button class="places-discovery-empty" id="placesDiscoveryEmpty" type="button" style="display:none;">
+    📍 Configurar lembretes por lugar
+  </button>
+
+  <button class="tdah-info-link places-discovery-card" id="placesDiscoveryCard" type="button" style="display:none;">
+    <div class="ico" id="placesDiscoveryIco"></div>
+    <div class="txt">
+      <h3 id="placesDiscoveryTitle">Locais ativos</h3>
+      <p id="placesDiscoverySub"></p>
     </div>
     <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </button>
@@ -321,6 +339,22 @@
         <button class="btn" id="placesPrivacySkipBtn" type="button">Agora não</button>
         <button class="btn btn-primary" id="placesPrivacyAllowBtn" type="button">Permitir localização</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="placesOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="placesOverlayTitle">
+    <div class="modal-header">
+      <h2 id="placesOverlayTitle">Meus locais</h2>
+      <button class="modal-close" id="placesOverlayCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="places-count" id="placesCount"></div>
+      <div id="placesList"></div>
+      <button class="add-task-btn" id="placesAddBtn" type="button">+ Adicionar lembrete por lugar</button>
     </div>
   </div>
 </div>
