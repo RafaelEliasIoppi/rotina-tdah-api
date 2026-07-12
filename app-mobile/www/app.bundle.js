@@ -1745,6 +1745,7 @@
   var GOOGLE_CLIENT_ID = null;
   var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
   var socialLoginInitPromise = null;
+  var isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   function ensureSocialLoginInit() {
     if (!SocialLogin) return Promise.reject(new Error("SocialLogin indisponivel"));
     if (!GOOGLE_CLIENT_ID) return Promise.reject(new Error("Google Client ID nao configurado"));
@@ -1754,6 +1755,69 @@
       });
     }
     return socialLoginInitPromise;
+  }
+  var gsiScriptPromise = null;
+  function ensureGsiScriptLoaded() {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+      return Promise.resolve();
+    }
+    if (!gsiScriptPromise) {
+      gsiScriptPromise = new Promise(function(resolve, reject) {
+        var s = document.createElement("script");
+        s.src = "https://accounts.google.com/gsi/client";
+        s.async = true;
+        s.defer = true;
+        s.onload = function() {
+          resolve();
+        };
+        s.onerror = function() {
+          reject(new Error("Falha ao carregar o script do Google."));
+        };
+        document.head.appendChild(s);
+      });
+    }
+    return gsiScriptPromise;
+  }
+  function doGoogleLoginWeb(onDone) {
+    if (!GOOGLE_CLIENT_ID) {
+      showToast("Google Client ID nao configurado.");
+      if (onDone) onDone(false);
+      return;
+    }
+    setAuthLoading(true);
+    ensureGsiScriptLoaded().then(function() {
+      return new Promise(function(resolve, reject) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: function(response) {
+            if (response && response.credential) resolve(response.credential);
+            else reject(new Error("Falha na autenticacao com Google."));
+          }
+        });
+        window.google.accounts.id.prompt(function(notification) {
+          if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
+            reject(new Error("Login com Google cancelado ou bloqueado pelo navegador."));
+          }
+        });
+      });
+    }).then(function(idToken) {
+      return Api.googleLogin(idToken).then(function() {
+        return Api.me().catch(function() {
+          return null;
+        });
+      }).then(function() {
+        setAuthLoading(false);
+        closeAuth();
+        var s = Api.getSession();
+        var who = s && s.user ? s.user.displayName || s.user.email : "";
+        showToast("Conectado com Google" + (who ? " como " + who : ""));
+        if (onDone) onDone(true);
+      });
+    }).catch(function(err) {
+      setAuthLoading(false);
+      setAuthError(friendlyAuthError(err));
+      if (onDone) onDone(false);
+    });
   }
   var sessionChip = document.getElementById("sessionChip");
   function renderSessionChip() {
@@ -1855,6 +1919,10 @@
     return "N\xE3o foi poss\xEDvel concluir. Tente novamente.";
   }
   function doGoogleLogin(onDone) {
+    if (!isNativeApp) {
+      doGoogleLoginWeb(onDone);
+      return;
+    }
     if (!SocialLogin) {
       showToast("Login com Google indisponivel neste app.");
       if (onDone) onDone(false);

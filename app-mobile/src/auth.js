@@ -7,6 +7,7 @@ var GOOGLE_CLIENT_ID = null;
 var GOOGLE_ANDROID_CLIENT_ID = null;
 var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
 var socialLoginInitPromise = null;
+var isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
 // Inicializa o plugin nativo de login social (Google via Credential Manager).
 // Login com Google via WebView/GSI é bloqueado pelo Google em apps Android nativos
@@ -20,6 +21,73 @@ function ensureSocialLoginInit() {
     });
   }
   return socialLoginInitPromise;
+}
+
+// ---------- Login Google no navegador (site publicado no Render) ----------
+// Fora do app nativo, o plugin SocialLogin não existe — usamos o SDK oficial
+// Google Identity Services (GSI) carregado sob demanda, que funciona em
+// qualquer navegador moderno e usa a mesma GOOGLE_CLIENT_ID (web) já buscada
+// do backend em /config.
+var gsiScriptPromise = null;
+function ensureGsiScriptLoaded() {
+  if (window.google && window.google.accounts && window.google.accounts.id) {
+    return Promise.resolve();
+  }
+  if (!gsiScriptPromise) {
+    gsiScriptPromise = new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = "https://accounts.google.com/gsi/client";
+      s.async = true;
+      s.defer = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error("Falha ao carregar o script do Google.")); };
+      document.head.appendChild(s);
+    });
+  }
+  return gsiScriptPromise;
+}
+
+function doGoogleLoginWeb(onDone) {
+  if (!GOOGLE_CLIENT_ID) {
+    showToast("Google Client ID nao configurado.");
+    if (onDone) onDone(false);
+    return;
+  }
+  setAuthLoading(true);
+  ensureGsiScriptLoaded().then(function () {
+    return new Promise(function (resolve, reject) {
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: function (response) {
+          if (response && response.credential) resolve(response.credential);
+          else reject(new Error("Falha na autenticacao com Google."));
+        }
+      });
+      // Usa o popup nativo do GSI (One Tap / seletor de conta) em vez do
+      // botão renderizado pelo Google, para reaproveitar o mesmo botão de
+      // UI que o app já tem (splashGoogleBtn / authGoogleBtn).
+      window.google.accounts.id.prompt(function (notification) {
+        if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
+          reject(new Error("Login com Google cancelado ou bloqueado pelo navegador."));
+        }
+      });
+    });
+  }).then(function (idToken) {
+    return Api.googleLogin(idToken).then(function () {
+      return Api.me().catch(function () { return null; });
+    }).then(function () {
+      setAuthLoading(false);
+      closeAuth();
+      var s = Api.getSession();
+      var who = s && s.user ? (s.user.displayName || s.user.email) : "";
+      showToast("Conectado com Google" + (who ? " como " + who : ""));
+      if (onDone) onDone(true);
+    });
+  }).catch(function (err) {
+    setAuthLoading(false);
+    setAuthError(friendlyAuthError(err));
+    if (onDone) onDone(false);
+  });
 }
 
 var sessionChip = document.getElementById("sessionChip");
@@ -129,6 +197,12 @@ function friendlyAuthError(err) {
 }
 
 function doGoogleLogin(onDone) {
+  // Fora do app nativo (site no navegador), não existe SocialLogin — usa o
+  // fluxo GSI dedicado em vez de mostrar "indisponível" sem alternativa.
+  if (!isNativeApp) {
+    doGoogleLoginWeb(onDone);
+    return;
+  }
   if (!SocialLogin) {
     showToast("Login com Google indisponivel neste app.");
     if (onDone) onDone(false);
