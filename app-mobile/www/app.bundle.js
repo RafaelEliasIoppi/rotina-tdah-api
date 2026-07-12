@@ -1524,6 +1524,26 @@
   function dismissSplash() {
     splashScreen.setAttribute("hidden", "");
   }
+  function showSplash() {
+    splashScreen.removeAttribute("hidden");
+    applySplashSessionState();
+  }
+  var SPLASH_REAPPEAR_AFTER_MS = 5 * 60 * 1e3;
+  var backgroundedAt = null;
+  function initSplashReappearOnResume() {
+    document.addEventListener("visibilitychange", function() {
+      if (document.visibilityState === "hidden") {
+        backgroundedAt = Date.now();
+        return;
+      }
+      if (backgroundedAt === null) return;
+      var elapsed = Date.now() - backgroundedAt;
+      backgroundedAt = null;
+      if (elapsed >= SPLASH_REAPPEAR_AFTER_MS) {
+        showSplash();
+      }
+    });
+  }
   function applySplashSessionState() {
     var s = Api.getSession();
     if (s && s.user) {
@@ -1613,6 +1633,7 @@
       Api.me().catch(function() {
       });
     }
+    initSplashReappearOnResume();
   }
 
   // src/education.js

@@ -185,6 +185,35 @@ function dismissSplash() {
   splashScreen.setAttribute("hidden", "");
 }
 
+function showSplash() {
+  splashScreen.removeAttribute("hidden");
+  applySplashSessionState();
+}
+
+// Reexibe a splash automaticamente se o app ficar um tempo em segundo plano
+// (usuário minimizou e voltou depois), sem exigir nenhuma ação manual (ex:
+// botão "Sair"). Isso cobre o caso de uso real: a splash deve aparecer "ao
+// abrir o app", e reabrir depois de alguns minutos fora conta como abrir de
+// novo, mesmo que o processo Android não tenha sido encerrado.
+var SPLASH_REAPPEAR_AFTER_MS = 5 * 60 * 1000; // 5 minutos
+var backgroundedAt = null;
+
+function initSplashReappearOnResume() {
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") {
+      backgroundedAt = Date.now();
+      return;
+    }
+    // visibilityState === "visible"
+    if (backgroundedAt === null) return;
+    var elapsed = Date.now() - backgroundedAt;
+    backgroundedAt = null;
+    if (elapsed >= SPLASH_REAPPEAR_AFTER_MS) {
+      showSplash();
+    }
+  });
+}
+
 function applySplashSessionState() {
   var s = Api.getSession();
   if (s && s.user) {
@@ -277,6 +306,8 @@ function initAuth() {
   if (Api.isLoggedIn()) {
     Api.me().catch(function () { /* offline ou token inválido: refresh/limpeza já tratados no Api */ });
   }
+
+  initSplashReappearOnResume();
 }
 
 export { openAuth, closeAuth, doGoogleLogin, initAuth };
