@@ -81,7 +81,12 @@
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
-    padding-bottom: 88px;
+    /* 88px cobria os FABs fixos (install-btn/edit-fab, ~56px + respiro), mas
+       nunca incluía env(safe-area-inset-bottom) — a página principal (fora
+       de qualquer modal) ficava com o fim real do conteúdo (footer) cortado
+       pela barra de gestos do Android. Mesma classe de bug já corrigida em
+       .modal-body/.modal-footer/.toast, só que nunca aplicada aqui. */
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
