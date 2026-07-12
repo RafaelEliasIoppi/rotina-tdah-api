@@ -13,7 +13,8 @@ var AppStorage = (function () {
     OUTBOX: "rotina_tdah_outbox_v1",
     MIGRATED: "rotina_tdah_migrated_v1",
     PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
-    PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1"
+    PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1",
+    SELF_ASSESSMENT_PROGRESS: "rotina_tdah_self_assessment_progress_v1"
   };
 
   function read(key, fallback) {
@@ -81,7 +82,13 @@ var AppStorage = (function () {
     setPlacesDisclosureSeen: function () { writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1"); },
 
     getPlaceFeatureDiscoverySeen: function () { return readRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, null) === "1"; },
-    setPlaceFeatureDiscoverySeen: function () { writeRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, "1"); }
+    setPlaceFeatureDiscoverySeen: function () { writeRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, "1"); },
+
+    getSelfAssessmentProgress: function () { return read(KEYS.SELF_ASSESSMENT_PROGRESS, null); },
+    setSelfAssessmentProgress: function (progress) {
+      if (progress) write(KEYS.SELF_ASSESSMENT_PROGRESS, progress);
+      else remove(KEYS.SELF_ASSESSMENT_PROGRESS);
+    }
   };
 })();
 

@@ -16,7 +16,8 @@
       OUTBOX: "rotina_tdah_outbox_v1",
       MIGRATED: "rotina_tdah_migrated_v1",
       PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
-      PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1"
+      PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1",
+      SELF_ASSESSMENT_PROGRESS: "rotina_tdah_self_assessment_progress_v1"
     };
     function read(key, fallback) {
       try {
@@ -118,6 +119,13 @@
       },
       setPlaceFeatureDiscoverySeen: function() {
         writeRaw(KEYS.PLACE_FEATURE_DISCOVERY_SEEN, "1");
+      },
+      getSelfAssessmentProgress: function() {
+        return read(KEYS.SELF_ASSESSMENT_PROGRESS, null);
+      },
+      setSelfAssessmentProgress: function(progress) {
+        if (progress) write(KEYS.SELF_ASSESSMENT_PROGRESS, progress);
+        else remove(KEYS.SELF_ASSESSMENT_PROGRESS);
       }
     };
   })();
@@ -1802,7 +1810,7 @@
       ]
     }
   ];
-  var TOTAL_STEPS = 4;
+  var TOTAL_STEPS = 5;
   var FREQUENT_MIN = 2;
   var saState = null;
   var saStep = 0;
@@ -1833,9 +1841,18 @@
       })
     };
   }
+  function saveProgress() {
+    AppStorage.setSelfAssessmentProgress({ state: saState, step: saStep });
+  }
   function openSelfAssessment() {
-    saState = freshState();
-    saStep = 0;
+    var saved = AppStorage.getSelfAssessmentProgress();
+    if (saved && saved.state && saved.step < TOTAL_STEPS - 1) {
+      saState = saved.state;
+      saStep = saved.step;
+    } else {
+      saState = freshState();
+      saStep = 0;
+    }
     render();
     saOverlay.classList.add("show");
   }
@@ -1845,6 +1862,7 @@
   function renderFrequencyItem(question, listRef, idx) {
     var wrap = document.createElement("div");
     wrap.className = "sa-item";
+    wrap.dataset.answered = listRef.arr[idx] !== null ? "1" : "0";
     var q = document.createElement("div");
     q.className = "sa-item-q";
     q.textContent = question;
@@ -1861,7 +1879,10 @@
       input.checked = listRef.arr[idx] === opt.value;
       input.addEventListener("change", function() {
         listRef.arr[idx] = opt.value;
+        wrap.dataset.answered = "1";
+        wrap.classList.remove("sa-item-unanswered");
         updateNextEnabled();
+        saveProgress();
       });
       label.appendChild(input);
       label.appendChild(document.createTextNode(opt.label));
@@ -1870,31 +1891,44 @@
     wrap.appendChild(opts);
     return wrap;
   }
-  function renderPart1() {
+  function renderFrequencyStep(title, questions, listName, listArr, introText, sourceText) {
     var wrap = document.createElement("div");
     var intro = document.createElement("p");
     intro.className = "sa-intro";
-    intro.textContent = "Para cada item, marque com que frequ\xEAncia isso acontece com voc\xEA nos \xFAltimos 6 meses.";
+    intro.textContent = introText;
     wrap.appendChild(intro);
     var h1 = document.createElement("h3");
     h1.className = "sa-subhead";
-    h1.textContent = "Desaten\xE7\xE3o";
+    h1.textContent = title;
     wrap.appendChild(h1);
-    PART1_DESATENCAO.forEach(function(q, idx) {
-      wrap.appendChild(renderFrequencyItem(q, { name: "desatencao", arr: saState.desatencao }, idx));
-    });
-    var h2 = document.createElement("h3");
-    h2.className = "sa-subhead";
-    h2.textContent = "Hiperatividade / Impulsividade";
-    wrap.appendChild(h2);
-    PART1_HIPERATIVIDADE.forEach(function(q, idx) {
-      wrap.appendChild(renderFrequencyItem(q, { name: "hiperatividade", arr: saState.hiperatividade }, idx));
+    questions.forEach(function(q, idx) {
+      wrap.appendChild(renderFrequencyItem(q, { name: listName, arr: listArr }, idx));
     });
     var source = document.createElement("div");
     source.className = "sa-source";
-    source.textContent = "Fonte: crit\xE9rios do DSM-5, conforme citados na Cartilha ABP/Alexa e no cap\xEDtulo IACAPAP.";
+    source.textContent = sourceText;
     wrap.appendChild(source);
     return wrap;
+  }
+  function renderPart1Desatencao() {
+    return renderFrequencyStep(
+      "Desaten\xE7\xE3o",
+      PART1_DESATENCAO,
+      "desatencao",
+      saState.desatencao,
+      "Para cada item, marque com que frequ\xEAncia isso acontece com voc\xEA nos \xFAltimos 6 meses. (1 de 2 \u2014 Desaten\xE7\xE3o)",
+      "Fonte: crit\xE9rios do DSM-5, conforme citados na Cartilha ABP/Alexa e no cap\xEDtulo IACAPAP."
+    );
+  }
+  function renderPart1Hiperatividade() {
+    return renderFrequencyStep(
+      "Hiperatividade / Impulsividade",
+      PART1_HIPERATIVIDADE,
+      "hiperatividade",
+      saState.hiperatividade,
+      "Continue marcando a frequ\xEAncia de cada item nos \xFAltimos 6 meses. (2 de 2 \u2014 Hiperatividade/Impulsividade)",
+      "Fonte: crit\xE9rios do DSM-5, conforme citados na Cartilha ABP/Alexa e no cap\xEDtulo IACAPAP."
+    );
   }
   function renderPart2() {
     var wrap = document.createElement("div");
@@ -1905,6 +1939,7 @@
     PART2_QUESTIONS.forEach(function(q, idx) {
       var item = document.createElement("div");
       item.className = "sa-item";
+      item.dataset.answered = saState.confirm[idx] !== null ? "1" : "0";
       var qEl = document.createElement("div");
       qEl.className = "sa-item-q";
       qEl.textContent = q;
@@ -1921,7 +1956,10 @@
         input.checked = saState.confirm[idx] === opt.v;
         input.addEventListener("change", function() {
           saState.confirm[idx] = opt.v;
+          item.dataset.answered = "1";
+          item.classList.remove("sa-item-unanswered");
           updateNextEnabled();
+          saveProgress();
         });
         label.appendChild(input);
         label.appendChild(document.createTextNode(opt.l));
@@ -1959,6 +1997,7 @@
         input.checked = !!saState.barkley[areaIdx][itemIdx];
         input.addEventListener("change", function() {
           saState.barkley[areaIdx][itemIdx] = input.checked;
+          saveProgress();
         });
         label.appendChild(input);
         label.appendChild(document.createTextNode(text));
@@ -2067,20 +2106,28 @@
   function render() {
     saBody.innerHTML = "";
     var stepEl;
-    if (saStep === 0) stepEl = renderPart1();
-    else if (saStep === 1) stepEl = renderPart2();
-    else if (saStep === 2) stepEl = renderPart3();
+    if (saStep === 0) stepEl = renderPart1Desatencao();
+    else if (saStep === 1) stepEl = renderPart1Hiperatividade();
+    else if (saStep === 2) stepEl = renderPart2();
+    else if (saStep === 3) stepEl = renderPart3();
     else stepEl = renderResult();
     saBody.appendChild(stepEl);
     saBody.scrollTop = 0;
     var pct = Math.round((saStep + 1) / TOTAL_STEPS * 100);
     saProgressFill.style.width = pct + "%";
-    var labels = ["Parte 1 de 3 \xB7 Sintomas (DSM-5)", "Parte 2 de 3 \xB7 Confirma\xE7\xE3o", "Parte 3 de 3 \xB7 \xC1reas de Barkley", "Resultado"];
+    var labels = [
+      "Passo 1 de 4 \xB7 Desaten\xE7\xE3o (DSM-5)",
+      "Passo 2 de 4 \xB7 Hiperatividade/Impulsividade (DSM-5)",
+      "Passo 3 de 4 \xB7 Confirma\xE7\xE3o",
+      "Passo 4 de 4 \xB7 \xC1reas de Barkley",
+      "Resultado"
+    ];
     saStepLabel.textContent = labels[saStep];
     saBackBtn.style.visibility = saStep === 0 ? "hidden" : "visible";
     if (saStep === TOTAL_STEPS - 1) {
       saNextBtn.style.display = "none";
       saRestartBtn.style.display = "";
+      AppStorage.setSelfAssessmentProgress(null);
     } else {
       saNextBtn.style.display = "";
       saRestartBtn.style.display = "none";
@@ -2088,26 +2135,36 @@
     }
     updateNextEnabled();
   }
+  function stepIsComplete() {
+    if (saStep === 0) return saState.desatencao.every(function(v) {
+      return v !== null;
+    });
+    if (saStep === 1) return saState.hiperatividade.every(function(v) {
+      return v !== null;
+    });
+    if (saStep === 2) return saState.confirm.every(function(v) {
+      return v !== null;
+    });
+    return true;
+  }
   function updateNextEnabled() {
     if (saStep === TOTAL_STEPS - 1) return;
-    var ok = true;
-    if (saStep === 0) {
-      ok = saState.desatencao.every(function(v) {
-        return v !== null;
-      }) && saState.hiperatividade.every(function(v) {
-        return v !== null;
-      });
-    } else if (saStep === 1) {
-      ok = saState.confirm.every(function(v) {
-        return v !== null;
-      });
-    }
-    saNextBtn.disabled = !ok;
+    saNextBtn.disabled = !stepIsComplete();
+  }
+  function focusFirstUnanswered() {
+    var unanswered = saBody.querySelector('.sa-item[data-answered="0"]');
+    if (!unanswered) return;
+    unanswered.classList.add("sa-item-unanswered");
+    unanswered.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function goNext() {
-    if (saNextBtn.disabled) return;
+    if (saNextBtn.disabled) {
+      focusFirstUnanswered();
+      return;
+    }
     if (saStep < TOTAL_STEPS - 1) {
       saStep += 1;
+      saveProgress();
       render();
     }
   }
@@ -2120,6 +2177,7 @@
   function restart() {
     saState = freshState();
     saStep = 0;
+    AppStorage.setSelfAssessmentProgress(null);
     render();
   }
   function initSelfAssessment() {
@@ -2974,7 +3032,7 @@
     renderDayTabs();
     renderBlocks();
     var today = /* @__PURE__ */ new Date();
-    var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+    var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }).replace(/\./g, "");
     var principle = principleForDate(today);
     var principleTextEl = document.getElementById("principleText");
     var principleSourceEl = document.getElementById("principleSource");

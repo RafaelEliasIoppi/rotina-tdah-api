@@ -34,7 +34,9 @@ import { Api } from "./api.js";
   // visualmente que o conteúdo muda todo dia, e a fonte é sempre mostrada
   // junto ao texto (regra do projeto: nenhum conteúdo clínico sem fonte).
   var today = new Date();
-  var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+  // Formato curto ("sáb, 11 jul") em vez de por extenso — evita truncamento
+  // por ellipsis em telas estreitas e reduz a disputa visual com o label.
+  var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" }).replace(/\./g, "");
 
   var principle = principleForDate(today);
   var principleTextEl = document.getElementById("principleText");

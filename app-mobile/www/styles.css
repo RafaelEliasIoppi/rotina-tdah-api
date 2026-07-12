@@ -61,6 +61,21 @@
 
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+
+  /* Foco visível global — essencial para navegação por teclado/switch e
+     para retomar o lugar na tela após uma interrupção (comum no público
+     do app). Cor fixa (não var(--accent)) para não desaparecer sobre
+     fundos que já usam --accent-soft/--accent (ex. opção selecionada). */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  .sa-freq-opt:focus-within,
+  .sa-yn-opt:focus-within,
+  .sa-check-item:focus-within,
+  .tdah-info-link:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
   body {
     background: var(--bg);
     color: var(--ink);
@@ -283,8 +298,8 @@
   .principle .label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
   .principle p { font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; margin: 8px 0 0 0; color: var(--ink); }
   .principle .label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-  .principle .label-date { font-size: 0.66rem; font-weight: 600; color: var(--ink-faint); text-transform: capitalize; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .principle .source-tag { font-family: var(--font-body, inherit); font-size: 0.72rem; font-style: italic; color: var(--ink-faint); margin: 8px 0 0 0; line-height: 1.4; }
+  .principle .label-date { font-size: 0.66rem; font-weight: 600; color: var(--ink-soft); text-transform: capitalize; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .principle .source-tag { font-family: var(--font-body, inherit); font-size: 0.75rem; font-style: italic; color: var(--ink-soft); margin: 8px 0 0 0; line-height: 1.4; }
 
   .tdah-info-link {
     display: flex; align-items: center; gap: 12px; width: 100%;
@@ -372,7 +387,8 @@
   .sa-freq-opts { display: flex; flex-direction: column; gap: 6px; }
   .sa-freq-opt {
     display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--ink-soft);
-    padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    padding: 11px 12px; min-height: 44px; box-sizing: border-box;
+    border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
     background: var(--bg-elevated);
   }
   .sa-freq-opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
@@ -382,7 +398,8 @@
   .sa-yn-opt {
     flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
     font-size: 0.82rem; font-weight: 600; color: var(--ink-soft);
-    padding: 9px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    padding: 11px; min-height: 44px; box-sizing: border-box;
+    border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
     background: var(--bg-elevated);
   }
   .sa-yn-opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
@@ -390,13 +407,15 @@
 
   .sa-check-item {
     display: flex; align-items: flex-start; gap: 9px; font-size: 0.83rem; color: var(--ink-soft);
-    padding: 8px 2px; cursor: pointer; line-height: 1.4;
+    padding: 12px 2px; min-height: 44px; box-sizing: border-box; cursor: pointer; line-height: 1.4;
   }
   .sa-check-item input { flex: none; margin-top: 2px; }
 
   .sa-source {
-    font-size: 0.71rem; color: var(--ink-faint); font-style: italic; margin-top: 14px;
+    font-size: 0.75rem; color: var(--ink-soft); font-style: italic; margin-top: 14px;
   }
+
+  .sa-item-unanswered { border-color: var(--warn) !important; box-shadow: 0 0 0 2px var(--warn-soft); }
 
   .sa-result-card {
     border-radius: 12px; padding: 16px; border: 1px solid var(--border); background: var(--bg-sunken);
@@ -408,8 +427,8 @@
   .sa-tone-calm h3 { color: var(--good); }
   .sa-tone-warn { border-color: var(--warn); background: var(--warn-soft); }
   .sa-tone-warn h3 { color: var(--warn); }
-  .sa-tone-alert { border-color: var(--crit); background: var(--crit-soft); }
-  .sa-tone-alert h3 { color: var(--crit); }
+  .sa-tone-alert { border-color: var(--accent); background: var(--accent-soft); }
+  .sa-tone-alert h3 { color: var(--accent); }
 
   .sa-summary { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
   .sa-summary-row {

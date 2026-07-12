@@ -1,3 +1,5 @@
+import { AppStorage } from "./storage.js";
+
 /* ---------- Modal: Autoavaliação · TDAH em adultos ---------- */
 // Roteiro fiel a _extracted/autoavaliacao_triagem_tdah.md — 18 sintomas do
 // DSM-5 (Parte 1), 4 critérios de confirmação (Parte 2) e 15 itens das 5
@@ -87,11 +89,15 @@ var PART3_AREAS = [
   }
 ];
 
-var TOTAL_STEPS = 4; // Parte 1, Parte 2, Parte 3, Resultado
+// 5 passos: Desatenção, Hiperatividade/Impulsividade, Confirmação, Áreas de
+// Barkley, Resultado. A Parte 1 original (18 itens seguidos) foi dividida em
+// dois sub-passos de 9 itens cada — uma sequência longa sem pausa é o tipo
+// de tarefa que o público do app tem mais dificuldade de sustentar.
+var TOTAL_STEPS = 5;
 var FREQUENT_MIN = 2; // índice de FREQ_OPTIONS a partir do qual conta como "frequentemente" ou "muito frequentemente"
 
 var saState = null; // { desatencao: [], hiperatividade: [], confirm: [], barkley: [] }
-var saStep = 0; // 0 = Parte 1, 1 = Parte 2, 2 = Parte 3, 3 = Resultado
+var saStep = 0; // 0 = Desatenção, 1 = Hiperatividade, 2 = Parte 2, 3 = Parte 3, 4 = Resultado
 
 var saOverlay = document.getElementById("saOverlay");
 var saBtn = document.getElementById("saBtn");
@@ -112,9 +118,23 @@ function freshState() {
   };
 }
 
+// Persistência de progresso: perder o modal (fechar sem querer, trocar de
+// app, ser interrompido) não deve custar recomeçar um questionário de 32
+// itens do zero — esse tipo de perda é desmotivador especificamente para
+// quem tem dificuldade de retomar tarefas longas interrompidas.
+function saveProgress() {
+  AppStorage.setSelfAssessmentProgress({ state: saState, step: saStep });
+}
+
 function openSelfAssessment() {
-  saState = freshState();
-  saStep = 0;
+  var saved = AppStorage.getSelfAssessmentProgress();
+  if (saved && saved.state && saved.step < TOTAL_STEPS - 1) {
+    saState = saved.state;
+    saStep = saved.step;
+  } else {
+    saState = freshState();
+    saStep = 0;
+  }
   render();
   saOverlay.classList.add("show");
 }
@@ -128,6 +148,7 @@ function closeSelfAssessment() {
 function renderFrequencyItem(question, listRef, idx) {
   var wrap = document.createElement("div");
   wrap.className = "sa-item";
+  wrap.dataset.answered = listRef.arr[idx] !== null ? "1" : "0";
 
   var q = document.createElement("div");
   q.className = "sa-item-q";
@@ -146,7 +167,10 @@ function renderFrequencyItem(question, listRef, idx) {
     input.checked = listRef.arr[idx] === opt.value;
     input.addEventListener("change", function () {
       listRef.arr[idx] = opt.value;
+      wrap.dataset.answered = "1";
+      wrap.classList.remove("sa-item-unanswered");
       updateNextEnabled();
+      saveProgress();
     });
     label.appendChild(input);
     label.appendChild(document.createTextNode(opt.label));
@@ -156,36 +180,53 @@ function renderFrequencyItem(question, listRef, idx) {
   return wrap;
 }
 
-function renderPart1() {
+// Sub-passo com 9 itens (Desatenção ou Hiperatividade/Impulsividade) em vez
+// dos 18 originais seguidos — reduz a sensação de "não tem fim" e dá um
+// ponto de conclusão intermediário.
+function renderFrequencyStep(title, questions, listName, listArr, introText, sourceText) {
   var wrap = document.createElement("div");
 
   var intro = document.createElement("p");
   intro.className = "sa-intro";
-  intro.textContent = "Para cada item, marque com que frequência isso acontece com você nos últimos 6 meses.";
+  intro.textContent = introText;
   wrap.appendChild(intro);
 
   var h1 = document.createElement("h3");
   h1.className = "sa-subhead";
-  h1.textContent = "Desatenção";
+  h1.textContent = title;
   wrap.appendChild(h1);
-  PART1_DESATENCAO.forEach(function (q, idx) {
-    wrap.appendChild(renderFrequencyItem(q, { name: "desatencao", arr: saState.desatencao }, idx));
-  });
-
-  var h2 = document.createElement("h3");
-  h2.className = "sa-subhead";
-  h2.textContent = "Hiperatividade / Impulsividade";
-  wrap.appendChild(h2);
-  PART1_HIPERATIVIDADE.forEach(function (q, idx) {
-    wrap.appendChild(renderFrequencyItem(q, { name: "hiperatividade", arr: saState.hiperatividade }, idx));
+  questions.forEach(function (q, idx) {
+    wrap.appendChild(renderFrequencyItem(q, { name: listName, arr: listArr }, idx));
   });
 
   var source = document.createElement("div");
   source.className = "sa-source";
-  source.textContent = "Fonte: critérios do DSM-5, conforme citados na Cartilha ABP/Alexa e no capítulo IACAPAP.";
+  source.textContent = sourceText;
   wrap.appendChild(source);
 
   return wrap;
+}
+
+function renderPart1Desatencao() {
+  return renderFrequencyStep(
+    "Desatenção",
+    PART1_DESATENCAO,
+    "desatencao",
+    saState.desatencao,
+    "Para cada item, marque com que frequência isso acontece com você nos últimos 6 meses. (1 de 2 — Desatenção)",
+    "Fonte: critérios do DSM-5, conforme citados na Cartilha ABP/Alexa e no capítulo IACAPAP."
+  );
+}
+
+function renderPart1Hiperatividade() {
+  return renderFrequencyStep(
+    "Hiperatividade / Impulsividade",
+    PART1_HIPERATIVIDADE,
+    "hiperatividade",
+    saState.hiperatividade,
+    "Continue marcando a frequência de cada item nos últimos 6 meses. (2 de 2 — Hiperatividade/Impulsividade)",
+    "Fonte: critérios do DSM-5, conforme citados na Cartilha ABP/Alexa e no capítulo IACAPAP."
+  );
 }
 
 function renderPart2() {
@@ -199,6 +240,7 @@ function renderPart2() {
   PART2_QUESTIONS.forEach(function (q, idx) {
     var item = document.createElement("div");
     item.className = "sa-item";
+    item.dataset.answered = saState.confirm[idx] !== null ? "1" : "0";
     var qEl = document.createElement("div");
     qEl.className = "sa-item-q";
     qEl.textContent = q;
@@ -216,7 +258,10 @@ function renderPart2() {
       input.checked = saState.confirm[idx] === opt.v;
       input.addEventListener("change", function () {
         saState.confirm[idx] = opt.v;
+        item.dataset.answered = "1";
+        item.classList.remove("sa-item-unanswered");
         updateNextEnabled();
+        saveProgress();
       });
       label.appendChild(input);
       label.appendChild(document.createTextNode(opt.l));
@@ -261,6 +306,7 @@ function renderPart3() {
       input.checked = !!saState.barkley[areaIdx][itemIdx];
       input.addEventListener("change", function () {
         saState.barkley[areaIdx][itemIdx] = input.checked;
+        saveProgress();
       });
       label.appendChild(input);
       label.appendChild(document.createTextNode(text));
@@ -393,9 +439,10 @@ function render() {
   saBody.innerHTML = "";
 
   var stepEl;
-  if (saStep === 0) stepEl = renderPart1();
-  else if (saStep === 1) stepEl = renderPart2();
-  else if (saStep === 2) stepEl = renderPart3();
+  if (saStep === 0) stepEl = renderPart1Desatencao();
+  else if (saStep === 1) stepEl = renderPart1Hiperatividade();
+  else if (saStep === 2) stepEl = renderPart2();
+  else if (saStep === 3) stepEl = renderPart3();
   else stepEl = renderResult();
 
   saBody.appendChild(stepEl);
@@ -404,7 +451,13 @@ function render() {
   var pct = Math.round(((saStep + 1) / TOTAL_STEPS) * 100);
   saProgressFill.style.width = pct + "%";
 
-  var labels = ["Parte 1 de 3 · Sintomas (DSM-5)", "Parte 2 de 3 · Confirmação", "Parte 3 de 3 · Áreas de Barkley", "Resultado"];
+  var labels = [
+    "Passo 1 de 4 · Desatenção (DSM-5)",
+    "Passo 2 de 4 · Hiperatividade/Impulsividade (DSM-5)",
+    "Passo 3 de 4 · Confirmação",
+    "Passo 4 de 4 · Áreas de Barkley",
+    "Resultado"
+  ];
   saStepLabel.textContent = labels[saStep];
 
   saBackBtn.style.visibility = saStep === 0 ? "hidden" : "visible";
@@ -412,6 +465,7 @@ function render() {
   if (saStep === TOTAL_STEPS - 1) {
     saNextBtn.style.display = "none";
     saRestartBtn.style.display = "";
+    AppStorage.setSelfAssessmentProgress(null); // concluído: não há mais o que retomar
   } else {
     saNextBtn.style.display = "";
     saRestartBtn.style.display = "none";
@@ -423,22 +477,36 @@ function render() {
 
 // Exige que todos os itens do passo atual estejam respondidos antes de
 // avançar (Parte 3 é opcional item a item, então não bloqueia).
+function stepIsComplete() {
+  if (saStep === 0) return saState.desatencao.every(function (v) { return v !== null; });
+  if (saStep === 1) return saState.hiperatividade.every(function (v) { return v !== null; });
+  if (saStep === 2) return saState.confirm.every(function (v) { return v !== null; });
+  return true;
+}
+
 function updateNextEnabled() {
   if (saStep === TOTAL_STEPS - 1) return;
-  var ok = true;
-  if (saStep === 0) {
-    ok = saState.desatencao.every(function (v) { return v !== null; }) &&
-      saState.hiperatividade.every(function (v) { return v !== null; });
-  } else if (saStep === 1) {
-    ok = saState.confirm.every(function (v) { return v !== null; });
-  }
-  saNextBtn.disabled = !ok;
+  saNextBtn.disabled = !stepIsComplete();
+}
+
+// Ao tentar avançar com itens pendentes, rola até o primeiro não respondido
+// e destaca-o brevemente — em vez de deixar o botão simplesmente inerte sem
+// explicar por que não avança (frustrante em uma lista de 9 itens em scroll).
+function focusFirstUnanswered() {
+  var unanswered = saBody.querySelector(".sa-item[data-answered=\"0\"]");
+  if (!unanswered) return;
+  unanswered.classList.add("sa-item-unanswered");
+  unanswered.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function goNext() {
-  if (saNextBtn.disabled) return;
+  if (saNextBtn.disabled) {
+    focusFirstUnanswered();
+    return;
+  }
   if (saStep < TOTAL_STEPS - 1) {
     saStep += 1;
+    saveProgress();
     render();
   }
 }
@@ -453,6 +521,7 @@ function goBack() {
 function restart() {
   saState = freshState();
   saStep = 0;
+  AppStorage.setSelfAssessmentProgress(null);
   render();
 }
 
