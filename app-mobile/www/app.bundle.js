@@ -1725,6 +1725,414 @@
     });
   }
 
+  // src/self-assessment.js
+  var FREQ_OPTIONS = [
+    { value: "0", label: "Nunca" },
+    { value: "1", label: "\xC0s vezes" },
+    { value: "2", label: "Frequentemente" },
+    { value: "3", label: "Muito frequentemente" }
+  ];
+  var PART1_DESATENCAO = [
+    "N\xE3o presta aten\xE7\xE3o em detalhes ou comete erros por descuido",
+    "Dificuldade de manter aten\xE7\xE3o em tarefas ou atividades",
+    "Parece n\xE3o escutar quando falam diretamente com voc\xEA",
+    "N\xE3o termina tarefas, perde o foco no meio do caminho",
+    "Dificuldade de organizar tarefas e atividades",
+    "Evita ou reluta em tarefas que exigem esfor\xE7o mental prolongado",
+    "Perde objetos necess\xE1rios (chaves, celular, documentos)",
+    "Distrai-se facilmente com est\xEDmulos externos (ou pensamentos)",
+    "Esquecimento em atividades cotidianas (contas, compromissos, retornar liga\xE7\xF5es)"
+  ];
+  var PART1_HIPERATIVIDADE = [
+    "Mexe as m\xE3os/p\xE9s ou se remexe na cadeira",
+    "Levanta-se em situa\xE7\xF5es em que deveria ficar sentado",
+    "Sente inquieta\xE7\xE3o interna (em adultos, mais sensa\xE7\xE3o subjetiva que correr/subir)",
+    "Dificuldade de ter lazer/atividades tranquilas em sil\xEAncio",
+    'Sente-se "com o motor ligado", incapaz de ficar parado',
+    "Fala em excesso",
+    "Responde antes da pergunta terminar",
+    "Dificuldade de esperar a vez (filas, tr\xE2nsito, conversas)",
+    "Interrompe ou se intromete em conversas/atividades alheias"
+  ];
+  var PART2_QUESTIONS = [
+    "Os sintomas acima j\xE1 existiam antes dos 12 anos (mesmo que n\xE3o diagnosticado na \xE9poca)?",
+    "Os sintomas aparecem em mais de um ambiente (trabalho E casa E relacionamentos, n\xE3o s\xF3 um)?",
+    "Os sintomas causam preju\xEDzo real e mensur\xE1vel (perda de emprego, d\xEDvidas, brigas, notas baixas, multas de tr\xE2nsito) \u2014 n\xE3o apenas desconforto ou autocr\xEDtica?",
+    "Isso persiste h\xE1 pelo menos 6 meses, n\xE3o \xE9 uma fase ligada a um evento espec\xEDfico (luto, crise aguda, mudan\xE7a recente)?"
+  ];
+  var PART3_AREAS = [
+    {
+      title: "Gest\xE3o de tempo e metas",
+      items: [
+        "Procrastino sistematicamente, mesmo em coisas importantes",
+        "Tenho p\xE9ssima no\xE7\xE3o de quanto tempo uma tarefa vai levar",
+        "Cumprir prazos \xE9 uma luta constante"
+      ]
+    },
+    {
+      title: "Organiza\xE7\xE3o, mem\xF3ria e comunica\xE7\xE3o",
+      items: [
+        "Perco o fio da meada ao explicar algo para algu\xE9m",
+        "Tenho dificuldade de manter uma sequ\xEAncia l\xF3gica ao falar ou escrever",
+        "Esque\xE7o instru\xE7\xF5es complexas rapidamente"
+      ]
+    },
+    {
+      title: "Autodisciplina / impulsividade",
+      items: [
+        "Tomo decis\xF5es por impulso e me arrependo depois",
+        "Interrompo conversas ou digo coisas sem filtrar antes",
+        "Tenho rea\xE7\xF5es emocionais desproporcionais ao que gerou elas"
+      ]
+    },
+    {
+      title: "Automotiva\xE7\xE3o",
+      items: [
+        "S\xF3 consigo fazer algo chato se o prazo est\xE1 em cima",
+        "Preciso de supervis\xE3o ou cobran\xE7a externa para manter const\xE2ncia",
+        "Abandono tarefas no meio quando a novidade passa"
+      ]
+    },
+    {
+      title: "Concentra\xE7\xE3o / prontid\xE3o",
+      items: [
+        "Devaneio com frequ\xEAncia mesmo em conversas importantes",
+        "Entedio-me r\xE1pido com tarefas repetitivas/administrativas",
+        "Tenho dificuldade de manter aten\xE7\xE3o em leituras longas"
+      ]
+    }
+  ];
+  var TOTAL_STEPS = 4;
+  var FREQUENT_MIN = 2;
+  var saState = null;
+  var saStep = 0;
+  var saOverlay = document.getElementById("saOverlay");
+  var saBtn = document.getElementById("saBtn");
+  var saCloseBtn = document.getElementById("saCloseBtn");
+  var saBackBtn = document.getElementById("saBackBtn");
+  var saNextBtn = document.getElementById("saNextBtn");
+  var saRestartBtn = document.getElementById("saRestartBtn");
+  var saProgressFill = document.getElementById("saProgressFill");
+  var saStepLabel = document.getElementById("saStepLabel");
+  var saBody = document.getElementById("saBody");
+  function freshState() {
+    return {
+      desatencao: PART1_DESATENCAO.map(function() {
+        return null;
+      }),
+      hiperatividade: PART1_HIPERATIVIDADE.map(function() {
+        return null;
+      }),
+      confirm: PART2_QUESTIONS.map(function() {
+        return null;
+      }),
+      barkley: PART3_AREAS.map(function(area) {
+        return area.items.map(function() {
+          return false;
+        });
+      })
+    };
+  }
+  function openSelfAssessment() {
+    saState = freshState();
+    saStep = 0;
+    render();
+    saOverlay.classList.add("show");
+  }
+  function closeSelfAssessment() {
+    saOverlay.classList.remove("show");
+  }
+  function renderFrequencyItem(question, listRef, idx) {
+    var wrap = document.createElement("div");
+    wrap.className = "sa-item";
+    var q = document.createElement("div");
+    q.className = "sa-item-q";
+    q.textContent = question;
+    wrap.appendChild(q);
+    var opts = document.createElement("div");
+    opts.className = "sa-freq-opts";
+    FREQ_OPTIONS.forEach(function(opt) {
+      var label = document.createElement("label");
+      label.className = "sa-freq-opt";
+      var input = document.createElement("input");
+      input.type = "radio";
+      input.name = "sa-freq-" + listRef.name + "-" + idx;
+      input.value = opt.value;
+      input.checked = listRef.arr[idx] === opt.value;
+      input.addEventListener("change", function() {
+        listRef.arr[idx] = opt.value;
+        updateNextEnabled();
+      });
+      label.appendChild(input);
+      label.appendChild(document.createTextNode(opt.label));
+      opts.appendChild(label);
+    });
+    wrap.appendChild(opts);
+    return wrap;
+  }
+  function renderPart1() {
+    var wrap = document.createElement("div");
+    var intro = document.createElement("p");
+    intro.className = "sa-intro";
+    intro.textContent = "Para cada item, marque com que frequ\xEAncia isso acontece com voc\xEA nos \xFAltimos 6 meses.";
+    wrap.appendChild(intro);
+    var h1 = document.createElement("h3");
+    h1.className = "sa-subhead";
+    h1.textContent = "Desaten\xE7\xE3o";
+    wrap.appendChild(h1);
+    PART1_DESATENCAO.forEach(function(q, idx) {
+      wrap.appendChild(renderFrequencyItem(q, { name: "desatencao", arr: saState.desatencao }, idx));
+    });
+    var h2 = document.createElement("h3");
+    h2.className = "sa-subhead";
+    h2.textContent = "Hiperatividade / Impulsividade";
+    wrap.appendChild(h2);
+    PART1_HIPERATIVIDADE.forEach(function(q, idx) {
+      wrap.appendChild(renderFrequencyItem(q, { name: "hiperatividade", arr: saState.hiperatividade }, idx));
+    });
+    var source = document.createElement("div");
+    source.className = "sa-source";
+    source.textContent = "Fonte: crit\xE9rios do DSM-5, conforme citados na Cartilha ABP/Alexa e no cap\xEDtulo IACAPAP.";
+    wrap.appendChild(source);
+    return wrap;
+  }
+  function renderPart2() {
+    var wrap = document.createElement("div");
+    var intro = document.createElement("p");
+    intro.className = "sa-intro";
+    intro.textContent = "Sintomas isolados n\xE3o bastam. Responda sim ou n\xE3o:";
+    wrap.appendChild(intro);
+    PART2_QUESTIONS.forEach(function(q, idx) {
+      var item = document.createElement("div");
+      item.className = "sa-item";
+      var qEl = document.createElement("div");
+      qEl.className = "sa-item-q";
+      qEl.textContent = q;
+      item.appendChild(qEl);
+      var opts = document.createElement("div");
+      opts.className = "sa-yn-opts";
+      [{ v: "sim", l: "Sim" }, { v: "nao", l: "N\xE3o" }].forEach(function(opt) {
+        var label = document.createElement("label");
+        label.className = "sa-yn-opt";
+        var input = document.createElement("input");
+        input.type = "radio";
+        input.name = "sa-confirm-" + idx;
+        input.value = opt.v;
+        input.checked = saState.confirm[idx] === opt.v;
+        input.addEventListener("change", function() {
+          saState.confirm[idx] = opt.v;
+          updateNextEnabled();
+        });
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(opt.l));
+        opts.appendChild(label);
+      });
+      item.appendChild(opts);
+      wrap.appendChild(item);
+    });
+    var note = document.createElement("p");
+    note.className = "sa-note";
+    note.textContent = 'Se voc\xEA respondeu "n\xE3o" a alguma dessas quatro perguntas, o quadro pode ser outra coisa (ansiedade, depress\xE3o, estresse, problema de tireoide, m\xE1 qualidade de sono) \u2014 desaten\xE7\xE3o n\xE3o \xE9 sin\xF4nimo de TDAH.';
+    wrap.appendChild(note);
+    var source = document.createElement("div");
+    source.className = "sa-source";
+    source.textContent = 'Fonte: "9 crit\xE9rios adaptados para adultos", Russell Barkley, "Vencendo o TDAH Adulto".';
+    wrap.appendChild(source);
+    return wrap;
+  }
+  function renderPart3() {
+    var wrap = document.createElement("div");
+    var intro = document.createElement("p");
+    intro.className = "sa-intro";
+    intro.textContent = "Marque as afirma\xE7\xF5es que descrevem voc\xEA bem.";
+    wrap.appendChild(intro);
+    PART3_AREAS.forEach(function(area, areaIdx) {
+      var h = document.createElement("h3");
+      h.className = "sa-subhead";
+      h.textContent = area.title;
+      wrap.appendChild(h);
+      area.items.forEach(function(text, itemIdx) {
+        var label = document.createElement("label");
+        label.className = "sa-check-item";
+        var input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = !!saState.barkley[areaIdx][itemIdx];
+        input.addEventListener("change", function() {
+          saState.barkley[areaIdx][itemIdx] = input.checked;
+        });
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(text));
+        wrap.appendChild(label);
+      });
+    });
+    var source = document.createElement("div");
+    source.className = "sa-source";
+    source.textContent = 'Fonte: 5 \xE1reas de funcionamento adaptadas de "Vencendo o TDAH Adulto", Russell Barkley.';
+    wrap.appendChild(source);
+    return wrap;
+  }
+  function countFrequent(arr) {
+    return arr.filter(function(v) {
+      return v !== null && Number(v) >= FREQUENT_MIN;
+    }).length;
+  }
+  function computeResult() {
+    var desatencaoCount = countFrequent(saState.desatencao);
+    var hiperatividadeCount = countFrequent(saState.hiperatividade);
+    var confirmYesCount = saState.confirm.filter(function(v) {
+      return v === "sim";
+    }).length;
+    var barkleyCount = saState.barkley.reduce(function(total, area) {
+      return total + area.filter(Boolean).length;
+    }, 0);
+    var barkleyAreasWithHits = saState.barkley.filter(function(area) {
+      return area.some(Boolean);
+    }).length;
+    return {
+      desatencaoCount,
+      hiperatividadeCount,
+      confirmYesCount,
+      barkleyCount,
+      barkleyAreasWithHits,
+      meetsDsm5Threshold: desatencaoCount >= 5 || hiperatividadeCount >= 5,
+      meetsConfirmation: confirmYesCount === 4
+    };
+  }
+  function buildFeedback(r) {
+    var title, body, tone;
+    if (!r.meetsDsm5Threshold && r.barkleyCount === 0) {
+      tone = "sa-tone-calm";
+      title = "Poucos sinais nesse retrato";
+      body = [
+        "Pelas suas respostas, voc\xEA marcou poucos sintomas frequentes nas duas listas do DSM-5 e poucas afirma\xE7\xF5es nas 5 \xE1reas de Barkley. Isso n\xE3o costuma ser o retrato t\xEDpico do TDAH em adultos.",
+        "Se ainda assim algo te incomoda no dia a dia, vale conversar com um profissional sobre o que est\xE1 pesando \u2014 n\xE3o precisa ser TDAH para merecer aten\xE7\xE3o."
+      ];
+    } else if (!r.meetsDsm5Threshold && r.barkleyCount > 0) {
+      tone = "sa-tone-calm";
+      title = "Sinais pontuais, abaixo do padr\xE3o t\xEDpico do DSM-5";
+      body = [
+        'Voc\xEA marcou algumas afirma\xE7\xF5es das 5 \xE1reas de Barkley, mas n\xE3o chegou a 5 sintomas "frequentes" ou "muito frequentes" em nenhuma das listas do DSM-5 (desaten\xE7\xE3o ou hiperatividade/impulsividade) \u2014 que \xE9 o crit\xE9rio citado nas fontes para considerar o quadro compat\xEDvel com TDAH.',
+        "Isso sugere que, se h\xE1 dificuldades reais, elas podem ter outra origem ou ser mais leves/pontuais. Mesmo assim, se algo te incomoda, vale conversar com um profissional."
+      ];
+    } else if (r.meetsDsm5Threshold && !r.meetsConfirmation) {
+      tone = "sa-tone-warn";
+      title = "Muitos sintomas, mas os crit\xE9rios de confirma\xE7\xE3o n\xE3o fecharam";
+      body = [
+        "Voc\xEA atingiu " + (r.desatencaoCount >= 5 ? "5 ou mais sintomas frequentes de desaten\xE7\xE3o" : "5 ou mais sintomas frequentes de hiperatividade/impulsividade") + ', que \xE9 o crit\xE9rio citado no DSM-5. Por\xE9m, nem todas as 4 perguntas de confirma\xE7\xE3o da Parte 2 tiveram resposta "sim".',
+        "Segundo as fontes, sintomas isolados n\xE3o bastam: eles precisam existir desde antes dos 12 anos, aparecer em mais de um ambiente, causar preju\xEDzo real e persistir por pelo menos 6 meses sem liga\xE7\xE3o com um evento espec\xEDfico. Quando algum desses crit\xE9rios falta, o quadro pode ser outra coisa \u2014 ansiedade, depress\xE3o, estresse, problema de tireoide ou m\xE1 qualidade de sono s\xE3o causas comuns de sintomas parecidos.",
+        "Vale conversar com um profissional para investigar a causa real desses sintomas."
+      ];
+    } else if (r.meetsDsm5Threshold && r.meetsConfirmation && r.barkleyAreasWithHits < 3) {
+      tone = "sa-tone-warn";
+      title = "Quadro parcialmente consistente \u2014 vale investigar melhor";
+      body = [
+        "Voc\xEA atingiu o crit\xE9rio do DSM-5 (5 ou mais sintomas frequentes numa das listas) e confirmou os 4 crit\xE9rios da Parte 2. Por\xE9m, marcou afirma\xE7\xF5es em poucas das 5 \xE1reas de funcionamento de Barkley.",
+        "As fontes citam que 89-98% dos adultos com TDAH relatam problemas relevantes nas 5 \xE1reas de Barkley, contra 7-14% da popula\xE7\xE3o geral \u2014 ent\xE3o quanto mais \xE1reas afetadas, mais o quadro tende a ser consistente com TDAH. Como seu resultado ainda est\xE1 parcial nessa parte, uma avalia\xE7\xE3o profissional \xE9 o caminho mais seguro para entender o que est\xE1 acontecendo."
+      ];
+    } else {
+      tone = "sa-tone-alert";
+      title = "Quadro consistente com TDAH \u2014 avalia\xE7\xE3o profissional \xE9 o pr\xF3ximo passo";
+      body = [
+        'Voc\xEA se identificou fortemente nas tr\xEAs partes: sintomas do DSM-5 acima do crit\xE9rio (5 ou mais "frequentemente"/"muito frequentemente" numa das listas), os 4 crit\xE9rios de confirma\xE7\xE3o da Parte 2 e v\xE1rias das 5 \xE1reas de funcionamento de Barkley (que 89-98% dos adultos com TDAH relatam, contra 7-14% da popula\xE7\xE3o geral).',
+        'Isso \xE9 um ind\xEDcio relevante \u2014 n\xE3o uma confirma\xE7\xE3o. O pr\xF3ximo passo leg\xEDtimo \xE9 procurar avalia\xE7\xE3o profissional (psiquiatra ou psic\xF3logo com experi\xEAncia em TDAH adulto), n\xE3o concluir sozinho que "tem TDAH" a partir deste question\xE1rio. A avalia\xE7\xE3o formal exige entrevista cl\xEDnica, hist\xF3rico de desenvolvimento e, idealmente, relato de algu\xE9m que te conhece bem \u2014 porque o autorrelato tende a subestimar preju\xEDzos.'
+      ];
+    }
+    return { tone, title, body };
+  }
+  function renderResult() {
+    var r = computeResult();
+    var fb = buildFeedback(r);
+    var wrap = document.createElement("div");
+    var card = document.createElement("div");
+    card.className = "sa-result-card " + fb.tone;
+    var h = document.createElement("h3");
+    h.textContent = fb.title;
+    card.appendChild(h);
+    fb.body.forEach(function(p) {
+      var pEl = document.createElement("p");
+      pEl.textContent = p;
+      card.appendChild(pEl);
+    });
+    wrap.appendChild(card);
+    var summary = document.createElement("div");
+    summary.className = "sa-summary";
+    summary.innerHTML = '<div class="sa-summary-row"><span>Sintomas de desaten\xE7\xE3o frequentes</span><strong>' + r.desatencaoCount + ' de 9</strong></div><div class="sa-summary-row"><span>Sintomas de hiperatividade/impulsividade frequentes</span><strong>' + r.hiperatividadeCount + ' de 9</strong></div><div class="sa-summary-row"><span>Crit\xE9rios de confirma\xE7\xE3o (Parte 2)</span><strong>' + r.confirmYesCount + ' de 4</strong></div><div class="sa-summary-row"><span>Afirma\xE7\xF5es marcadas nas 5 \xE1reas de Barkley (Parte 3)</span><strong>' + r.barkleyCount + " de 15</strong></div>";
+    wrap.appendChild(summary);
+    var next = document.createElement("div");
+    next.className = "sa-next-steps";
+    next.innerHTML = '<p><strong>Sobre este resultado:</strong> esta ferramenta \xE9 reflex\xE3o pessoal, n\xE3o diagn\xF3stico. S\xF3 um profissional habilitado, com entrevista, hist\xF3rico de vida e (idealmente) relato de terceiros, pode diagnosticar TDAH.</p><div class="sa-source">Fontes: crit\xE9rios do DSM-5 citados na Cartilha ABP/Alexa e no cap\xEDtulo IACAPAP; "9 crit\xE9rios adaptados para adultos" e 5 \xE1reas de funcionamento de Russell Barkley, "Vencendo o TDAH Adulto".</div>';
+    wrap.appendChild(next);
+    return wrap;
+  }
+  function render() {
+    saBody.innerHTML = "";
+    var stepEl;
+    if (saStep === 0) stepEl = renderPart1();
+    else if (saStep === 1) stepEl = renderPart2();
+    else if (saStep === 2) stepEl = renderPart3();
+    else stepEl = renderResult();
+    saBody.appendChild(stepEl);
+    saBody.scrollTop = 0;
+    var pct = Math.round((saStep + 1) / TOTAL_STEPS * 100);
+    saProgressFill.style.width = pct + "%";
+    var labels = ["Parte 1 de 3 \xB7 Sintomas (DSM-5)", "Parte 2 de 3 \xB7 Confirma\xE7\xE3o", "Parte 3 de 3 \xB7 \xC1reas de Barkley", "Resultado"];
+    saStepLabel.textContent = labels[saStep];
+    saBackBtn.style.visibility = saStep === 0 ? "hidden" : "visible";
+    if (saStep === TOTAL_STEPS - 1) {
+      saNextBtn.style.display = "none";
+      saRestartBtn.style.display = "";
+    } else {
+      saNextBtn.style.display = "";
+      saRestartBtn.style.display = "none";
+      saNextBtn.textContent = saStep === TOTAL_STEPS - 2 ? "Ver resultado" : "Pr\xF3ximo";
+    }
+    updateNextEnabled();
+  }
+  function updateNextEnabled() {
+    if (saStep === TOTAL_STEPS - 1) return;
+    var ok = true;
+    if (saStep === 0) {
+      ok = saState.desatencao.every(function(v) {
+        return v !== null;
+      }) && saState.hiperatividade.every(function(v) {
+        return v !== null;
+      });
+    } else if (saStep === 1) {
+      ok = saState.confirm.every(function(v) {
+        return v !== null;
+      });
+    }
+    saNextBtn.disabled = !ok;
+  }
+  function goNext() {
+    if (saNextBtn.disabled) return;
+    if (saStep < TOTAL_STEPS - 1) {
+      saStep += 1;
+      render();
+    }
+  }
+  function goBack() {
+    if (saStep > 0) {
+      saStep -= 1;
+      render();
+    }
+  }
+  function restart() {
+    saState = freshState();
+    saStep = 0;
+    render();
+  }
+  function initSelfAssessment() {
+    saBtn.addEventListener("click", openSelfAssessment);
+    saCloseBtn.addEventListener("click", closeSelfAssessment);
+    saOverlay.addEventListener("click", function(ev) {
+      if (ev.target === saOverlay) closeSelfAssessment();
+    });
+    saNextBtn.addEventListener("click", goNext);
+    saBackBtn.addEventListener("click", goBack);
+    saRestartBtn.addEventListener("click", restart);
+  }
+
   // src/places-overlay.js
   var places_overlay_exports = {};
   __export(places_overlay_exports, {
@@ -1848,83 +2256,281 @@
 
   // src/principles.js
   var PRINCIPLES = [
-    'O c\xE9rebro com TDAH n\xE3o sustenta bem informa\xE7\xE3o, tempo e motiva\xE7\xE3o internamente \u2014 a solu\xE7\xE3o n\xE3o \xE9 "tentar mais", \xE9 externalizar. Este checklist \xE9 isso aplicado \xE0 sua rotina real.',
-    'Prazo que s\xF3 existe na sua cabe\xE7a \xE9 prazo que n\xE3o existe. Coloque hora, alarme ou lembrete vis\xEDvel \u2014 o c\xE9rebro com TDAH reage muito mais ao que v\xEA do que ao que "sabe".',
-    "TDAH tem raiz gen\xE9tica forte, n\xE3o \xE9 resultado de falta de car\xE1ter ou de m\xE1 cria\xE7\xE3o. Cobrar mais for\xE7a de vontade de quem j\xE1 est\xE1 se esfor\xE7ando s\xF3 aumenta a frustra\xE7\xE3o sem mudar o resultado.",
-    'A dificuldade n\xE3o \xE9 "prestar aten\xE7\xE3o" em geral \u2014 \xE9 sustentar aten\xE7\xE3o quando a tarefa n\xE3o \xE9 interessante nem tem recompensa imediata. Torne a tarefa chata mais curta, mais vis\xEDvel ou com um pr\xEAmio pequeno no final.',
-    'Mem\xF3ria de trabalho fraca significa que a informa\xE7\xE3o "escorrega" antes de virar a\xE7\xE3o. Anotar n\xE3o \xE9 frescura nem falta de intelig\xEAncia \u2014 \xE9 a pr\xF3tese que substitui um sistema que naturalmente falha.',
-    'TDAH costuma vir com "miopia temporal": o futuro parece distante e pouco real, ent\xE3o o presente sempre ganha. Trazer a consequ\xEAncia futura para perto \u2014 visualiz\xE1-la, escrev\xEA-la, antecip\xE1-la \u2014 ajuda a competir com o impulso do agora.',
-    "Antes de reagir, existe uma fra\xE7\xE3o de segundo em que era poss\xEDvel pausar. Treinar essa pausa \u2014 contar at\xE9 tr\xEAs, respirar, sair da sala \u2014 \xE9 treinar o m\xFAsculo que o TDAH deixa mais fraco.",
-    'Dificuldade para regular emo\xE7\xE3o faz parte do TDAH, n\xE3o \xE9 "drama" ou instabilidade de car\xE1ter. Nomear o que voc\xEA sente antes de agir j\xE1 reduz a intensidade da resposta.',
-    "Recompensa que demora n\xE3o segura a aten\xE7\xE3o de um c\xE9rebro com TDAH tanto quanto recompensa imediata. Quebrar uma meta grande em pequenas vit\xF3rias com retorno r\xE1pido n\xE3o \xE9 fraqueza, \xE9 estrat\xE9gia.",
-    "Rotina fixa n\xE3o \xE9 sobre disciplina moral \u2014 \xE9 sobre reduzir decis\xF5es. Cada decis\xE3o nova gasta energia que o c\xE9rebro com TDAH j\xE1 tem em menor reserva.",
-    "Come\xE7ar uma tarefa costuma ser mais dif\xEDcil do que execut\xE1-la. Se travar antes de iniciar, tente negociar consigo mesmo s\xF3 os primeiros dois minutos \u2014 o resto costuma vir mais f\xE1cil depois.",
-    "Hiperfoco \xE9 a outra face do TDAH: a mesma dificuldade de regular aten\xE7\xE3o que atrapalha em tarefas chatas pode prender voc\xEA por horas em algo que engancha. Use alarmes tamb\xE9m para sair de tarefas boas demais, n\xE3o s\xF3 para lembrar das chatas.",
-    'Trocar de atividade exige uma fun\xE7\xE3o executiva que o TDAH enfraquece: desligar de uma coisa para ligar em outra. Um aviso de "faltam 5 minutos" antes da transi\xE7\xE3o facilita esse desligamento.',
-    'TDAH raramente vem sozinho \u2014 ansiedade, transtorno opositor, altera\xE7\xF5es de humor e uso de subst\xE2ncias s\xE3o comorbidades frequentes. Se algo al\xE9m da desaten\xE7\xE3o/impulsividade estiver pesando, vale investigar separadamente, n\xE3o s\xF3 rotular tudo como "TDAH".',
-    "Sono ruim piora sintomas de TDAH, e TDAH tamb\xE9m dificulta manter um sono regular \u2014 \xE9 uma via de m\xE3o dupla. Proteger hor\xE1rio fixo de dormir \xE9 t\xE3o parte do manejo quanto qualquer lista de tarefas.",
-    'Adultos com TDAH costumam ter sido crian\xE7as com TDAH que aprenderam a mascarar sintomas, n\xE3o pessoas que "curaram" o transtorno. Estrat\xE9gias de organiza\xE7\xE3o continuam necess\xE1rias mesmo quando a hiperatividade vis\xEDvel diminuiu com a idade.',
-    "Muita gente com TDAH subestima o pr\xF3prio n\xEDvel de dificuldade \u2014 \xE9 um vi\xE9s conhecido, n\xE3o falta de autocr\xEDtica. Pedir feedback de algu\xE9m pr\xF3ximo sobre prazos e combinados pode revelar padr\xF5es que passam despercebidos por dentro.",
-    "Planejar um passo de cada vez \xE9 mais realista do que tentar visualizar o caminho inteiro de uma vez. Divida a tarefa em partes pequenas o suficiente para caber na mem\xF3ria de trabalho.",
-    "Custo de resposta \u2014 perder algo j\xE1 conquistado por n\xE3o cumprir um combinado \u2014 costuma funcionar melhor do que s\xF3 prometer recompensa por bom comportamento. Pequenas perdas imediatas comunicam mais do que promessas distantes.",
-    'Impulsividade n\xE3o \xE9 "falta de educa\xE7\xE3o", \xE9 um freio que engata mais devagar. Ambientes com menos est\xEDmulo e menos tenta\xE7\xE3o por perto reduzem a necessidade de exercer esse freio o tempo todo.',
-    "Lista de tarefas na cabe\xE7a compete com tudo que est\xE1 acontecendo agora, e quase sempre perde. Colocar a lista fora da cabe\xE7a \u2014 papel, app, quadro \u2014 tira essa disputa e libera espa\xE7o mental.",
-    'O tratamento eficaz do TDAH costuma combinar abordagem comportamental com acompanhamento profissional \u2014 n\xE3o \xE9 escolher entre "for\xE7a de vontade" ou "rem\xE9dio", \xE9 somar estrat\xE9gias que sustentam umas \xE0s outras.',
-    "Um ambiente bagun\xE7ado ou barulhento pesa mais sobre um c\xE9rebro com TDAH do que sobre outros, porque ele j\xE1 gasta mais energia filtrando est\xEDmulos. Reduzir bagun\xE7a visual ao redor da tarefa \xE9 reduzir a carga que a aten\xE7\xE3o precisa carregar.",
-    'Autoinstru\xE7\xE3o verbal \u2014 "falar" o pr\xF3ximo passo em voz alta ou por escrito \u2014 supre uma fun\xE7\xE3o interna que no TDAH tende a ser mais fraca: a voz que guia o pr\xF3prio comportamento. Narrar a tarefa em voz alta pode parecer bobo, mas ajuda a manter o rumo.',
-    "TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 inven\xE7\xE3o recente nem efeito colateral de tela ou tecnologia moderna. Isso n\xE3o significa que telas n\xE3o atrapalhem foco \u2014 significa que o transtorno j\xE1 existia muito antes delas.",
-    "Comemorar o progresso pequeno junto com o grande \xE9 importante: c\xE9rebros com TDAH respondem melhor a refor\xE7o frequente do que a uma \xFAnica recompensa distante no fim de um grande projeto. Marque as vit\xF3rias intermedi\xE1rias, n\xE3o s\xF3 a linha de chegada.",
-    "Colocar objetos-chave sempre no mesmo lugar vis\xEDvel (chaves, carteira, rem\xE9dio) elimina uma decis\xE3o e uma busca que, de outra forma, consomem aten\xE7\xE3o todos os dias. Ambiente previs\xEDvel poupa fun\xE7\xE3o executiva para o que realmente importa.",
-    'Errar um prazo ou esquecer um compromisso n\xE3o \xE9 evid\xEAncia de "personalidade desorganizada" \u2014 \xE9 sintoma esperado de um transtorno reconhecido, com explica\xE7\xE3o neurobiol\xF3gica. Isso n\xE3o tira sua responsabilidade sobre buscar apoio, mas tira o peso da culpa moral.',
-    "Em crian\xE7as, TDAH costuma aparecer mais como agita\xE7\xE3o vis\xEDvel; em adultos, mais como inquieta\xE7\xE3o interna, procrastina\xE7\xE3o e dificuldade de organiza\xE7\xE3o. O transtorno muda de forma ao longo da vida, n\xE3o desaparece sozinho.",
-    "Dividir uma tarefa grande em etapas com prazos parciais imita, de fora, a fun\xE7\xE3o de planejamento que o TDAH dificulta por dentro. Cada etapa pequena vira um novo ponto de checagem e de ajuste de rota.",
-    "TDAH \xE9 tratado melhor como uma condi\xE7\xE3o cont\xEDnua a manejar, n\xE3o como um problema a resolver de uma vez. Ajustar estrat\xE9gias com o tempo \u2014 n\xE3o desistir na primeira que falhou \u2014 \xE9 parte esperada do processo, n\xE3o sinal de fracasso."
+    { text: 'O c\xE9rebro com TDAH n\xE3o sustenta bem informa\xE7\xE3o, tempo e motiva\xE7\xE3o internamente \u2014 a solu\xE7\xE3o n\xE3o \xE9 "tentar mais", \xE9 externalizar. Este checklist \xE9 isso aplicado \xE0 sua rotina real.', source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Prazo que s\xF3 existe na sua cabe\xE7a \xE9 prazo que n\xE3o existe. Coloque hora, alarme ou lembrete vis\xEDvel \u2014 o c\xE9rebro com TDAH reage muito mais ao que v\xEA do que ao que "sabe".', source: "Manual Barkley, cap. 7" },
+    { text: "TDAH tem raiz gen\xE9tica forte, n\xE3o \xE9 resultado de falta de car\xE1ter ou de m\xE1 cria\xE7\xE3o. Cobrar mais for\xE7a de vontade de quem j\xE1 est\xE1 se esfor\xE7ando s\xF3 aumenta a frustra\xE7\xE3o sem mudar o resultado.", source: "Manual Barkley, cap. 5 \xB7 Cartilha ABP/Alexa" },
+    { text: 'A dificuldade n\xE3o \xE9 "prestar aten\xE7\xE3o" em geral \u2014 \xE9 sustentar aten\xE7\xE3o quando a tarefa n\xE3o \xE9 interessante nem tem recompensa imediata. Torne a tarefa chata mais curta, mais vis\xEDvel ou com um pr\xEAmio pequeno no final.', source: "Manual Barkley, cap. 7 e cap. 12" },
+    { text: 'Mem\xF3ria de trabalho fraca significa que a informa\xE7\xE3o "escorrega" antes de virar a\xE7\xE3o. Anotar n\xE3o \xE9 frescura nem falta de intelig\xEAncia \u2014 \xE9 a pr\xF3tese que substitui um sistema que naturalmente falha.', source: "Manual Barkley, cap. 3 e cap. 7" },
+    { text: 'TDAH costuma vir com "miopia temporal": o futuro parece distante e pouco real, ent\xE3o o presente sempre ganha. Trazer a consequ\xEAncia futura para perto \u2014 visualiz\xE1-la, escrev\xEA-la, antecip\xE1-la \u2014 ajuda a competir com o impulso do agora.', source: "Manual Barkley, cap. 7" },
+    { text: "Antes de reagir, existe uma fra\xE7\xE3o de segundo em que era poss\xEDvel pausar. Treinar essa pausa \u2014 contar at\xE9 tr\xEAs, respirar, sair da sala \u2014 \xE9 treinar o m\xFAsculo que o TDAH deixa mais fraco.", source: "Manual Barkley, cap. 7" },
+    { text: 'Dificuldade para regular emo\xE7\xE3o faz parte do TDAH, n\xE3o \xE9 "drama" ou instabilidade de car\xE1ter. Nomear o que voc\xEA sente antes de agir j\xE1 reduz a intensidade da resposta.', source: "Manual Barkley, cap. 7" },
+    { text: "Recompensa que demora n\xE3o segura a aten\xE7\xE3o de um c\xE9rebro com TDAH tanto quanto recompensa imediata. Quebrar uma meta grande em pequenas vit\xF3rias com retorno r\xE1pido n\xE3o \xE9 fraqueza, \xE9 estrat\xE9gia.", source: "Manual Barkley, cap. 7 e cap. 12" },
+    { text: "Rotina fixa n\xE3o \xE9 sobre disciplina moral \u2014 \xE9 sobre reduzir decis\xF5es. Cada decis\xE3o nova gasta energia que o c\xE9rebro com TDAH j\xE1 tem em menor reserva.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: "Come\xE7ar uma tarefa costuma ser mais dif\xEDcil do que execut\xE1-la. Se travar antes de iniciar, tente negociar consigo mesmo s\xF3 os primeiros dois minutos \u2014 o resto costuma vir mais f\xE1cil depois.", source: "Manual Barkley, cap. 7" },
+    { text: "Hiperfoco \xE9 a outra face do TDAH: a mesma dificuldade de regular aten\xE7\xE3o que atrapalha em tarefas chatas pode prender voc\xEA por horas em algo que engancha. Use alarmes tamb\xE9m para sair de tarefas boas demais, n\xE3o s\xF3 para lembrar das chatas.", source: "Manual Barkley, cap. 3 (Problemas Cognitivos Associados)" },
+    { text: 'Trocar de atividade exige uma fun\xE7\xE3o executiva que o TDAH enfraquece: desligar de uma coisa para ligar em outra. Um aviso de "faltam 5 minutos" antes da transi\xE7\xE3o facilita esse desligamento.', source: "Manual Barkley, cap. 7" },
+    { text: 'TDAH raramente vem sozinho \u2014 ansiedade, transtorno opositor, altera\xE7\xF5es de humor e uso de subst\xE2ncias s\xE3o comorbidades frequentes. Se algo al\xE9m da desaten\xE7\xE3o/impulsividade estiver pesando, vale investigar separadamente, n\xE3o s\xF3 rotular tudo como "TDAH".', source: "Cartilha ABP/Alexa \xB7 Manual Barkley, cap. 4 \xB7 IACAPAP" },
+    { text: "Sono ruim piora sintomas de TDAH, e TDAH tamb\xE9m dificulta manter um sono regular \u2014 \xE9 uma via de m\xE3o dupla. Proteger hor\xE1rio fixo de dormir \xE9 t\xE3o parte do manejo quanto qualquer lista de tarefas.", source: "Manual Barkley, cap. 3" },
+    { text: 'Adultos com TDAH costumam ter sido crian\xE7as com TDAH que aprenderam a mascarar sintomas, n\xE3o pessoas que "curaram" o transtorno. Estrat\xE9gias de organiza\xE7\xE3o continuam necess\xE1rias mesmo quando a hiperatividade vis\xEDvel diminuiu com a idade.', source: "Manual Barkley, cap. 6 \xB7 IACAPAP" },
+    { text: "Muita gente com TDAH subestima o pr\xF3prio n\xEDvel de dificuldade \u2014 \xE9 um vi\xE9s conhecido, n\xE3o falta de autocr\xEDtica. Pedir feedback de algu\xE9m pr\xF3ximo sobre prazos e combinados pode revelar padr\xF5es que passam despercebidos por dentro.", source: "Manual Barkley, cap. 3" },
+    { text: "Planejar um passo de cada vez \xE9 mais realista do que tentar visualizar o caminho inteiro de uma vez. Divida a tarefa em partes pequenas o suficiente para caber na mem\xF3ria de trabalho.", source: "Manual Barkley, cap. 7" },
+    { text: "Custo de resposta \u2014 perder algo j\xE1 conquistado por n\xE3o cumprir um combinado \u2014 costuma funcionar melhor do que s\xF3 prometer recompensa por bom comportamento. Pequenas perdas imediatas comunicam mais do que promessas distantes.", source: "Manual Barkley, cap. 12" },
+    { text: 'Impulsividade n\xE3o \xE9 "falta de educa\xE7\xE3o", \xE9 um freio que engata mais devagar. Ambientes com menos est\xEDmulo e menos tenta\xE7\xE3o por perto reduzem a necessidade de exercer esse freio o tempo todo.', source: "Manual Barkley, cap. 7" },
+    { text: "Lista de tarefas na cabe\xE7a compete com tudo que est\xE1 acontecendo agora, e quase sempre perde. Colocar a lista fora da cabe\xE7a \u2014 papel, app, quadro \u2014 tira essa disputa e libera espa\xE7o mental.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'O tratamento eficaz do TDAH costuma combinar abordagem comportamental com acompanhamento profissional \u2014 n\xE3o \xE9 escolher entre "for\xE7a de vontade" ou "rem\xE9dio", \xE9 somar estrat\xE9gias que sustentam umas \xE0s outras.', source: "Cartilha ABP/Alexa \xB7 Manual Barkley, cap. 20 (estudo MTA)" },
+    { text: "Um ambiente bagun\xE7ado ou barulhento pesa mais sobre um c\xE9rebro com TDAH do que sobre outros, porque ele j\xE1 gasta mais energia filtrando est\xEDmulos. Reduzir bagun\xE7a visual ao redor da tarefa \xE9 reduzir a carga que a aten\xE7\xE3o precisa carregar.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Autoinstru\xE7\xE3o verbal \u2014 "falar" o pr\xF3ximo passo em voz alta ou por escrito \u2014 supre uma fun\xE7\xE3o interna que no TDAH tende a ser mais fraca: a voz que guia o pr\xF3prio comportamento. Narrar a tarefa em voz alta pode parecer bobo, mas ajuda a manter o rumo.', source: "Manual Barkley, cap. 3 e cap. 7" },
+    { text: "TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 inven\xE7\xE3o recente nem efeito colateral de tela ou tecnologia moderna. Isso n\xE3o significa que telas n\xE3o atrapalhem foco \u2014 significa que o transtorno j\xE1 existia muito antes delas.", source: "Manual Barkley, cap. 5 \xB7 Cartilha ABP/Alexa" },
+    { text: "Comemorar o progresso pequeno junto com o grande \xE9 importante: c\xE9rebros com TDAH respondem melhor a refor\xE7o frequente do que a uma \xFAnica recompensa distante no fim de um grande projeto. Marque as vit\xF3rias intermedi\xE1rias, n\xE3o s\xF3 a linha de chegada.", source: "Manual Barkley, cap. 7, 12 e 15" },
+    { text: "Colocar objetos-chave sempre no mesmo lugar vis\xEDvel (chaves, carteira, rem\xE9dio) elimina uma decis\xE3o e uma busca que, de outra forma, consomem aten\xE7\xE3o todos os dias. Ambiente previs\xEDvel poupa fun\xE7\xE3o executiva para o que realmente importa.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Errar um prazo ou esquecer um compromisso n\xE3o \xE9 evid\xEAncia de "personalidade desorganizada" \u2014 \xE9 sintoma esperado de um transtorno reconhecido, com explica\xE7\xE3o neurobiol\xF3gica. Isso n\xE3o tira sua responsabilidade sobre buscar apoio, mas tira o peso da culpa moral.', source: "Manual Barkley, cap. 5 \xB7 Cartilha ABP/Alexa" },
+    { text: "Em crian\xE7as, TDAH costuma aparecer mais como agita\xE7\xE3o vis\xEDvel; em adultos, mais como inquieta\xE7\xE3o interna, procrastina\xE7\xE3o e dificuldade de organiza\xE7\xE3o. O transtorno muda de forma ao longo da vida, n\xE3o desaparece sozinho.", source: "Manual Barkley, cap. 6 \xB7 IACAPAP" },
+    { text: "Dividir uma tarefa grande em etapas com prazos parciais imita, de fora, a fun\xE7\xE3o de planejamento que o TDAH dificulta por dentro. Cada etapa pequena vira um novo ponto de checagem e de ajuste de rota.", source: "Manual Barkley, cap. 7" },
+    { text: "TDAH \xE9 tratado melhor como uma condi\xE7\xE3o cont\xEDnua a manejar, n\xE3o como um problema a resolver de uma vez. Ajustar estrat\xE9gias com o tempo \u2014 n\xE3o desistir na primeira que falhou \u2014 \xE9 parte esperada do processo, n\xE3o sinal de fracasso.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'O modelo de Barkley descreve quatro fun\xE7\xF5es executivas que o TDAH enfraquece: a que visualiza passado e futuro ("olho da mente"), a que conversa consigo mesmo ("voz da mente"), a que regula emo\xE7\xE3o ("cora\xE7\xE3o da mente") e a que planeja e testa op\xE7\xF5es ("playground da mente"). Cada dificuldade pr\xE1tica do dia a dia pode ser rastreada at\xE9 uma dessas quatro.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'A mem\xF3ria de trabalho n\xE3o verbal \u2014 o "olho da mente" \u2014 \xE9 o que permite reviver mentalmente uma situa\xE7\xE3o parecida antes de agir de novo. Quando ela \xE9 fraca, cada decis\xE3o parece nova, mesmo que voc\xEA j\xE1 tenha vivido aquilo dez vezes antes.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'A "voz da mente" \xE9 a mem\xF3ria de trabalho verbal: a autoconversa interna que formula regras e mant\xE9m o fio da meada ao falar ou escrever. Quando ela falha, \xE9 comum perder o rumo no meio de uma explica\xE7\xE3o ou n\xE3o achar as palavras na hora certa.', source: "Vencendo o TDAH Adulto, Passo 2 \xB7 se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: 'O "cora\xE7\xE3o da mente" \xE9 a fun\xE7\xE3o executiva que regula a intensidade da emo\xE7\xE3o antes que ela vire a\xE7\xE3o. No TDAH, a emo\xE7\xE3o costuma chegar na mesma for\xE7a de sempre, mas o controle sobre express\xE1-la ou n\xE3o \xE9 que fica comprometido.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'O "playground da mente" \xE9 onde ideias e solu\xE7\xF5es seriam testadas mentalmente antes de agir. Quando essa fun\xE7\xE3o de planejamento \xE9 fraca, o caminho mais curto costuma ser agir primeiro e pensar depois \u2014 n\xE3o por impulsividade de personalidade, mas por um passo que simplesmente n\xE3o aconteceu por dentro.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'Barkley chama o TDAH de "cegueira temporal": n\xE3o \xE9 que a pessoa n\xE3o saiba o que precisa fazer no futuro, \xE9 que o futuro n\xE3o pesa o suficiente agora para competir com o presente. \xC9 um problema de desempenho no momento certo, n\xE3o de conhecimento.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: "O livro descreve cinco \xE1reas onde o TDAH adulto mais atrapalha: gerir tempo e metas, organizar e comunicar, manter autodisciplina diante de impulsos, se automotivar sem supervis\xE3o externa, e manter concentra\xE7\xE3o e prontid\xE3o. Reconhecer em qual dessas \xE1reas voc\xEA mais trope\xE7a ajuda a escolher a estrat\xE9gia certa em vez de tentar tudo ao mesmo tempo.", source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: "A primeira das oito regras de autogest\xE3o \xE9 simples de enunciar e dif\xEDcil de praticar: pare a a\xE7\xE3o. Respirar, repetir o que a outra pessoa acabou de dizer, ou apenas falar mais devagar cria a fra\xE7\xE3o de segundo que o TDAH costuma pular.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: "Antes de decidir algo, vale relembrar conscientemente uma situa\xE7\xE3o parecida do passado e s\xF3 depois imaginar o futuro decorrente da escolha atual. Essa \xE9 a segunda regra do livro: olhar para tr\xE1s para poder olhar para frente com mais realismo.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: "N\xE3o basta visualizar o passado e o futuro por dentro \u2014 colocar isso em palavras, mesmo em voz alta e sozinho, ajuda a extrair dali uma regra pr\xE1tica para agora. \xC9 a terceira regra: expressar o passado e o futuro em vez de s\xF3 senti-los vagamente.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: "A quarta regra de autogest\xE3o do livro \xE9 exteriorizar as informa\xE7\xF5es fundamentais: lembretes f\xEDsicos exatamente onde a a\xE7\xE3o vai acontecer, um caderno sempre \xE0 m\xE3o. A informa\xE7\xE3o precisa estar no ambiente, porque contar s\xF3 com a mente para guard\xE1-la tende a falhar.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: "Antecipar emocionalmente como vai ser a sensa\xE7\xE3o de ter terminado algo \u2014 n\xE3o s\xF3 pensar racionalmente sobre o prazo \u2014 \xE9 a quinta regra do livro: considerar o futuro como combust\xEDvel motivacional, n\xE3o s\xF3 como dado abstrato.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: "A sexta regra prop\xF5e decompor o futuro em blocos pequenos e torn\xE1-lo significativo com presta\xE7\xE3o de contas a outra pessoa e recompensa imediata a cada etapa conclu\xEDda. Tarefa grande sem essa fragmenta\xE7\xE3o tende a ficar abstrata demais para gerar a\xE7\xE3o.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: "A s\xE9tima regra \xE9 tornar os problemas externos, f\xEDsicos e manuais \u2014 post-its, quadros, fichas \u2014 em vez de tentar resolver tudo s\xF3 na cabe\xE7a. O que est\xE1 fora da mente compete melhor com as distra\xE7\xF5es do que o que fica s\xF3 pensado.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: "A oitava e \xFAltima regra do livro \xE9 ter senso de humor com os pr\xF3prios erros: reconhecer o que aconteceu, explicar, pedir desculpas e prometer melhora \u2014 sem nega\xE7\xE3o, mas tamb\xE9m sem culpa excessiva. Humor autodepreciativo saud\xE1vel \xE9 ferramenta de manejo, n\xE3o fraqueza de car\xE1ter.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: "No trabalho, o livro recomenda escolher, sempre que poss\xEDvel, uma carreira e um ambiente compat\xEDveis com o pr\xF3prio perfil, al\xE9m de reduzir distra\xE7\xF5es f\xEDsicas no espa\xE7o. Revelar o diagn\xF3stico ao empregador s\xF3 costuma valer a pena quando \xE9 necess\xE1rio para conseguir uma adapta\xE7\xE3o formal.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: "Em finan\xE7as, o livro sugere automatizar pagamentos, manter o or\xE7amento vis\xEDvel e, em casos mais graves, delegar a administra\xE7\xE3o do dinheiro a outra pessoa. Usar dinheiro f\xEDsico em vez de cart\xE3o tamb\xE9m ajuda porque torna o gasto concreto e vis\xEDvel no momento em que acontece.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: "Em relacionamentos, sintomas de TDAH \u2014 esquecer, interromper, se distrair no meio de uma conversa \u2014 costumam ser mal-interpretados pelo outro como desinteresse ou grosseria. Aplicar as oito regras de autogest\xE3o nas intera\xE7\xF5es e buscar tratamento tende a melhorar tamb\xE9m a qualidade do relacionamento, n\xE3o s\xF3 os sintomas isolados.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos" },
+    { text: "Para quem tem TDAH e tamb\xE9m \xE9 pai ou m\xE3e, o livro recomenda tratar o pr\xF3prio TDAH primeiro, antes de tentar impor regras aos filhos. Regras familiares vis\xEDveis, combinadas com o parceiro, e um timer para checagens peri\xF3dicas ajudam a sustentar consist\xEAncia que a mem\xF3ria sozinha n\xE3o sustentaria.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Paternidade/Maternidade" },
+    { text: "Ao volante, o livro \xE9 direto: nunca dirigir sem a medica\xE7\xE3o em efeito quando ela \xE9 parte do tratamento, zero \xE1lcool, celular bloqueado, e um lembrete f\xEDsico para o cinto de seguran\xE7a. Dire\xE7\xE3o exige exatamente as fun\xE7\xF5es executivas mais afetadas pelo TDAH \u2014 antecipa\xE7\xE3o, controle de impulso, aten\xE7\xE3o sustentada.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o" },
+    { text: "Comorbidades como transtorno opositor, transtorno de conduta, ansiedade e depress\xE3o aparecem em mais de 80% dos casos de TDAH adulto segundo o livro, e cada uma precisa de tratamento pr\xF3prio al\xE9m do manejo do TDAH em si. Tratar s\xF3 a desaten\xE7\xE3o quando h\xE1 uma comorbidade n\xE3o resolvida deixa o quadro geral incompleto.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Comorbidades" },
+    { text: "Os crit\xE9rios de avalia\xE7\xE3o propostos no livro s\xE3o mais rigorosos que os crit\xE9rios diagn\xF3sticos padr\xE3o: exigem sintomas em tr\xEAs \xE1reas (aten\xE7\xE3o/persist\xEAncia, controle de impulsos, atividade excessiva), in\xEDcio antes dos 16 anos e preju\xEDzo em m\xFAltiplos dom\xEDnios da vida \u2014 n\xE3o s\xF3 um inc\xF4modo pontual em um contexto espec\xEDfico.", source: "Vencendo o TDAH Adulto, Passo 1" },
+    { text: "Cerca de 75% das pessoas respondem bem j\xE1 ao primeiro estimulante testado, segundo o livro, mas o ajuste de dose \xE9 um processo gradual e monitorado, n\xE3o algo definido de uma vez. N\xE3o estranhar se a primeira dose n\xE3o for a ideal faz parte de esperar realisticamente pelo processo.", source: "Vencendo o TDAH Adulto, Passo 3" },
+    { text: "Repetir em voz alta o que a outra pessoa acabou de dizer, antes de responder, ganha o tempo que a mem\xF3ria de trabalho verbal fraca n\xE3o d\xE1 de gra\xE7a. \xC9 uma das estrat\xE9gias de comunica\xE7\xE3o mais simples descritas no livro, e serve tanto para n\xE3o perder o fio quanto para mostrar que voc\xEA escutou.", source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: "Diagnosticar TDAH em adultos \xE9 mais complexo do que em crian\xE7as, porque depende de mem\xF3ria retrospectiva de sintomas da inf\xE2ncia e se sobrep\xF5e a outros quadros. O protocolo do Manual Barkley passa por quatro perguntas centrais: os sintomas existiam antes dos 12 anos? h\xE1 preju\xEDzo em mais de um ambiente da vida atual? outra condi\xE7\xE3o explica melhor o quadro? existe comorbidade junto?", source: "Manual Barkley, cap. 11" },
+    { text: "Um dos diagn\xF3sticos diferenciais mais importantes em adultos \xE9 distinguir TDAH de transtorno bipolar \u2014 os dois podem parecer parecidos de fora, mas pedem tratamentos diferentes. Por isso a avalia\xE7\xE3o de adultos costuma incluir triagem de humor e de uso de subst\xE2ncias, n\xE3o s\xF3 escalas de aten\xE7\xE3o.", source: "Manual Barkley, cap. 11" },
+    { text: "Nenhum teste isolado \u2014 nem de computador, nem neuropsicol\xF3gico \u2014 confirma ou descarta TDAH sozinho, segundo o Manual Barkley. Testes servem para sustentar uma hip\xF3tese diagn\xF3stica j\xE1 levantada pela entrevista cl\xEDnica, buscar explica\xE7\xF5es alternativas, ou identificar comorbidades associadas.", source: "Manual Barkley, cap. 9" },
+    { text: "A entrevista com quem convive de perto \xE9 considerada a fonte mais rica de informa\xE7\xE3o diagn\xF3stica, mais at\xE9 do que a entrevista direta sobre sintomas de desaten\xE7\xE3o e hiperatividade. Isso porque muita gente com TDAH tem dificuldade real de perceber e relatar o pr\xF3prio padr\xE3o de comportamento.", source: "Manual Barkley, cap. 8" },
+    { text: "Estimulantes agem bloqueando a recapta\xE7\xE3o de dopamina e noradrenalina no c\xE9rebro, o que ajuda a explicar por que melhoram aten\xE7\xE3o sustentada e controle de impulso. Estudos citados no Manual Barkley refutam a ideia de que o uso correto de estimulantes aumente risco de abuso de subst\xE2ncias \u2014 o efeito, quando o tratamento \xE9 bem conduzido, tende a ser protetor.", source: "Manual Barkley, cap. 17" },
+    { text: "Tiques n\xE3o s\xE3o mais considerados contraindica\xE7\xE3o absoluta para o uso de estimulantes, ao contr\xE1rio do que se pensava antes \u2014 a decis\xE3o passou a ser individualizada, pesando benef\xEDcio e efeito colateral caso a caso. Isso mostra como o entendimento sobre tratamento medicamentoso do TDAH segue sendo atualizado com novas evid\xEAncias.", source: "Manual Barkley, cap. 17" },
+    { text: "Quando estimulantes n\xE3o s\xE3o indicados \u2014 por ansiedade importante, tiques ou hist\xF3rico de abuso de subst\xE2ncias \u2014 a atomoxetina \xE9 uma alternativa n\xE3o estimulante com efic\xE1cia comprovada em crian\xE7as, adolescentes e adultos, sem potencial de abuso.", source: "Manual Barkley, cap. 18" },
+    { text: "O estudo MTA, um dos maiores j\xE1 feitos sobre tratamento de TDAH, mostrou que combinar medica\xE7\xE3o com interven\xE7\xE3o comportamental produz os melhores resultados gerais \u2014 com vantagem especialmente clara em desfechos como comportamento opositor e pr\xE1ticas parentais, al\xE9m dos sintomas nucleares de aten\xE7\xE3o.", source: "Manual Barkley, cap. 20 \xB7 Estudo MTA" },
+    { text: 'TDAH raramente aparece sozinho: no livro "Vencendo o TDAH Adulto", Barkley estima que mais de 80% dos casos v\xEAm acompanhados de outra condi\xE7\xE3o \u2014 TOD, ansiedade, depress\xE3o ou uso de subst\xE2ncias. Tratar s\xF3 o TDAH e ignorar o resto costuma deixar a pessoa sem entender por que ainda se sente mal.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 5 \u2014 Comorbidades" },
+    { text: 'A "cegueira temporal" descrita por Barkley n\xE3o \xE9 falta de intelig\xEAncia sobre o futuro \u2014 \xE9 a dificuldade de fazer esse futuro pesar no momento da decis\xE3o. Saber que algo \xE9 importante e conseguir agir de acordo com isso s\xE3o coisas diferentes no c\xE9rebro com TDAH.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 2" },
+    { text: 'Barkley organiza o TDAH em quatro fun\xE7\xF5es executivas enfraquecidas: a "voz da mente" (mem\xF3ria de trabalho verbal), o "olho da mente" (mem\xF3ria de trabalho n\xE3o verbal), o "cora\xE7\xE3o da mente" (autocontrole emocional) e o "playground da mente" (planejamento). Entender qual dessas falha mais no seu dia ajuda a escolher a estrat\xE9gia certa.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 2" },
+    { text: "Antes de fechar um diagn\xF3stico de TDAH, vale perguntar: os sintomas j\xE1 apareciam antes dos 16 anos? Existe preju\xEDzo em mais de uma \xE1rea da vida? Alguma outra condi\xE7\xE3o explica melhor o quadro? Essas s\xE3o as perguntas centrais que o Manual Barkley recomenda para avalia\xE7\xE3o de adultos \u2014 n\xE3o \xE9 intui\xE7\xE3o, \xE9 protocolo.", source: "Manual Barkley, cap. 11 (Avalia\xE7\xE3o de Adultos)" },
+    { text: "Distinguir TDAH de transtorno bipolar em adultos \xE9 um dos diagn\xF3sticos diferenciais mais delicados: oscila\xE7\xE3o de humor no TDAH costuma ser r\xE1pida e reativa a eventos, enquanto no bipolar tende a formar epis\xF3dios mais sustentados. Um profissional especializado \xE9 quem faz essa diferencia\xE7\xE3o com seguran\xE7a.", source: "Manual Barkley, cap. 11 (Avalia\xE7\xE3o de Adultos)" },
+    { text: "TDAH combinado com transtorno de conduta na inf\xE2ncia indica, segundo os estudos longitudinais citados por Barkley, um subgrupo com maior risco de dificuldades persistentes na vida adulta \u2014 mas isso \xE9 estat\xEDstica de grupo, n\xE3o destino individual. Interven\xE7\xE3o precoce muda essa trajet\xF3ria.", source: "Manual Barkley, cap. 4 (Comorbidades) e cap. 6 (Curso evolutivo)" },
+    { text: "Ansiedade associada ao TDAH tende a vir acompanhada de mais desaten\xE7\xE3o e, curiosamente, menos impulsividade \u2014 como se a preocupa\xE7\xE3o excessiva funcionasse como um freio parcial. Isso mostra por que tratar s\xF3 um sintoma isolado sem olhar o quadro completo pode confundir mais do que ajudar.", source: "Manual Barkley, cap. 4 (Comorbidades)" },
+    { text: "O Projeto Milwaukee, um dos maiores estudos longitudinais sobre TDAH, acompanhou crian\xE7as at\xE9 a vida adulta e mostrou que a persist\xEAncia do transtorno varia bastante conforme o crit\xE9rio usado \u2014 mas os riscos em \xE1reas como tr\xE2nsito, trabalho e relacionamentos aparecem de forma consistente quando o TDAH n\xE3o \xE9 manejado.", source: "Manual Barkley, cap. 6 (Curso evolutivo)" },
+    { text: 'A hiperatividade vis\xEDvel da inf\xE2ncia \u2014 correr, subir, n\xE3o parar quieto \u2014 tende a se transformar, na vida adulta, em inquieta\xE7\xE3o interna: uma sensa\xE7\xE3o constante de estar "a mil" por dentro, mesmo parado por fora. O transtorno muda de roupa, n\xE3o desaparece.', source: "Manual Barkley, cap. 6 (Curso evolutivo) \xB7 IACAPAP" },
+    { text: "TDAH em adultos est\xE1 associado a maior risco de acidentes de tr\xE2nsito, segundo dados citados no cap\xEDtulo sobre curso evolutivo \u2014 n\xE3o por imprud\xEAncia de car\xE1ter, mas por falhas moment\xE2neas de aten\xE7\xE3o sustentada e de inibi\xE7\xE3o do impulso. Reconhecer esse risco \xE9 o primeiro passo para compens\xE1-lo, n\xE3o motivo de vergonha.", source: "Manual Barkley, cap. 6 (Curso evolutivo)" },
+    { text: 'A Regra 8 de Barkley para adultos com TDAH \xE9 "tenha senso de humor": reconhecer o erro, explicar sem se justificar excessivamente, pedir desculpas e seguir em frente, evitando tanto a nega\xE7\xE3o quanto a culpa paralisante. \xC9 uma forma pr\xE1tica de proteger a autoestima sem deixar de assumir responsabilidade.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 4 \u2014 Regra 8" },
+    { text: 'Muitos adultos com TDAH carregam anos de r\xF3tulos como "pregui\xE7oso", "relaxado" ou "sem compromisso" antes de qualquer diagn\xF3stico. Esse hist\xF3rico deixa marcas na autoestima que n\xE3o somem s\xF3 porque o diagn\xF3stico chegou \u2014 costuma exigir um trabalho \xE0 parte de reconstru\xE7\xE3o da autoimagem.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 1 \u2014 Avalia\xE7\xE3o" },
+    { text: "Em relacionamentos, sintomas de TDAH \u2014 esquecer combinados, interromper, se distrair no meio de uma conversa \u2014 s\xE3o frequentemente interpretados pelo parceiro como desinteresse ou desrespeito. Nomear que \xE9 sintoma, n\xE3o inten\xE7\xE3o, \xE9 o primeiro passo para tirar a culpa moral da equa\xE7\xE3o sem tirar a responsabilidade de buscar tratamento.", source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 5 \u2014 Relacionamentos" },
+    { text: "Adultos com TDAH n\xE3o tratado enfrentam mais risco em \xE1reas espec\xEDficas da vida: dinheiro, dire\xE7\xE3o, trabalho e relacionamentos aparecem repetidamente nos estudos como pontos de maior preju\xEDzo. Isso n\xE3o \xE9 acaso \u2014 s\xE3o exatamente as \xE1reas que mais exigem planejamento, mem\xF3ria de trabalho e controle de impulso sustentados no tempo.", source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 5" },
+    { text: "TDAH tem base neurobiol\xF3gica identific\xE1vel: estudos de neuroimagem mostram matura\xE7\xE3o cortical cerca de tr\xEAs anos mais lenta e menor ativa\xE7\xE3o de redes cerebrais frontais respons\xE1veis por aten\xE7\xE3o e controle. N\xE3o \xE9 uma met\xE1fora \u2014 \xE9 um atraso mensur\xE1vel no desenvolvimento de circuitos espec\xEDficos.", source: "Tratado IACAPAP, cap. D.1 \u2014 Neurobiologia" },
+    { text: "Os sistemas de dopamina e noradrenalina \u2014 neurotransmissores ligados a motiva\xE7\xE3o, recompensa e aten\xE7\xE3o \u2014 funcionam de forma diferente no c\xE9rebro com TDAH. \xC9 por isso que estimulantes, que atuam diretamente nesses sistemas, costumam ter efeito t\xE3o espec\xEDfico sobre os sintomas centrais.", source: "Tratado IACAPAP, cap. D.1 \u2014 Neurobiologia" },
+    { text: "Nenhum exame de imagem ou biomarcador isolado confirma ou descarta TDAH \u2014 o diagn\xF3stico continua sendo cl\xEDnico, baseado em entrevista, hist\xF3rico e relatos de m\xFAltiplas fontes. Achados de neuroimagem ajudam a entender o transtorno, n\xE3o a diagnostic\xE1-lo individualmente.", source: "Tratado IACAPAP, cap. D.1 \u2014 Diagn\xF3stico" },
+    { text: 'Antes de fechar um diagn\xF3stico de TDAH em crian\xE7a, vale considerar se ela n\xE3o \xE9 simplesmente uma das mais novas da turma: crian\xE7as relativamente mais imaturas por diferen\xE7a de idade dentro do mesmo ano escolar s\xE3o identificadas com TDAH com mais frequ\xEAncia \u2014 o chamado efeito de "imaturidade relativa".', source: "Tratado IACAPAP, cap. D.1 \u2014 Diagn\xF3stico diferencial" },
+    { text: "Trauma e neglig\xEAncia podem produzir sintomas parecidos com os do TDAH \u2014 desaten\xE7\xE3o, agita\xE7\xE3o, dificuldade de regula\xE7\xE3o \u2014 sem que o transtorno esteja presente. Diferenciar exige olhar a hist\xF3ria de vida e o contexto, n\xE3o s\xF3 a lista de sintomas atuais.", source: "Tratado IACAPAP, cap. D.1 \u2014 Diagn\xF3stico diferencial" },
+    { text: "TDAH n\xE3o tratado est\xE1 associado a maior risco de acidentes, uso de subst\xE2ncias e at\xE9 mortalidade precoce \u2014 mas o mesmo corpo de pesquisa mostra que tratamento adequado reduz esses riscos de forma mensur\xE1vel, incluindo menos acidentes de tr\xE2nsito e menor risco de suic\xEDdio.", source: "Tratado IACAPAP, cap. D.1 \u2014 Curso e progn\xF3stico" },
+    { text: "Nem tudo no TDAH \xE9 d\xE9ficit: a literatura tamb\xE9m aponta tra\xE7os associados a maior toler\xE2ncia a risco, criatividade e perfil empreendedor em alguns adultos com o transtorno. Reconhecer isso n\xE3o substitui o tratamento das dificuldades, mas ajuda a formar uma imagem mais completa e menos s\xF3 negativa de si.", source: "Tratado IACAPAP, cap. D.1 \u2014 Curso e progn\xF3stico" },
+    { text: "TDAH em idosos existe e \xE9 frequentemente subdiagnosticado: a preval\xEAncia estimada em pessoas com 50 anos ou mais gira em torno de 1,5%, e sintomas de mem\xF3ria e desorganiza\xE7\xE3o \xE0s vezes s\xE3o confundidos com outros quadros pr\xF3prios da idade. \xC9 um transtorno que atravessa toda a vida, n\xE3o uma condi\xE7\xE3o s\xF3 de inf\xE2ncia ou juventude.", source: "Cartilha ABP/Alexa \u2014 Epidemiologia" },
+    { text: "A propor\xE7\xE3o de diagn\xF3stico entre homens e mulheres \xE9 maior nos consult\xF3rios do que na popula\xE7\xE3o em geral \u2014 cerca de 2,5 para 1 em amostras cl\xEDnicas. Isso sugere que meninas e mulheres com TDAH s\xE3o subidentificadas, provavelmente porque apresentam menos hiperatividade vis\xEDvel e mais sintomas internos, silenciosos.", source: "Cartilha ABP/Alexa \u2014 Diferen\xE7as de g\xEAnero \xB7 Manual Barkley, cap. 2" },
+    { text: 'Meninas com TDAH tendem a mostrar menos comportamento de oposi\xE7\xE3o e agita\xE7\xE3o vis\xEDvel do que meninos, o que atrasa o encaminhamento para avalia\xE7\xE3o. O sintoma menos "barulhento" n\xE3o significa menos preju\xEDzo \u2014 s\xF3 significa que passa mais despercebido.', source: "Manual Barkley, cap. 2 \u2014 Diferen\xE7as de g\xEAnero" },
+    { text: "\xC9 mito que TDAH seja causado por m\xE1 cria\xE7\xE3o, excesso de tela ou a\xE7\xFAcar \u2014 a herdabilidade gen\xE9tica do transtorno gira entre 70 e 90%, uma das mais altas entre os transtornos psiqui\xE1tricos. Fatores ambientais t\xEAm papel mediado e secund\xE1rio, n\xE3o causal isolado.", source: "Cartilha ABP/Alexa \u2014 Mitos desmontados \xB7 Tratado IACAPAP, cap. D.1 \u2014 Etiologia" },
+    { text: "\xC9 mito que medica\xE7\xE3o para TDAH aumente o risco de uso de drogas no futuro \u2014 estudos mostram justamente o oposto: tratamento adequado com estimulantes est\xE1 associado a um efeito protetor contra abuso de subst\xE2ncias mais tarde na vida.", source: "Manual Barkley, cap. 17 (Estimulantes) \xB7 Cartilha ABP/Alexa \u2014 Mitos desmontados" },
+    { text: "TDAH tamb\xE9m tem hist\xF3rico familiar frequente entre os pais: pesquisas mostram maior preval\xEAncia do pr\xF3prio transtorno e de outros quadros psiqui\xE1tricos nos pais de crian\xE7as com TDAH. Isso ajuda a explicar por que o manejo em casa \xE0s vezes precisa considerar as dificuldades executivas de mais de uma pessoa na fam\xEDlia ao mesmo tempo.", source: "Manual Barkley, cap. 4 (Comorbidades, Adapta\xE7\xE3o Familiar e Subtipos)" },
+    { text: 'No livro "Vencendo o TDAH Adulto", tratar o pr\xF3prio TDAH \xE9 descrito como o primeiro passo antes de tentar aplicar qualquer estrat\xE9gia de parentalidade \u2014 um adulto com fun\xE7\xF5es executivas sobrecarregadas tem menos recursos dispon\xEDveis para sustentar regras e rotina com os filhos.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 5 \u2014 Paternidade/Maternidade" },
+    { text: 'A Regra 5 das oito regras cotidianas de Barkley e Benton \xE9 "considere o futuro": antecipar concretamente, com detalhes sensoriais, a sensa\xE7\xE3o de j\xE1 ter terminado a tarefa. Esse exerc\xEDcio mental usa a emo\xE7\xE3o como combust\xEDvel motivacional, driblando a miopia temporal do TDAH.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 4 \u2014 Regra 5" },
+    { text: 'A Regra 6 do mesmo livro prop\xF5e "decompor o futuro e torn\xE1-lo significativo": fragmentar tarefas grandes em blocos pequenos, com algu\xE9m acompanhando o progresso e recompensa logo ap\xF3s cada etapa conclu\xEDda \u2014 porque recompensa distante tem pouco poder de mover um c\xE9rebro com TDAH.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 4 \u2014 Regra 6" },
+    { text: "Segundo Barkley e Benton, revelar o diagn\xF3stico de TDAH no ambiente de trabalho s\xF3 costuma valer a pena quando \xE9 necess\xE1rio para conseguir adapta\xE7\xF5es formais \u2014 a decis\xE3o de contar ou n\xE3o \xE9 estrat\xE9gica, n\xE3o uma obriga\xE7\xE3o moral.", source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 5 \u2014 Trabalho" },
+    { text: 'Cerca de tr\xEAs em cada quatro pessoas respondem bem j\xE1 \xE0 primeira medica\xE7\xE3o estimulante testada, segundo o livro "Vencendo o TDAH Adulto" \u2014 mas o ajuste de dose \xE9 descrito como processo gradual e monitorado, n\xE3o algo que se acerta de uma vez.', source: "Vencendo o TDAH Adulto (Barkley & Benton), Passo 3 \u2014 Medica\xE7\xE3o" },
+    { text: "TDAH em crian\xE7as e TDAH em adultos n\xE3o s\xE3o o mesmo quadro cl\xEDnico observado em espelho: o transtorno tem uma trajet\xF3ria pr\xF3pria, passando por fases distintas da pr\xE9-escola \xE0 idade adulta, com sintomas que mudam de forma sem necessariamente diminuir de impacto.", source: "Manual Barkley, cap. 6 (Curso evolutivo)" },
+    { text: "O modelo do livro descreve o TDAH como um freio (inibi\xE7\xE3o comportamental) mais fraco, que compromete quatro fun\xE7\xF5es executivas \u2014 a mem\xF3ria visual do tempo, a voz interna, o controle emocional e a capacidade de planejar. Entender essas quatro pe\xE7as ajuda a enxergar o TDAH como um problema de desempenho no momento certo, n\xE3o de conhecimento.", source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'TDAH n\xE3o \xE9 falta de saber o que fazer \u2014 \xE9 "miopia temporal": dificuldade de organizar o presente em fun\xE7\xE3o de uma consequ\xEAncia que s\xF3 vai aparecer no futuro. Por isso instru\xE7\xE3o e bom senso raramente bastam sozinhos.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: "A Regra 1 do livro \xE9 simples de enunciar e dif\xEDcil de praticar: pare a a\xE7\xE3o antes de agir ou falar. Respirar, repetir o que o outro acabou de dizer ou desacelerar a pr\xF3pria fala j\xE1 cria a pausa que o freio natural n\xE3o oferece sozinho.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: "A Regra 2 prop\xF5e olhar para tr\xE1s antes de decidir: buscar na mem\xF3ria uma situa\xE7\xE3o parecida j\xE1 vivida serve de b\xFAssola para prever o que provavelmente vai acontecer agora. Sem esse olhar deliberado para o passado, cada decis\xE3o nasce do zero.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: "A Regra 3 pede para colocar em palavras \u2014 inclusive em voz alta, mesmo sozinho \u2014 o que foi visualizado sobre o passado e o futuro, extraindo dali uma regra pr\xE1tica para o momento. Verbalizar \xE9 o que transforma uma lembran\xE7a vaga em orienta\xE7\xE3o de a\xE7\xE3o.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: "A Regra 4 \xE9 exteriorizar as informa\xE7\xF5es fundamentais: lembretes f\xEDsicos exatamente onde ser\xE3o precisos, e um caderno ou di\xE1rio sempre \xE0 m\xE3o. A informa\xE7\xE3o que existe s\xF3 na cabe\xE7a \xE9 a que mais escapa em um c\xE9rebro com TDAH.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: "A Regra 5 sugere antecipar emocionalmente a sensa\xE7\xE3o de j\xE1 ter terminado a tarefa, usando essa sensa\xE7\xE3o como combust\xEDvel para come\xE7ar agora. Sentir o al\xEDvio da conclus\xE3o antes de fazer o trabalho ajuda a competir com a recompensa imediata de adiar.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: "A Regra 6 orienta fragmentar o futuro em blocos pequenos e significativos, com presta\xE7\xE3o de contas a outra pessoa e recompensa logo depois de cada etapa conclu\xEDda \u2014 n\xE3o s\xF3 ao final do projeto inteiro.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: "A Regra 7 defende tornar os problemas externos, f\xEDsicos e manuais: post-its, quadros, fichas \u2014 qualquer ferramenta que tire o problema de dentro da cabe\xE7a e o coloque em algo que se possa ver e manusear.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: "A Regra 8 \xE9 ter senso de humor: reconhecer o erro, explicar o que aconteceu, pedir desculpas quando cabe e seguir em frente, sem nega\xE7\xE3o nem culpa excessiva. Humor autodepreciativo saud\xE1vel \xE9 tratado como ferramenta de manejo, n\xE3o como fraqueza.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: "Na educa\xE7\xE3o, o livro recomenda t\xE9cnicas como a leitura SQ4R e gravar aulas \u2014 formas de exteriorizar e refor\xE7ar o que a mem\xF3ria de trabalho verbal sozinha n\xE3o sustenta. Um mentor com check-ins curtos e di\xE1rios tamb\xE9m substitui, de fora, a autorregula\xE7\xE3o que falta por dentro.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o" },
+    { text: "No trabalho, escolher carreira e ambiente compat\xEDveis com o pr\xF3prio perfil pesa tanto quanto qualquer t\xE9cnica de organiza\xE7\xE3o. Reduzir distra\xE7\xF5es no espa\xE7o f\xEDsico e contar com um mentor no trabalho s\xE3o adapta\xE7\xF5es discretas que fazem diferen\xE7a real.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: "Revelar o diagn\xF3stico de TDAH no trabalho \xE9 uma escolha, n\xE3o uma obriga\xE7\xE3o \u2014 o livro recomenda fazer isso apenas quando for necess\xE1rio para conseguir uma adapta\xE7\xE3o formal, n\xE3o como exposi\xE7\xE3o autom\xE1tica.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: "Em dinheiro, a recomenda\xE7\xE3o central \xE9 automatizar o que puder \u2014 pagamentos autom\xE1ticos, or\xE7amento vis\xEDvel \u2014 e considerar usar dinheiro f\xEDsico em vez de cart\xE3o, porque o f\xEDsico torna o gasto mais concreto e mais f\xE1cil de sentir na hora.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: "Em casos financeiros mais graves, delegar a administra\xE7\xE3o do dinheiro a outra pessoa n\xE3o \xE9 fracasso \u2014 \xE9 reconhecer que algumas fun\xE7\xF5es executivas comprometidas pedem apoio externo permanente, assim como \xF3culos para quem n\xE3o enxerga bem de longe.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: "Em relacionamentos, sintomas de TDAH \u2014 esquecer, interromper, se distrair no meio de uma conversa \u2014 costumam ser mal-interpretados pelo outro como desinteresse ou grosseria. Nomear o que \xE9 sintoma ajuda o casal a discutir o problema real em vez de brigar por uma leitura errada de inten\xE7\xE3o.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos" },
+    { text: 'Tratar o pr\xF3prio TDAH melhora o relacionamento n\xE3o por acaso: menos impulsividade e mais previsibilidade tiram do parceiro o papel de "lembrete ambulante" e devolvem espa\xE7o para a rela\xE7\xE3o em si.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos" },
+    { text: "Na paternidade e maternidade, o primeiro passo recomendado pelo livro \xE9 tratar o pr\xF3prio TDAH \u2014 \xE9 dif\xEDcil sustentar rotina e regras para os filhos enquanto a autorregula\xE7\xE3o do adulto tamb\xE9m est\xE1 comprometida.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Paternidade/Maternidade" },
+    { text: "Regras familiares vis\xEDveis, combinadas previamente entre os pais, e um timer para checagem peri\xF3dica dos filhos aplicam o mesmo princ\xEDpio das 8 Regras \xE0 vida em casa: externalizar o que a mem\xF3ria n\xE3o sustenta sozinha.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Paternidade/Maternidade" },
+    { text: "Na dire\xE7\xE3o, o livro \xE9 categ\xF3rico: nunca dirigir sem a medica\xE7\xE3o em efeito e zero \xE1lcool, porque a combina\xE7\xE3o de impulsividade e menor controle do freio comportamental eleva diretamente o risco de acidente.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o" },
+    { text: 'Bloquear o celular ao dirigir e usar um lembrete f\xEDsico para o cinto de seguran\xE7a s\xE3o exemplos de como transformar uma boa inten\xE7\xE3o ("vou prestar aten\xE7\xE3o") em uma barreira f\xEDsica que n\xE3o depende de lembrar na hora.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o" },
+    { text: "Mais de 80% dos adultos com TDAH t\xEAm ao menos uma comorbidade \u2014 transtorno opositor, transtorno de conduta, ansiedade ou depress\xE3o. O livro \xE9 claro: tratar s\xF3 o TDAH e ignorar a comorbidade deixa parte do sofrimento sem resposta.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Comorbidades" },
+    { text: "Cerca de 75% das pessoas respondem bem j\xE1 ao primeiro estimulante testado, mas o ajuste de dose \xE9 um processo gradual e monitorado, n\xE3o um resultado imediato. Esperar acerto de primeira tende a gerar frustra\xE7\xE3o desnecess\xE1ria.", source: "Vencendo o TDAH Adulto, Passo 3" },
+    { text: "O livro usa crit\xE9rios de avalia\xE7\xE3o mais rigorosos que o DSM-IV para adultos: sintomas presentes em tr\xEAs \xE1reas (aten\xE7\xE3o/persist\xEAncia, controle de impulsos, atividade excessiva), in\xEDcio antes dos 16 anos, e preju\xEDzo em m\xFAltiplos dom\xEDnios da vida \u2014 n\xE3o bastam sintomas isolados em um \xFAnico contexto.", source: "Vencendo o TDAH Adulto, Passo 1" },
+    { text: "As cinco \xE1reas problem\xE1ticas do dia a dia listadas no livro s\xE3o gest\xE3o de tempo/metas, organiza\xE7\xE3o e mem\xF3ria operacional, autodisciplina/impulsividade, automotiva\xE7\xE3o e concentra\xE7\xE3o/prontid\xE3o. Reconhecer em qual dessas \xE1reas a dificuldade pesa mais ajuda a escolher a regra certa para aplicar primeiro.", source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'A mem\xF3ria de trabalho verbal \u2014 a "voz da mente" \u2014 \xE9 o que permite formular regras pr\xF3prias e manter a autoconversa que guia o comportamento. Quando ela \xE9 fraca, falar em voz alta o que se pretende fazer supre, de fora, o que essa voz interna n\xE3o sustenta sozinha.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: 'A mem\xF3ria de trabalho n\xE3o verbal \u2014 o "olho da mente" \u2014 \xE9 a capacidade de visualizar mentalmente o passado e o futuro. Sem ela funcionando bem, prever consequ\xEAncias vira um exerc\xEDcio abstrato em vez de algo que se "v\xEA" antes de agir.', source: "Vencendo o TDAH Adulto, Passo 2" },
+    { text: "Dificuldades de comunica\xE7\xE3o no TDAH t\xEAm raiz espec\xEDfica: mem\xF3ria de trabalho verbal fraca dificulta achar as palavras e manter uma sequ\xEAncia l\xF3gica ao explicar algo, enquanto planejamento fraco dificulta organizar ideias complexas na fala. N\xE3o \xE9 falta de intelig\xEAncia, \xE9 uma engrenagem executiva espec\xEDfica.", source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: "Repetir o que o interlocutor acabou de dizer antes de responder ganha tempo para organizar a resposta e ao mesmo tempo aplica a Regra 1 (pausa) e a Regra 3 (verbalizar) na pr\xE1tica de uma conversa real.", source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: "Tomar notas ativamente durante uma reuni\xE3o n\xE3o serve s\xF3 para lembrar depois \u2014 serve para manter o foco no momento presente, porque escrever exige um tipo de aten\xE7\xE3o que sustenta a aten\xE7\xE3o auditiva sozinha.", source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: "O livro trata as 8 Regras como um conjunto interligado, n\xE3o uma lista de escolha \xFAnica: pausar (Regra 1) sem depois visualizar o passado (Regra 2) e verbalizar uma conclus\xE3o (Regra 3) deixa a pausa sem dire\xE7\xE3o nenhuma para seguir.", source: "Vencendo o TDAH Adulto, Passo 4" },
+    { text: "Antes de qualquer regra pr\xE1tica, o Passo 2 do livro insiste em conhecer e aceitar o pr\xF3prio TDAH como ele \xE9 \u2014 negar o diagn\xF3stico ou minimizar o impacto das fun\xE7\xF5es executivas comprometidas tende a atrasar a busca por estrat\xE9gias que realmente ajudam.", source: "Vencendo o TDAH Adulto, Passo 2" }
   ];
   function principleForDate(date) {
     var d = date || /* @__PURE__ */ new Date();
-    var dayOfMonth = d.getDate();
-    var index = (dayOfMonth - 1) % PRINCIPLES.length;
+    var start = new Date(d.getFullYear(), 0, 0);
+    var diff = d - start;
+    var dayOfYear = Math.floor(diff / 864e5);
+    var index = (dayOfYear - 1) % PRINCIPLES.length;
     return PRINCIPLES[index];
   }
 
   // src/exercises.js
   var EXERCISES = [
-    'Antes de abrir qualquer aplicativo hoje, escreva \xE0 m\xE3o em um papel vis\xEDvel as 3 tarefas mais importantes do dia \u2014 n\xE3o mais que 3. Externalizar a prioridade compensa a dificuldade de manter isso "na cabe\xE7a".',
-    'Escolha uma tarefa que voc\xEA vem adiando e divida-a em pelo menos 4 passos bem pequenos, cada um com verbo de a\xE7\xE3o ("abrir o documento", "escrever o primeiro par\xE1grafo"). Passos pequenos e concretos s\xE3o mais f\xE1ceis de iniciar.',
-    'Configure um timer vis\xEDvel (celular, rel\xF3gio, ou at\xE9 um copo com \xE1gua) para uma tarefa que voc\xEA vai fazer agora. Ver o tempo passando substitui o "sentido de tempo" interno que costuma falhar no TDAH.',
-    "Quando sentir vontade de responder algo com raiva ou impulsividade hoje, conte at\xE9 10 antes de agir ou espere ler de novo depois de 5 minutos. A pausa \xE9 um substituto externo para a inibi\xE7\xE3o que n\xE3o vem automaticamente.",
-    'Escolha um objeto que voc\xEA usa todos os dias (chaves, carteira, \xF3culos) e defina um \xFAnico lugar fixo para ele. Deixe-o l\xE1 hoje mesmo. Um "lar" fixo reduz a carga de mem\xF3ria para lembrar onde as coisas est\xE3o.',
-    "Ao terminar uma tarefa hoje, d\xEA a si mesmo uma recompensa pequena e imediata (um caf\xE9, 5 minutos de algo que gosta) antes de passar para a pr\xF3xima. Recompensa atrasada tem pouco efeito \u2014 o refor\xE7o precisa ser r\xE1pido.",
-    'Escolha uma transi\xE7\xE3o do seu dia (sair de casa, come\xE7ar a trabalhar, ir dormir) e crie um alerta sonoro ou visual 10 minutos antes dela. Transi\xE7\xF5es s\xE3o pontos de risco de "travar"; um aviso externo ajuda a se preparar.',
-    "Antes de come\xE7ar a trabalhar hoje, guarde fisicamente (numa gaveta, outro c\xF4modo) uma fonte de distra\xE7\xE3o espec\xEDfica. Reduzir est\xEDmulos concorrentes no ambiente \xE9 mais eficaz do que s\xF3 confiar na for\xE7a de vontade.",
-    'Escolha uma tarefa chata de hoje e diga em voz alta, para si mesmo, o pr\xF3ximo passo antes de faz\xEA-lo. Verbalizar o passo imita a "fala interna" que orienta o comportamento e que costuma ser menos eficaz no TDAH.',
-    "Hoje, ao perceber que est\xE1 enrolando com uma tarefa, anote a hora em que come\xE7ou a enrolar e a hora em que efetivamente come\xE7ou. S\xF3 observar essa diferen\xE7a j\xE1 ajuda a construir no\xE7\xE3o real de tempo, sem se julgar.",
-    "Escolha um compromisso que costuma esquecer e cadastre agora um alarme ou lembrete com o texto exato do que fazer. Lembretes autom\xE1ticos substituem a mem\xF3ria prospectiva, um ponto fraco comum no TDAH.",
-    "Antes de dormir hoje, deixe vis\xEDvel, perto da porta, os itens que precisa levar amanh\xE3. Preparar \xE0 noite tira a decis\xE3o de cima da manh\xE3, quando a autorregula\xE7\xE3o costuma estar mais fragilizada.",
-    "Se hoje voc\xEA perceber que est\xE1 prestes a interromper algu\xE9m no meio da fala, tente segurar por 3 segundos antes de falar. Esse intervalo \xE9 treino direto de inibi\xE7\xE3o de resposta.",
-    "Escolha uma tarefa longa e use um bloco curto de tempo (15\u201325 minutos) com um intervalo garantido depois. Blocos curtos com pausa reduzem a fadiga da aten\xE7\xE3o sustentada, que se esgota mais r\xE1pido no TDAH.",
-    'Hoje, ao sentir uma emo\xE7\xE3o forte, nomeie-a em voz alta ou por escrito ("estou irritado porque isso demorou") antes de reagir. Nomear a emo\xE7\xE3o ativa uma pausa entre sentir e agir.',
-    'Escolha um c\xF4modo ou mesa de trabalho e remova, s\xF3 por hoje, tudo que n\xE3o \xE9 necess\xE1rio para a tarefa atual. Menos objetos no campo visual, menos "ganchos" para a aten\xE7\xE3o sair do lugar.',
-    'Antes de sair de casa hoje, fa\xE7a uma checagem verbal em voz alta dos itens essenciais ("chave, carteira, celular"). Rotinas verbais fixas reduzem esquecimentos recorrentes sem exigir mem\xF3ria perfeita.',
-    'Escolha uma tarefa chata e negocie consigo mesmo um "custo" se n\xE3o a fizer at\xE9 um hor\xE1rio combinado (ex: n\xE3o checar redes sociais at\xE9 terminar). Perder algo de valor costuma motivar mais do que s\xF3 "tentar lembrar".',
-    "Hoje, ao acordar, evite checar o celular nos primeiros 10 minutos e escreva uma frase sobre como quer que o dia comece. Adiar o est\xEDmulo mais absorvente do dia d\xE1 espa\xE7o para autorregula\xE7\xE3o antes da sobrecarga.",
-    'Escolha uma tarefa que voc\xEA tende a fazer de forma impulsiva e escreva 2 linhas antes de come\xE7ar: "o que eu quero no final" e "primeiro passo". Isso \xE9 um exerc\xEDcio direto de planejamento.',
-    'Se hoje surgir um pensamento do tipo "eu devia conseguir fazer isso sem ajuda", anote-o e responda por escrito com um fato: TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 falta de esfor\xE7o. Contestar o mito por escrito ajuda a lembrar que isso n\xE3o \xE9 uma falha pessoal.',
-    'Escolha um hor\xE1rio fixo para dormir hoje e configure um alarme "hora de desligar telas" 30 minutos antes. Sono irregular piora diretamente aten\xE7\xE3o e controle de impulsos no dia seguinte.',
-    "Hoje, ao iniciar uma tarefa, deixe vis\xEDvel s\xF3 o material daquela tarefa espec\xEDfica na mesa. Reduzir pistas de outras tarefas evita a troca constante de foco.",
-    "Escolha uma pessoa (parceiro, amigo, familiar, colega) e pe\xE7a a ela para te lembrar de um compromisso espec\xEDfico hoje. Apoio social como lembrete externo \xE9 uma forma leg\xEDtima de compensar d\xE9ficits de mem\xF3ria.",
-    'Se hoje voc\xEA perceber que uma tarefa est\xE1 tomando muito mais tempo do que devia, pare e pergunte por escrito: "isso ainda \xE9 necess\xE1rio ou eu travei em detalhe?". Essa pausa quebra o padr\xE3o de hiperfoco improdutivo.',
-    'Escolha uma meta pequena de hoje e, assim que cumprir, marque com um "X" vis\xEDvel em um papel ou aplicativo. Ver o progresso registrado d\xE1 um refor\xE7o visual imediato que a mente por si s\xF3 n\xE3o ret\xE9m bem.',
-    'Antes de uma reuni\xE3o, compromisso ou conversa importante hoje, escreva 2 ou 3 pontos que quer lembrar de dizer. Isso externaliza o "roteiro mental" que costuma se perder no meio da fala espont\xE2nea.',
-    'Hoje, ao sentir o impulso de come\xE7ar uma tarefa nova antes de terminar a atual, escreva a nova ideia numa lista de "depois" em vez de trocar de tarefa na hora. A lista captura o impulso sem exigir for\xE7a de vontade.',
-    "Escolha um momento do dia para se mover fisicamente por 5 minutos (caminhar, alongar, subir escada) antes de uma tarefa que exige concentra\xE7\xE3o. Atividade f\xEDsica breve ajuda a regular o estado de alerta.",
-    "Hoje, ao terminar o dia, escreva uma coisa que deu certo, mesmo pequena \u2014 n\xE3o o que faltou fazer. Fechar o dia notando progresso contraria o vi\xE9s de autocr\xEDtica comum em quem convive com TDAH h\xE1 anos.",
-    "Escolha uma regra ou combinado que voc\xEA tem com algu\xE9m e, hoje, transforme-a em um lembrete visual f\xEDsico (post-it, cartaz, nota na porta) em vez de depender de lembrar sozinho. Regras vis\xEDveis no ambiente funcionam melhor."
+    { text: 'Antes de abrir qualquer aplicativo hoje, escreva \xE0 m\xE3o em um papel vis\xEDvel as 3 tarefas mais importantes do dia \u2014 n\xE3o mais que 3. Externalizar a prioridade compensa a dificuldade de manter isso "na cabe\xE7a".', source: "Manual Barkley, cap. 7 (externaliza\xE7\xE3o)" },
+    { text: 'Escolha uma tarefa que voc\xEA vem adiando e divida-a em pelo menos 4 passos bem pequenos, cada um com verbo de a\xE7\xE3o ("abrir o documento", "escrever o primeiro par\xE1grafo"). Passos pequenos e concretos s\xE3o mais f\xE1ceis de iniciar.', source: "Manual Barkley, cap. 7 (planejamento)" },
+    { text: 'Configure um timer vis\xEDvel (celular, rel\xF3gio, ou at\xE9 um copo com \xE1gua) para uma tarefa que voc\xEA vai fazer agora. Ver o tempo passando substitui o "sentido de tempo" interno que costuma falhar no TDAH.', source: "Manual Barkley, cap. 7 (percep\xE7\xE3o de tempo)" },
+    { text: "Quando sentir vontade de responder algo com raiva ou impulsividade hoje, conte at\xE9 10 antes de agir ou espere ler de novo depois de 5 minutos. A pausa \xE9 um substituto externo para a inibi\xE7\xE3o que n\xE3o vem automaticamente.", source: "Manual Barkley, cap. 7 (inibi\xE7\xE3o comportamental)" },
+    { text: 'Escolha um objeto que voc\xEA usa todos os dias (chaves, carteira, \xF3culos) e defina um \xFAnico lugar fixo para ele. Deixe-o l\xE1 hoje mesmo. Um "lar" fixo reduz a carga de mem\xF3ria para lembrar onde as coisas est\xE3o.', source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: "Ao terminar uma tarefa hoje, d\xEA a si mesmo uma recompensa pequena e imediata (um caf\xE9, 5 minutos de algo que gosta) antes de passar para a pr\xF3xima. Recompensa atrasada tem pouco efeito \u2014 o refor\xE7o precisa ser r\xE1pido.", source: "Manual Barkley, cap. 12 (refor\xE7o imediato)" },
+    { text: 'Escolha uma transi\xE7\xE3o do seu dia (sair de casa, come\xE7ar a trabalhar, ir dormir) e crie um alerta sonoro ou visual 10 minutos antes dela. Transi\xE7\xF5es s\xE3o pontos de risco de "travar"; um aviso externo ajuda a se preparar.', source: "Manual Barkley, cap. 7 (transi\xE7\xE3o de tarefas)" },
+    { text: "Antes de come\xE7ar a trabalhar hoje, guarde fisicamente (numa gaveta, outro c\xF4modo) uma fonte de distra\xE7\xE3o espec\xEDfica. Reduzir est\xEDmulos concorrentes no ambiente \xE9 mais eficaz do que s\xF3 confiar na for\xE7a de vontade.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Escolha uma tarefa chata de hoje e diga em voz alta, para si mesmo, o pr\xF3ximo passo antes de faz\xEA-lo. Verbalizar o passo imita a "fala interna" que orienta o comportamento e que costuma ser menos eficaz no TDAH.', source: "Manual Barkley, cap. 3 (autoconversa/fala internalizada)" },
+    { text: "Hoje, ao perceber que est\xE1 enrolando com uma tarefa, anote a hora em que come\xE7ou a enrolar e a hora em que efetivamente come\xE7ou. S\xF3 observar essa diferen\xE7a j\xE1 ajuda a construir no\xE7\xE3o real de tempo, sem se julgar.", source: "Manual Barkley, cap. 7 (percep\xE7\xE3o de tempo)" },
+    { text: "Escolha um compromisso que costuma esquecer e cadastre agora um alarme ou lembrete com o texto exato do que fazer. Lembretes autom\xE1ticos substituem a mem\xF3ria prospectiva, um ponto fraco comum no TDAH.", source: "Cartilha ABP/Alexa (recursos tecnol\xF3gicos de suporte)" },
+    { text: "Antes de dormir hoje, deixe vis\xEDvel, perto da porta, os itens que precisa levar amanh\xE3. Preparar \xE0 noite tira a decis\xE3o de cima da manh\xE3, quando a autorregula\xE7\xE3o costuma estar mais fragilizada.", source: "Manual Barkley, cap. 7 (externaliza\xE7\xE3o)" },
+    { text: "Se hoje voc\xEA perceber que est\xE1 prestes a interromper algu\xE9m no meio da fala, tente segurar por 3 segundos antes de falar. Esse intervalo \xE9 treino direto de inibi\xE7\xE3o de resposta.", source: "Manual Barkley, cap. 7 (inibi\xE7\xE3o comportamental)" },
+    { text: "Escolha uma tarefa longa e use um bloco curto de tempo (15\u201325 minutos) com um intervalo garantido depois. Blocos curtos com pausa reduzem a fadiga da aten\xE7\xE3o sustentada, que se esgota mais r\xE1pido no TDAH.", source: "Manual Barkley, cap. 7 (aten\xE7\xE3o sustentada)" },
+    { text: 'Hoje, ao sentir uma emo\xE7\xE3o forte, nomeie-a em voz alta ou por escrito ("estou irritado porque isso demorou") antes de reagir. Nomear a emo\xE7\xE3o ativa uma pausa entre sentir e agir.', source: "Manual Barkley, cap. 7 (autorregula\xE7\xE3o emocional)" },
+    { text: 'Escolha um c\xF4modo ou mesa de trabalho e remova, s\xF3 por hoje, tudo que n\xE3o \xE9 necess\xE1rio para a tarefa atual. Menos objetos no campo visual, menos "ganchos" para a aten\xE7\xE3o sair do lugar.', source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Antes de sair de casa hoje, fa\xE7a uma checagem verbal em voz alta dos itens essenciais ("chave, carteira, celular"). Rotinas verbais fixas reduzem esquecimentos recorrentes sem exigir mem\xF3ria perfeita.', source: "Manual Barkley, cap. 3 (autoconversa)" },
+    { text: 'Escolha uma tarefa chata e negocie consigo mesmo um "custo" se n\xE3o a fizer at\xE9 um hor\xE1rio combinado (ex: n\xE3o checar redes sociais at\xE9 terminar). Perder algo de valor costuma motivar mais do que s\xF3 "tentar lembrar".', source: "Manual Barkley, cap. 12 (custo de resposta)" },
+    { text: "Hoje, ao acordar, evite checar o celular nos primeiros 10 minutos e escreva uma frase sobre como quer que o dia comece. Adiar o est\xEDmulo mais absorvente do dia d\xE1 espa\xE7o para autorregula\xE7\xE3o antes da sobrecarga.", source: "Manual Barkley, cap. 7 (autorregula\xE7\xE3o)" },
+    { text: 'Escolha uma tarefa que voc\xEA tende a fazer de forma impulsiva e escreva 2 linhas antes de come\xE7ar: "o que eu quero no final" e "primeiro passo". Isso \xE9 um exerc\xEDcio direto de planejamento.', source: "Manual Barkley, cap. 7 (planejamento)" },
+    { text: 'Se hoje surgir um pensamento do tipo "eu devia conseguir fazer isso sem ajuda", anote-o e responda por escrito com um fato: TDAH tem base neurobiol\xF3gica, n\xE3o \xE9 falta de esfor\xE7o. Contestar o mito por escrito ajuda a lembrar que isso n\xE3o \xE9 uma falha pessoal.', source: "Manual Barkley, cap. 5 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Escolha um hor\xE1rio fixo para dormir hoje e configure um alarme "hora de desligar telas" 30 minutos antes. Sono irregular piora diretamente aten\xE7\xE3o e controle de impulsos no dia seguinte.', source: "Manual Barkley, cap. 3 (sono e TDAH)" },
+    { text: "Hoje, ao iniciar uma tarefa, deixe vis\xEDvel s\xF3 o material daquela tarefa espec\xEDfica na mesa. Reduzir pistas de outras tarefas evita a troca constante de foco.", source: "Manual Barkley, cap. 7 (controle de est\xEDmulos)" },
+    { text: "Escolha uma pessoa (parceiro, amigo, familiar, colega) e pe\xE7a a ela para te lembrar de um compromisso espec\xEDfico hoje. Apoio social como lembrete externo \xE9 uma forma leg\xEDtima de compensar d\xE9ficits de mem\xF3ria.", source: "Cartilha ABP/Alexa (apoio social no manejo)" },
+    { text: 'Se hoje voc\xEA perceber que uma tarefa est\xE1 tomando muito mais tempo do que devia, pare e pergunte por escrito: "isso ainda \xE9 necess\xE1rio ou eu travei em detalhe?". Essa pausa quebra o padr\xE3o de hiperfoco improdutivo.', source: "Manual Barkley, cap. 3 (hiperfoco)" },
+    { text: 'Escolha uma meta pequena de hoje e, assim que cumprir, marque com um "X" vis\xEDvel em um papel ou aplicativo. Ver o progresso registrado d\xE1 um refor\xE7o visual imediato que a mente por si s\xF3 n\xE3o ret\xE9m bem.', source: "Manual Barkley, cap. 12 (refor\xE7o visual)" },
+    { text: 'Antes de uma reuni\xE3o, compromisso ou conversa importante hoje, escreva 2 ou 3 pontos que quer lembrar de dizer. Isso externaliza o "roteiro mental" que costuma se perder no meio da fala espont\xE2nea.', source: "Manual Barkley, cap. 3 (mem\xF3ria de trabalho verbal)" },
+    { text: 'Hoje, ao sentir o impulso de come\xE7ar uma tarefa nova antes de terminar a atual, escreva a nova ideia numa lista de "depois" em vez de trocar de tarefa na hora. A lista captura o impulso sem exigir for\xE7a de vontade.', source: "Manual Barkley, cap. 7 (inibi\xE7\xE3o comportamental)" },
+    { text: "Escolha um momento do dia para se mover fisicamente por 5 minutos (caminhar, alongar, subir escada) antes de uma tarefa que exige concentra\xE7\xE3o. Atividade f\xEDsica breve ajuda a regular o estado de alerta.", source: "Manual Barkley, cap. 7 (regula\xE7\xE3o do estado de alerta)" },
+    { text: "Hoje, ao terminar o dia, escreva uma coisa que deu certo, mesmo pequena \u2014 n\xE3o o que faltou fazer. Fechar o dia notando progresso contraria o vi\xE9s de autocr\xEDtica comum em quem convive com TDAH h\xE1 anos.", source: "Manual Barkley, cap. 3 (autoestima e hist\xF3rico de vida)" },
+    { text: "Escolha uma regra ou combinado que voc\xEA tem com algu\xE9m e, hoje, transforme-a em um lembrete visual f\xEDsico (post-it, cartaz, nota na porta) em vez de depender de lembrar sozinho. Regras vis\xEDveis no ambiente funcionam melhor.", source: "Manual Barkley, cap. 7 \xB7 Cartilha ABP/Alexa" },
+    { text: 'Hoje, ao sentir vontade de responder no calor do momento (mensagem, e-mail, discuss\xE3o), pare fisicamente por 3 segundos antes de agir: respire fundo uma vez e s\xF3 depois decida. Regra 1 de "Vencendo o TDAH Adulto" (Passo 4) \u2014 criar uma pausa f\xEDsica \xE9 o substituto externo do freio que n\xE3o vem automaticamente.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Antes de responder a uma pergunta dif\xEDcil hoje, repita em voz baixa o que a outra pessoa disse antes de formular sua resposta. Repetir ganha tempo e ativa a Regra 1 (Pare a a\xE7\xE3o) de "Vencendo o TDAH Adulto" na comunica\xE7\xE3o.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Escolha uma situa\xE7\xE3o de hoje em que voc\xEA normalmente reagiria r\xE1pido demais (dirigir, discutir, decidir uma compra) e treine falar mais devagar de prop\xF3sito, mesmo que pare\xE7a estranho. "Vencendo o TDAH Adulto" descreve falar mais devagar como t\xE9cnica pr\xE1tica da Regra 1 para criar espa\xE7o de inibi\xE7\xE3o.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Hoje, antes de mandar aquela mensagem ou e-mail que voc\xEA escreveu com raiva, deixe o rascunho salvo e releia s\xF3 depois de 15 minutos. Regra 1 (Pare a a\xE7\xE3o) de "Vencendo o TDAH Adulto": o intervalo f\xEDsico entre impulso e a\xE7\xE3o \xE9 o que falta naturalmente no TDAH.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Escolha um momento hoje em que perceber tens\xE3o subindo numa conversa e proponha uma pausa de verdade ("posso te responder em 5 minutos?") em vez de continuar no autom\xE1tico. A Regra 1 trata a pausa como ferramenta ativa, n\xE3o como fraqueza.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Antes de tomar uma decis\xE3o de compra hoje (mesmo pequena), pare e conte at\xE9 10 olhando para o produto antes de decidir. Aplica\xE7\xE3o direta da Regra 1 de "Vencendo o TDAH Adulto" ao consumo impulsivo.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Hoje, ao dirigir, treine uma pausa deliberada de 1 segundo antes de acelerar em um sinal amarelo ou entrar numa vaga apertada. "Vencendo o TDAH Adulto" (Passo 5, Dire\xE7\xE3o) recomenda usar a Regra 1 especificamente no tr\xE2nsito, onde a impulsividade tem custo mais alto.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o (Regra 1)" },
+    { text: 'Escolha uma tarefa nova que te chamou aten\xE7\xE3o hoje e, antes de come\xE7\xE1-la, pare e pergunte: "isso \xE9 mais importante que o que eu j\xE1 estava fazendo?". A Regra 1 existe para interromper o piloto autom\xE1tico antes que ele te desvie do plano.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 1" },
+    { text: 'Antes de decidir algo hoje (uma resposta, uma compra, uma tarefa nova), pare 30 segundos e lembre de uma vez em que uma decis\xE3o parecida deu certo ou errado. Regra 2 de "Vencendo o TDAH Adulto" \u2014 olhar para o passado antes de agir compensa a fraqueza da mem\xF3ria de trabalho n\xE3o-verbal (o "olho da mente").', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: "Escolha uma situa\xE7\xE3o de hoje parecida com algo que voc\xEA j\xE1 viveu antes (uma reuni\xE3o, um conflito, uma tarefa complexa) e escreva 2 linhas lembrando como foi da \xFAltima vez, antes de agir de novo. Isso treina diretamente a fun\xE7\xE3o de mem\xF3ria de trabalho n\xE3o-verbal descrita no Cap. 7 do Manual Barkley.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: 'Antes de se comprometer com algo hoje, imagine concretamente como voc\xEA vai se sentir daqui a 1 hora fazendo aquilo. Regra 2 (olhar para o futuro) de "Vencendo o TDAH Adulto" usa visualiza\xE7\xE3o para compensar a "cegueira temporal" descrita no modelo de Barkley.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: 'Escolha uma tarefa chata de hoje e, antes de come\xE7ar, visualize por 30 segundos como vai se sentir quando ela estiver pronta. "Considere o futuro" (Regra 5) usa a sensa\xE7\xE3o antecipada de al\xEDvio como combust\xEDvel motivacional.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Hoje, antes de uma decis\xE3o importante, pergunte a si mesmo em voz alta: "da \xFAltima vez que fiz algo parecido, o que funcionou e o que n\xE3o funcionou?". Regra 2 de "Vencendo o TDAH Adulto" transforma a experi\xEAncia passada em crit\xE9rio ativo de decis\xE3o, j\xE1 que ela n\xE3o vem \xE0 mente sozinha.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: "Escolha algo que voc\xEA vai fazer amanh\xE3 e, hoje \xE0 noite, imagine em detalhe como ser\xE1 o momento de terminar essa tarefa amanh\xE3. Visualizar o futuro conclu\xEDdo (Regra 2/5) compensa a mem\xF3ria de trabalho n\xE3o-verbal fraca que dificulta prever consequ\xEAncias.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2 e 5" },
+    { text: 'Antes de recusar ou aceitar um convite hoje, pare e lembre de uma ocasi\xE3o parecida no passado \u2014 funcionou bem ou mal? Regra 2 de "Vencendo o TDAH Adulto": usar o passado como refer\xEAncia expl\xEDcita, n\xE3o deixar a decis\xE3o s\xF3 no impulso do momento.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 2" },
+    { text: 'Escolha uma tarefa que voc\xEA vem evitando e diga em voz alta, sozinho, o que vai fazer e por qu\xEA, como se estivesse explicando para outra pessoa. Regra 3 ("Expresse o passado e o futuro") de "Vencendo o TDAH Adulto" usa a fala verbalizada para compensar a fraqueza da mem\xF3ria de trabalho verbal (a "voz da mente").', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: "Hoje, antes de uma tarefa complexa, narre em voz alta os passos que voc\xEA vai seguir, como se fosse um tutorial falado para si mesmo. Verbalizar o plano \xE9 a aplica\xE7\xE3o pr\xE1tica da Regra 3, que substitui a autoconversa interna que costuma falhar no TDAH.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: 'Escolha uma regra que voc\xEA quer seguir hoje ("vou checar e-mail s\xF3 3 vezes") e diga essa regra em voz alta para si mesmo antes de come\xE7ar o dia. Regra 3 de "Vencendo o TDAH Adulto" trata formular regras em voz alta como mais eficaz do que s\xF3 pens\xE1-las.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: "Depois de terminar uma tarefa hoje, fale em voz alta (ou grave um \xE1udio curto) o que funcionou e o que voc\xEA faria diferente da pr\xF3xima vez. Regra 3 transforma a experi\xEAncia em uma regra verbalizada expl\xEDcita, j\xE1 que a reflex\xE3o silenciosa tende a se perder.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: 'Antes de uma liga\xE7\xE3o ou conversa dif\xEDcil hoje, ensaie em voz alta, sozinho, o que voc\xEA quer dizer. "Vencendo o TDAH Adulto" liga isso \xE0 mem\xF3ria de trabalho verbal fraca: verbalizar antes ajuda a manter a sequ\xEAncia l\xF3gica na hora de falar de verdade.', source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o (Regra 3)" },
+    { text: 'Escolha uma tarefa que exige planejamento hoje e narre para si mesmo, em voz alta, cada etapa antes de faz\xEA-la ("agora eu abro o arquivo, depois reviso o t\xEDtulo..."). Regra 3 substitui a fala interna que orienta a a\xE7\xE3o, ponto fraco descrito no Cap. 7 do Manual Barkley.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 3" },
+    { text: 'Escolha um compromisso de amanh\xE3 e escreva um lembrete f\xEDsico (post-it, cart\xE3o) e coloque-o exatamente no lugar onde voc\xEA vai precisar dele (na porta, no volante, na tela do notebook). Regra 4 ("Exteriorize as informa\xE7\xF5es fundamentais") de "Vencendo o TDAH Adulto" \u2014 o lembrete precisa estar no ponto de a\xE7\xE3o, n\xE3o s\xF3 guardado num app.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: "Hoje, comece (ou retome) um caderno ou bloco de notas f\xEDsico que fique sempre com voc\xEA, e anote nele qualquer compromisso ou ideia importante assim que surgir. Regra 4 recomenda um di\xE1rio sempre \xE0 m\xE3o como externaliza\xE7\xE3o cont\xEDnua da mem\xF3ria de trabalho.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: 'Escolha uma informa\xE7\xE3o que voc\xEA tende a esquecer (senha de um sistema, medida de uma receita, hor\xE1rio de um rem\xE9dio) e cole um lembrete f\xEDsico vis\xEDvel exatamente onde voc\xEA vai us\xE1-la. "Vencendo o TDAH Adulto" enfatiza que o lembrete s\xF3 funciona se estiver no local certo, n\xE3o em qualquer lugar.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: 'Hoje, transforme uma regra combinada (com parceiro, filho ou equipe) em um cartaz ou nota f\xEDsica vis\xEDvel no ambiente, em vez de confiar s\xF3 na mem\xF3ria de todos. Regra 4 de "Vencendo o TDAH Adulto" aplicada a combinados familiares ou de trabalho.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: "Antes de sair para uma tarefa fora de casa hoje, escreva num papel os 3 itens ou informa\xE7\xF5es que n\xE3o pode esquecer e leve o papel com voc\xEA, n\xE3o s\xF3 na cabe\xE7a. Exteriorizar as informa\xE7\xF5es fundamentais (Regra 4) reduz a depend\xEAncia da mem\xF3ria de trabalho.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: "Escolha uma tarefa grande de hoje ou da semana e escreva, num s\xF3 papel vis\xEDvel, apenas o pr\xF3ximo passo concreto \u2014 n\xE3o a lista toda. Regra 4 recomenda deixar vis\xEDvel s\xF3 a informa\xE7\xE3o necess\xE1ria no momento certo, para n\xE3o sobrecarregar.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 4" },
+    { text: 'Hoje, se voc\xEA tem uma reuni\xE3o ou compromisso importante, escreva os pontos-chave num cart\xE3o pequeno e mantenha-o vis\xEDvel durante a conversa. "Vencendo o TDAH Adulto" recomenda essa exterioriza\xE7\xE3o para compensar a mem\xF3ria de trabalho verbal na comunica\xE7\xE3o.', source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o (Regra 4)" },
+    { text: 'Escolha uma tarefa grande que voc\xEA vem adiando e, antes de come\xE7ar, imagine e escreva uma frase sobre como vai se sentir ao finalmente termin\xE1-la. Regra 5 ("Considere o futuro") de "Vencendo o TDAH Adulto" usa a antecipa\xE7\xE3o emocional da conclus\xE3o como motiva\xE7\xE3o, j\xE1 que a recompensa distante normalmente n\xE3o motiva no TDAH.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Hoje, antes de uma tarefa chata, escreva por escrito a resposta para: "o que eu ganho de verdade quando isso estiver pronto?". Regra 5 transforma um benef\xEDcio abstrato e distante em algo concreto e sentido agora.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Escolha algo que voc\xEA tem evitado fazer por semanas e descreva por escrito, em detalhe, a cena de voc\xEA tendo terminado \u2014 o que vai sentir, o que vai poder fazer depois. "Considere o futuro" (Regra 5) usa a imagina\xE7\xE3o v\xEDvida como substituto do planejamento natural que falha no TDAH.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Antes de decidir gastar ou economizar hoje, imagine concretamente uma cena futura de usar (ou n\xE3o ter) esse dinheiro depois. "Vencendo o TDAH Adulto" (Passo 5, Dinheiro) aplica a Regra 5 diretamente a decis\xF5es financeiras.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro (Regra 5)" },
+    { text: "Hoje, escolha uma meta de m\xE9dio prazo (semana ou m\xEAs) e escreva uma frase descrevendo a cena de t\xEA-la alcan\xE7ado, com o m\xE1ximo de detalhe sensorial poss\xEDvel. Regra 5 recomenda tornar o futuro v\xEDvido o suficiente para competir com a gratifica\xE7\xE3o imediata.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Escolha uma tarefa grande que est\xE1 te paralisando hoje e divida-a em pelo menos 5 blocos pequenos, cada um com um prazo pr\xF3prio, ainda que informal. Regra 6 ("Decomponha o futuro e o torne significativo") de "Vencendo o TDAH Adulto" \u2014 tarefas grandes de prazo distante n\xE3o geram a\xE7\xE3o no TDAH, s\xF3 blocos pequenos com prazo pr\xF3ximo geram.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: "Hoje, escolha uma etapa de uma tarefa maior e combine com algu\xE9m (colega, amigo, parceiro) que voc\xEA vai mostrar o resultado at\xE9 um hor\xE1rio espec\xEDfico. Regra 6 usa presta\xE7\xE3o de contas a terceiros como refor\xE7o externo para cumprir prazos intermedi\xE1rios.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: "Escolha uma tarefa longa de hoje e, a cada etapa conclu\xEDda, d\xEA a si mesmo algo bom na hora \u2014 um lanche, uma pausa, uma mensagem de parab\xE9ns a si mesmo. Regra 6 recomenda recompensa imediata a cada bloco pequeno, n\xE3o s\xF3 ao final do projeto inteiro.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: 'Hoje, pegue uma meta grande da semana e escreva-a como uma sequ\xEAncia de passos com prazo de horas, n\xE3o de dias. "Decomponha o futuro" (Regra 6) torna prazos distantes significativos ao aproxim\xE1-los da percep\xE7\xE3o imediata de tempo.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: 'Escolha uma tarefa de estudo ou trabalho longa hoje e defina, antes de come\xE7ar, um ponto de checagem no meio do caminho onde algu\xE9m vai perguntar como est\xE1 indo. "Vencendo o TDAH Adulto" (Passo 5, Estudo) recomenda parceiros de estudo com checagens frequentes como aplica\xE7\xE3o da Regra 6.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o (Regra 6)" },
+    { text: "Hoje, escolha um projeto pessoal parado h\xE1 tempo e quebre s\xF3 a primeira semana dele em passos di\xE1rios bem pequenos, sem se preocupar ainda com o resto. Regra 6 foca em tornar significativo o pr\xF3ximo passo, n\xE3o o projeto inteiro de uma vez.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: 'Escolha um problema real que est\xE1 te incomodando hoje e escreva-o fisicamente num papel, com uma caneta, em vez de s\xF3 remo\xEA-lo mentalmente. Regra 7 ("Torne os problemas externos, f\xEDsicos e manuais") de "Vencendo o TDAH Adulto" \u2014 resolver mentalmente \xE9 mais dif\xEDcil no TDAH; colocar no papel ajuda a manipular a informa\xE7\xE3o de fora para dentro.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: "Hoje, use um quadro, post-its coloridos ou cart\xF5es f\xEDsicos para organizar as tarefas do dia, em vez de manter tudo s\xF3 na cabe\xE7a ou num app que voc\xEA n\xE3o olha. Regra 7 recomenda ferramentas visuais e manuais como extens\xE3o f\xEDsica do planejamento.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: 'Escolha uma decis\xE3o dif\xEDcil de hoje (duas op\xE7\xF5es concorrentes) e escreva fisicamente os pr\xF3s e contras de cada lado em colunas separadas no papel. Regra 7 de "Vencendo o TDAH Adulto" transforma um dilema mental em algo manipul\xE1vel fora da cabe\xE7a.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: "Hoje, ao organizar seu espa\xE7o de trabalho, use etiquetas f\xEDsicas ou cores para categorizar documentos ou tarefas, em vez de confiar s\xF3 em memorizar onde cada coisa est\xE1. Aplica\xE7\xE3o pr\xE1tica da Regra 7 (tornar os problemas f\xEDsicos e manuais).", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: "Escolha um conflito ou mal-entendido de hoje e, antes de resolv\xEA-lo na conversa, escreva num papel o que voc\xEA quer dizer e em que ordem. Regra 7 recomenda usar ferramentas f\xEDsicas mesmo em situa\xE7\xF5es interpessoais, n\xE3o s\xF3 em tarefas de trabalho.", source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos (Regra 7)" },
+    { text: 'Hoje, se cometer um erro (esquecer algo, chegar atrasado, perder um prazo), reconhe\xE7a em voz alta com leveza ("l\xE1 vou eu de novo") em vez de se punir ou negar o erro. Regra 8 ("Tenha senso de humor") de "Vencendo o TDAH Adulto" trata o humor autodepreciativo saud\xE1vel como parte do manejo, evitando tanto a nega\xE7\xE3o quanto a culpa excessiva.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: "Escolha um erro recente causado por um sintoma do TDAH e pratique hoje as 4 etapas da Regra 8: reconhecer o que houve, explicar (n\xE3o justificar), pedir desculpas se necess\xE1rio, e dizer o que vai tentar diferente da pr\xF3xima vez.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: 'Hoje, ao perceber que esqueceu algo pela en\xE9sima vez, ria da situa\xE7\xE3o por um segundo antes de corrigir o problema, sem transformar isso em autocr\xEDtica pesada. "Vencendo o TDAH Adulto" descreve o senso de humor como prote\xE7\xE3o contra a vergonha cr\xF4nica, sem minimizar o impacto real do sintoma.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: "Escolha uma situa\xE7\xE3o em que voc\xEA atrapalhou algo hoje (ou recentemente) por impulsividade e conte essa hist\xF3ria para algu\xE9m de confian\xE7a com leveza, sem se rebaixar. Regra 8 recomenda compartilhar os deslizes com humor como forma de aliviar a carga emocional acumulada.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: "Hoje, antes de dormir, escolha um erro do dia causado por esquecimento ou impulsividade e escreva uma vers\xE3o engra\xE7ada da cena, como se fosse contar para um amigo. Pr\xE1tica de humor autodepreciativo (Regra 8) que separa o erro da identidade da pessoa.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: 'No trabalho hoje, identifique uma fonte de distra\xE7\xE3o do seu espa\xE7o f\xEDsico (barulho, tela cheia de abas, pessoas passando) e mude sua posi\xE7\xE3o ou pe\xE7a para reduzir esse est\xEDmulo por 1 hora. "Vencendo o TDAH Adulto" (Passo 5, Trabalho) recomenda adaptar o ambiente f\xEDsico em vez de s\xF3 tentar se concentrar mais.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: 'Escolha uma tarefa de trabalho de hoje e, se poss\xEDvel, converse com um colega de confian\xE7a para que ele funcione como um "check-in" r\xE1pido no meio do dia, perguntando como est\xE1 indo. Aplica\xE7\xE3o da ideia de mentor/parceiro no trabalho descrita em "Vencendo o TDAH Adulto" (Passo 5).', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: 'Hoje, antes de aceitar uma nova tarefa no trabalho, pare e avalie por escrito se ela \xE9 compat\xEDvel com o tipo de ambiente/rotina em que voc\xEA funciona melhor (mais estrutura vs. mais autonomia). "Vencendo o TDAH Adulto" recomenda escolher tarefas e ambientes de trabalho compat\xEDveis com o pr\xF3prio perfil, em vez de for\xE7ar um encaixe que n\xE3o existe.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: 'Escolha uma tarefa de trabalho chata de hoje e fa\xE7a-a em um bloco de tempo, sem checar e-mail ou mensagens durante esse per\xEDodo combinado. Reduzir est\xEDmulos concorrentes no ambiente de trabalho \xE9 recomenda\xE7\xE3o central de "Vencendo o TDAH Adulto" (Passo 5, Trabalho).', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: 'Hoje, automatize (ou agende para automatizar essa semana) o pagamento de uma conta fixa que voc\xEA costuma esquecer ou atrasar. "Vencendo o TDAH Adulto" (Passo 5, Dinheiro) recomenda automatizar pagamentos para tirar a decis\xE3o financeira do momento presente, onde a impulsividade pesa mais.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: 'Escolha um gasto pequeno de hoje e pague em dinheiro f\xEDsico, em vez de cart\xE3o, sentindo o valor sair fisicamente da carteira. "Vencendo o TDAH Adulto" recomenda dinheiro f\xEDsico como forma de tornar o gasto mais concreto e vis\xEDvel do que um cart\xE3o.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: 'Hoje, deixe vis\xEDvel (num papel na geladeira, numa planilha aberta) quanto voc\xEA j\xE1 gastou essa semana, para acompanhar de forma concreta, n\xE3o s\xF3 mental. Or\xE7amento vis\xEDvel \xE9 recomenda\xE7\xE3o de "Vencendo o TDAH Adulto" (Passo 5, Dinheiro) para compensar a dificuldade de prever consequ\xEAncias financeiras futuras.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: 'Antes de fazer uma compra maior hoje, espere pelo menos algumas horas e reveja a decis\xE3o depois desse intervalo. Aplica\xE7\xE3o da Regra 1 (Pare a a\xE7\xE3o) especificamente a decis\xF5es financeiras, descrita em "Vencendo o TDAH Adulto" (Passo 5, Dinheiro).', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro (Regra 1)" },
+    { text: 'Hoje, converse com seu parceiro ou parceira sobre um sintoma seu do TDAH que costuma ser mal-interpretado (esquecimento, interrup\xE7\xE3o na fala, atraso) e explique o mecanismo por tr\xE1s dele, sem se justificar excessivamente. "Vencendo o TDAH Adulto" (Passo 5, Relacionamentos) descreve que sintomas de TDAH s\xE3o frequentemente confundidos com desinteresse ou grosseria, e nomear isso ajuda o outro a reinterpretar o comportamento.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos" },
+    { text: 'Escolha uma intera\xE7\xE3o dif\xEDcil de hoje com algu\xE9m pr\xF3ximo e aplique deliberadamente a Regra 1 (pare antes de reagir) e a Regra 3 (verbalize antes de responder) na conversa. "Vencendo o TDAH Adulto" recomenda usar as 8 Regras especificamente nas intera\xE7\xF5es mais pr\xF3ximas, onde a impulsividade tem mais custo emocional.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Relacionamentos" },
+    { text: 'Hoje, se voc\xEA \xE9 pai/m\xE3e ou cuidador, escreva com seu parceiro uma regra familiar simples e coloque-a vis\xEDvel na cozinha ou sala. "Vencendo o TDAH Adulto" (Passo 5, Paternidade) recomenda regras familiares vis\xEDveis e combinadas com o parceiro, n\xE3o s\xF3 faladas.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Paternidade/Maternidade" },
+    { text: 'Escolha um hor\xE1rio hoje para fazer uma checagem r\xE1pida e programada dos seus filhos (ou de uma responsabilidade de cuidado), usando um timer, em vez de depender de lembrar sozinho. "Vencendo o TDAH Adulto" recomenda uso de timer para checagem peri\xF3dica na paternidade, compensando falhas de mem\xF3ria prospectiva.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Paternidade/Maternidade" },
+    { text: 'Antes de dirigir hoje, fa\xE7a uma checagem f\xEDsica do cinto de seguran\xE7a com um lembrete visual (adesivo, nota) se voc\xEA costuma esquecer. "Vencendo o TDAH Adulto" (Passo 5, Dire\xE7\xE3o) recomenda lembretes f\xEDsicos espec\xEDficos para seguran\xE7a no tr\xE2nsito.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o" },
+    { text: 'Hoje, se for dirigir, guarde o celular fora de alcance (porta-luvas, bolsa no banco de tr\xE1s) antes de ligar o carro. "Vencendo o TDAH Adulto" recomenda bloquear o celular durante a dire\xE7\xE3o como forma de eliminar a distra\xE7\xE3o mais perigosa, em vez de confiar em resistir a ela.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dire\xE7\xE3o" },
+    { text: 'Antes de uma sess\xE3o de estudo hoje, aplique a t\xE9cnica SQ4R: examine o material (Survey), formule perguntas (Question) antes de ler, e s\xF3 depois leia com aten\xE7\xE3o a essas perguntas. "Vencendo o TDAH Adulto" (Passo 5, Educa\xE7\xE3o) recomenda SQ4R como t\xE9cnica de leitura ativa que compensa a dificuldade de manter aten\xE7\xE3o sustentada em leitura passiva.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o" },
+    { text: 'Hoje, antes de estudar algo importante, fa\xE7a 10-15 minutos de atividade f\xEDsica (caminhada r\xE1pida, alongamento intenso) e comece o estudo logo em seguida. "Vencendo o TDAH Adulto" recomenda exerc\xEDcio f\xEDsico antes de provas ou sess\xF5es de estudo para melhorar o estado de alerta.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o" },
+    { text: 'Escolha uma mat\xE9ria ou conte\xFAdo que precisa estudar hoje e grave um \xE1udio de voc\xEA mesmo explicando o ponto principal, para ouvir depois. "Vencendo o TDAH Adulto" recomenda grava\xE7\xE3o como ferramenta de estudo, compensando a dificuldade de reter informa\xE7\xE3o s\xF3 lendo em sil\xEAncio.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o" },
+    { text: 'Hoje, combine com um colega ou amigo um hor\xE1rio fixo de estudo em dupla, mesmo que cada um estude algo diferente, apenas para criar responsabilidade m\xFAtua. "Vencendo o TDAH Adulto" recomenda parceria de estudo como forma de presta\xE7\xE3o de contas externa (ligado \xE0 Regra 6).', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Educa\xE7\xE3o (Regra 6)" },
+    { text: "Hoje, escolha uma tarefa que exige mem\xF3ria de trabalho verbal (explicar algo complexo, escrever um texto) e fa\xE7a um rascunho falado antes de escrever ou falar de verdade. Cap. 7 do Manual Barkley descreve a mem\xF3ria de trabalho verbal como respons\xE1vel por manter a fala internalizada organizada; ensaiar em voz alta compensa essa fragilidade.", source: "Manual Barkley, cap. 7 (mem\xF3ria de trabalho verbal)" },
+    { text: 'Escolha uma tarefa hoje que dependa de prever passos futuros (planejar uma viagem, organizar um evento) e escreva por escrito, em ordem, cada etapa antes de agir. Isso treina diretamente a fun\xE7\xE3o de planejamento/resolu\xE7\xE3o de problemas (o "playground da mente") descrita no Cap. 7 do Manual Barkley.', source: "Manual Barkley, cap. 7 (planejamento)" },
+    { text: "Hoje, ao sentir uma frustra\xE7\xE3o forte (algo deu errado, algu\xE9m te contrariou), escreva por escrito o que sente antes de decidir como vai reagir. O Cap. 7 do Manual Barkley descreve autorregula\xE7\xE3o do afeto como uma das 4 fun\xE7\xF5es executivas comprometidas no TDAH; escrever cria a pausa que a regula\xE7\xE3o natural n\xE3o oferece.", source: "Manual Barkley, cap. 7 (autorregula\xE7\xE3o emocional)" },
+    { text: "Escolha uma tarefa que envolve m\xFAltiplas etapas simult\xE2neas hoje (cozinhar algo com v\xE1rios passos, organizar um evento) e use fichas f\xEDsicas numeradas para cada etapa, movendo-as conforme avan\xE7a. Exerc\xEDcio de planejamento/reconstitui\xE7\xE3o (Cap. 7, Manual Barkley), usando apoio f\xEDsico para compensar a fun\xE7\xE3o executiva mais fraca.", source: "Manual Barkley, cap. 7 (planejamento)" },
+    { text: "Hoje, ao perceber uma emo\xE7\xE3o intensa subindo (raiva, ansiedade, frustra\xE7\xE3o), experimente uma t\xE9cnica de respira\xE7\xE3o de 4 tempos (inspirar 4s, segurar 4s, expirar 4s) antes de agir. A Cartilha ABP/Alexa descreve o TDAH como transtorno de autorregula\xE7\xE3o (n\xE3o s\xF3 de aten\xE7\xE3o); t\xE9cnicas de regula\xE7\xE3o fisiol\xF3gica ajudam diretamente nesse ponto.", source: "Cartilha ABP/Alexa (autorregula\xE7\xE3o)" },
+    { text: "Escolha uma situa\xE7\xE3o hoje em que voc\xEA tende a se irritar r\xE1pido e, antes de reagir, escreva uma frase nomeando a emo\xE7\xE3o e sua intensidade de 0 a 10. Autorregula\xE7\xE3o emocional \xE9 uma das 4 fun\xE7\xF5es executivas do modelo de Barkley (Cap. 7); medir a intensidade cria dist\xE2ncia entre sentir e agir.", source: "Manual Barkley, cap. 7 (autorregula\xE7\xE3o emocional)" },
+    { text: "Hoje, escolha uma tarefa e fa\xE7a-a durante um bloco de tempo sem nenhuma notifica\xE7\xE3o do celular ativa (modo avi\xE3o ou n\xE3o perturbe). A Cartilha ABP/Alexa descreve o uso de recursos tecnol\xF3gicos como suporte externo \xE0s fun\xE7\xF5es executivas \u2014 desligar notifica\xE7\xF5es \xE9 a vers\xE3o inversa: remover o est\xEDmulo que compete com o foco.", source: "Cartilha ABP/Alexa (recursos tecnol\xF3gicos de suporte)" },
+    { text: "Escolha uma rotina que voc\xEA tem dificuldade de manter (hor\xE1rio de dormir, exerc\xEDcio, refei\xE7\xF5es) e configure um lembrete por assistente de voz ou app para hoje. A Cartilha ABP/Alexa recomenda especificamente assistentes de voz como suporte externo \xE0s fun\xE7\xF5es executivas para rotinas.", source: "Cartilha ABP/Alexa (recursos tecnol\xF3gicos de suporte)" },
+    { text: "Hoje, se voc\xEA usa medica\xE7\xE3o para TDAH, confira se tomou no hor\xE1rio certo e anote o hor\xE1rio num papel ou app, para ter esse dado se precisar ajustar com seu m\xE9dico. Cap. 17 do Manual Barkley descreve efeitos dose-dependentes dos estimulantes; registrar hor\xE1rios ajuda no acompanhamento cl\xEDnico, sem substituir orienta\xE7\xE3o m\xE9dica.", source: "Manual Barkley, cap. 17 (estimulantes)" },
+    { text: 'Escolha uma cren\xE7a que voc\xEA tem sobre si mesmo relacionada ao TDAH ("sou pregui\xE7oso", "n\xE3o me esfor\xE7o o suficiente") e escreva ao lado um fato da Cartilha ABP/Alexa que contesta isso: TDAH tem herdabilidade de at\xE9 90% e n\xE3o \xE9 causado por falta de esfor\xE7o ou m\xE1 cria\xE7\xE3o.', source: "Cartilha ABP/Alexa (mitos desmontados)" },
+    { text: "Hoje, se voc\xEA tem TDAH e tamb\xE9m sintomas de ansiedade, escolha uma tarefa e fa\xE7a-a em passos menores que o habitual, j\xE1 que ansiedade combinada a TDAH tende a aumentar a desaten\xE7\xE3o. O Cap. 4 do Manual Barkley descreve que ansiedade com\xF3rbida est\xE1 associada a mais desaten\xE7\xE3o; passos menores reduzem a sobrecarga cognitiva.", source: "Manual Barkley, cap. 4 (comorbidades)" },
+    { text: 'Escolha uma situa\xE7\xE3o social de hoje em que voc\xEA tende a interpretar um coment\xE1rio como hostil e, antes de reagir, pergunte por escrito: "existe outra explica\xE7\xE3o poss\xEDvel para isso?". O Cap. 16 do Manual Barkley descreve que pessoas com TDAH tendem a interpretar comportamento alheio como mais hostil do que \xE9; essa pausa reduz rea\xE7\xE3o desproporcional.', source: "Manual Barkley, cap. 16 (resolu\xE7\xE3o de conflitos)" },
+    { text: 'Hoje, se voc\xEA lida com irritabilidade ou baixa toler\xE2ncia \xE0 frustra\xE7\xE3o, escolha um momento do dia para uma atividade f\xEDsica curta (caminhada, alongamento) como forma de regular o estado de alerta antes de uma tarefa que exige paci\xEAncia. Conecta-se \xE0 autorregula\xE7\xE3o emocional (Cap. 7, Manual Barkley) e \xE0 recomenda\xE7\xE3o de exerc\xEDcio f\xEDsico presente em "Vencendo o TDAH Adulto".', source: "Manual Barkley, cap. 7 \xB7 Vencendo o TDAH Adulto, Passo 5 (Educa\xE7\xE3o)" },
+    { text: 'Escolha uma tarefa hoje que voc\xEA tende a deixar para o fim do prazo e pergunte por escrito: "o que essa procrastina\xE7\xE3o est\xE1 me protegendo de sentir?" antes de come\xE7ar mesmo assim. Relacionado \xE0 miopia temporal do modelo de Barkley \u2014 nomear o motivo emocional ajuda a agir apesar dele.', source: "Vencendo o TDAH Adulto, Passo 2 (miopia temporal)" },
+    { text: 'Hoje, ao lidar com uma tarefa dom\xE9stica ou familiar repetitiva (lou\xE7a, contas, rem\xE9dios), crie um sistema de fichas simples: cada vez que concluir, mova um cart\xE3o de "a fazer" para "feito". Cap. 12 do Manual Barkley descreve o sistema de fichas como t\xE9cnica comportamental eficaz para refor\xE7ar comportamento e torn\xE1-lo vis\xEDvel.', source: "Manual Barkley, cap. 12 (sistema de fichas)" },
+    { text: 'Escolha um comportamento que voc\xEA quer reduzir hoje (procrastinar, checar celular em excesso) e defina um "custo" claro se ele acontecer (ex: perder um privil\xE9gio combinado). Cap. 12 do Manual Barkley descreve custo de resposta como t\xE9cnica comportamental que funciona melhor com consequ\xEAncia imediata e clara, n\xE3o vaga.', source: "Manual Barkley, cap. 12 (custo de resposta)" },
+    { text: "Hoje, se voc\xEA trabalha ou estuda com outras pessoas, negocie um sinal combinado (palavra, gesto) para avisar quando perceber que est\xE1 se dispersando numa conversa ou reuni\xE3o. Ajuda externa consciente, coerente com a recomenda\xE7\xE3o da Cartilha ABP/Alexa de que apoio social \xE9 parte leg\xEDtima do manejo, n\xE3o uma muleta a evitar.", source: "Cartilha ABP/Alexa (apoio social no manejo)" },
+    { text: 'Escolha uma tarefa hoje que voc\xEA tende a fazer de forma desorganizada e use cores diferentes (canetas, etiquetas, post-its) para categorizar as partes dela antes de come\xE7ar. Aplica\xE7\xE3o da Regra 7 de "Vencendo o TDAH Adulto" (tornar problemas f\xEDsicos e manuais) a uma tarefa de organiza\xE7\xE3o cotidiana.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 7" },
+    { text: 'Hoje, ao perceber que est\xE1 prestes a evitar uma tarefa desconfort\xE1vel (uma liga\xE7\xE3o, um formul\xE1rio, uma conversa dif\xEDcil), escreva por escrito: "o que vai acontecer se eu n\xE3o fizer isso hoje?" antes de decidir adiar de novo. Usa a Regra 5 (Considere o futuro) de "Vencendo o TDAH Adulto" de forma negativa \u2014 antecipar a consequ\xEAncia de n\xE3o agir, n\xE3o s\xF3 o benef\xEDcio de agir.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 5" },
+    { text: 'Escolha uma meta que voc\xEA tem para os pr\xF3ximos 3 meses e, hoje, escreva apenas o passo desta semana, ignorando o resto por enquanto. Regra 6 de "Vencendo o TDAH Adulto" \u2014 tornar o futuro significativo aproximando-o do presente, sem se perder no tamanho da meta inteira.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: 'Hoje, se puder, pe\xE7a a algu\xE9m de confian\xE7a para revisar com voc\xEA uma decis\xE3o financeira ou de trabalho importante antes de fech\xE1-la. "Vencendo o TDAH Adulto" (Passo 5, Dinheiro) menciona delegar ou compartilhar decis\xF5es financeiras como estrat\xE9gia v\xE1lida em casos de maior impulsividade, n\xE3o como fraqueza.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Dinheiro" },
+    { text: 'Escolha uma instru\xE7\xE3o complexa que voc\xEA recebeu hoje (de um chefe, professor, m\xE9dico) e pe\xE7a para repetirem ou anote na hora, mesmo que pare\xE7a \xF3bvio. "Vencendo o TDAH Adulto" recomenda pedir para repetir instru\xE7\xF5es complexas como forma de compensar a mem\xF3ria de trabalho verbal, n\xE3o como falha de aten\xE7\xE3o.', source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: 'Hoje, se voc\xEA est\xE1 numa reuni\xE3o ou aula, tome notas ativamente \xE0 m\xE3o, mesmo que depois n\xE3o as releia. "Vencendo o TDAH Adulto" descreve que tomar notas ativamente ajuda a manter o foco no momento, n\xE3o s\xF3 a lembrar depois \u2014 o ato de escrever j\xE1 \xE9 a ferramenta.', source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o" },
+    { text: 'Escolha uma tarefa dom\xE9stica ou de trabalho que voc\xEA tende a fazer sozinho e sem prazo definido, e hoje combine com algu\xE9m um hor\xE1rio espec\xEDfico para mostrar o resultado. Regra 6 de "Vencendo o TDAH Adulto" \u2014 presta\xE7\xE3o de contas a terceiros transforma um prazo vago em um prazo real.', source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 6" },
+    { text: 'Hoje, antes de decidir se vai revelar seu diagn\xF3stico de TDAH em algum contexto (trabalho, escola, relacionamento), escreva os pr\xF3s e contras espec\xEDficos dessa situa\xE7\xE3o, sem regra geral. "Vencendo o TDAH Adulto" (Passo 5, Trabalho) recomenda revelar o diagn\xF3stico apenas quando necess\xE1rio para adapta\xE7\xF5es formais, avaliando caso a caso.', source: "Vencendo o TDAH Adulto, Passo 5 \xB7 Trabalho" },
+    { text: 'Escolha uma tarefa hoje em que voc\xEA costuma se perder em detalhes sem terminar, e defina antes de come\xE7ar um crit\xE9rio simples de "pronto o suficiente". Relacionado \xE0 fun\xE7\xE3o de planejamento (Cap. 7, Manual Barkley) \u2014 travar em detalhe \xE9 falha de reconstitui\xE7\xE3o, n\xE3o falta de esfor\xE7o.', source: "Manual Barkley, cap. 7 (planejamento)" },
+    { text: "Hoje, ao sentir que uma tarefa est\xE1 demorando muito mais do que o esperado, escreva o hor\xE1rio de in\xEDcio e fa\xE7a uma estimativa por escrito de quanto falta, comparando com a estimativa inicial. Treina diretamente a percep\xE7\xE3o de tempo, ligada \xE0 mem\xF3ria de trabalho n\xE3o-verbal (Cap. 7, Manual Barkley).", source: "Manual Barkley, cap. 7 (percep\xE7\xE3o de tempo)" },
+    { text: 'Escolha um compromisso social de hoje (jantar, encontro, reuni\xE3o informal) e prepare com anteced\xEAncia 2 ou 3 t\xF3picos de conversa por escrito, se costuma travar ao puxar assunto. Aplica\xE7\xE3o da Regra 4 (exteriorizar informa\xE7\xF5es fundamentais) de "Vencendo o TDAH Adulto" \xE0 comunica\xE7\xE3o social.', source: "Vencendo o TDAH Adulto, se\xE7\xE3o sobre comunica\xE7\xE3o (Regra 4)" },
+    { text: "Hoje, se algo te irritou e voc\xEA j\xE1 reagiu mal, pratique a Regra 8 (senso de humor) em etapas: reconhe\xE7a o que houve para a pessoa envolvida, explique o motivo sem se justificar demais, pe\xE7a desculpas se cab\xEDvel, e diga o que vai tentar diferente da pr\xF3xima vez.", source: "Vencendo o TDAH Adulto, Passo 4 \xB7 Regra 8" },
+    { text: 'Escolha uma \xE1rea da sua vida (trabalho, estudo, relacionamento, dinheiro) onde os sintomas de TDAH mais te atrapalham hoje e aplique deliberadamente 2 das 8 Regras de "Vencendo o TDAH Adulto" nela ao longo do dia, anotando o que percebeu \xE0 noite.', source: "Vencendo o TDAH Adulto, Passo 4 (As 8 Regras)" }
   ];
   function exerciseForDate(date) {
     var d = date || /* @__PURE__ */ new Date();
-    var dayOfMonth = d.getDate();
-    var index = (dayOfMonth - 1) % EXERCISES.length;
+    var start = new Date(d.getFullYear(), 0, 0);
+    var diff = d - start;
+    var dayOfYear = Math.floor(diff / 864e5);
+    var index = (dayOfYear - 1) % EXERCISES.length;
     return EXERCISES[index];
   }
 
@@ -2367,10 +2973,22 @@
     setPlacesOverlayHook(places_overlay_exports);
     renderDayTabs();
     renderBlocks();
+    var today = /* @__PURE__ */ new Date();
+    var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+    var principle = principleForDate(today);
     var principleTextEl = document.getElementById("principleText");
-    if (principleTextEl) principleTextEl.textContent = principleForDate();
+    var principleSourceEl = document.getElementById("principleSource");
+    var principleDateEl = document.getElementById("principleDate");
+    if (principleTextEl) principleTextEl.textContent = principle.text;
+    if (principleSourceEl) principleSourceEl.textContent = "Fonte: " + principle.source;
+    if (principleDateEl) principleDateEl.textContent = dateLabel;
+    var exercise = exerciseForDate(today);
     var exerciseTextEl = document.getElementById("exerciseText");
-    if (exerciseTextEl) exerciseTextEl.textContent = exerciseForDate();
+    var exerciseSourceEl = document.getElementById("exerciseSource");
+    var exerciseDateEl = document.getElementById("exerciseDate");
+    if (exerciseTextEl) exerciseTextEl.textContent = exercise.text;
+    if (exerciseSourceEl) exerciseSourceEl.textContent = "Fonte: " + exercise.source;
+    if (exerciseDateEl) exerciseDateEl.textContent = dateLabel;
     var manifest = {
       name: "Rotina Di\xE1ria \u2014 Apoio TDAH",
       short_name: "Rotina TDAH",
@@ -2424,6 +3042,7 @@
     initEditor();
     initAuth();
     initEducation();
+    initSelfAssessment();
     initGeofencing();
     initPlacesOverlay();
     document.addEventListener("keydown", function(ev) {
@@ -2434,6 +3053,7 @@
       var placesPrivacyOverlay2 = document.getElementById("placesPrivacyOverlay");
       if (placesPrivacyOverlay2.classList.contains("show")) closePlacesPrivacy();
       else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
+      else if (saOverlay.classList.contains("show")) closeSelfAssessment();
       else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();
       else if (editOverlay2.classList.contains("show")) closeEditor();

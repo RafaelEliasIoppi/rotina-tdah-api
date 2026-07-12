@@ -111,13 +111,21 @@
   <div id="blocksContainer"></div>
 
   <div class="principle">
-    <div class="label">Princípio do dia</div>
+    <div class="label-row">
+      <div class="label">Princípio do dia</div>
+      <div class="label-date" id="principleDate"></div>
+    </div>
     <p id="principleText">O cérebro com TDAH não sustenta bem informação, tempo e motivação internamente — a solução não é "tentar mais", é <strong>externalizar</strong>. Este checklist é isso aplicado à sua rotina real.</p>
+    <p class="source-tag" id="principleSource"></p>
   </div>
 
   <div class="principle exercise">
-    <div class="label">Exercício do dia</div>
+    <div class="label-row">
+      <div class="label">Exercício do dia</div>
+      <div class="label-date" id="exerciseDate"></div>
+    </div>
     <p id="exerciseText"></p>
+    <p class="source-tag" id="exerciseSource"></p>
   </div>
 
   <button class="tdah-info-link" id="tdahInfoBtn" type="button">
@@ -125,6 +133,15 @@
     <div class="txt">
       <h3>Entenda o TDAH</h3>
       <p>Resumos sobre diagnóstico, tratamento e funções executivas</p>
+    </div>
+    <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </button>
+
+  <button class="tdah-info-link" id="saBtn" type="button">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="txt">
+      <h3>Autoavaliação · TDAH em adultos</h3>
+      <p>Questionário de reflexão baseado no DSM-5 e em Barkley (não é diagnóstico)</p>
     </div>
     <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </button>
@@ -318,6 +335,33 @@
         TDAH (ABP/Amazon Alexa, 2024) e no capítulo D.1 do Tratado IACAPAP. Não substitui avaliação, diagnóstico
         ou acompanhamento com profissional de saúde qualificado.
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="saOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="saTitle">
+    <div class="modal-header">
+      <h2 id="saTitle">Autoavaliação · TDAH em adultos</h2>
+      <button class="modal-close" id="saCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="sa-disclaimer">
+      Esta ferramenta <strong>não diagnostica TDAH</strong> — é um roteiro de reflexão pessoal, montado a partir dos
+      critérios do DSM-5 (citados na Cartilha ABP/Alexa e no capítulo IACAPAP) e dos "9 critérios adaptados para
+      adultos" descritos por Russell Barkley em "Vencendo o TDAH Adulto". Só um profissional habilitado, com
+      entrevista, histórico de vida e (idealmente) relato de terceiros, pode diagnosticar TDAH.
+    </div>
+    <div class="sa-progress-wrap">
+      <div class="sa-progress-label" id="saStepLabel">Parte 1 de 3 · Sintomas (DSM-5)</div>
+      <div class="sa-progress-track"><div class="sa-progress-fill" id="saProgressFill" style="width:25%;"></div></div>
+    </div>
+    <div class="modal-body" id="saBody"></div>
+    <div class="modal-footer">
+      <button class="btn" id="saBackBtn" type="button">Anterior</button>
+      <button class="btn btn-primary" id="saNextBtn" type="button" style="margin-left:auto;">Próximo</button>
+      <button class="btn btn-primary" id="saRestartBtn" type="button" style="margin-left:auto; display:none;">Refazer autoavaliação</button>
     </div>
   </div>
 </div>

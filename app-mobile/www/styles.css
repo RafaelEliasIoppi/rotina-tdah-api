@@ -282,6 +282,9 @@
   }
   .principle .label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
   .principle p { font-family: var(--font-display); font-size: 0.95rem; line-height: 1.5; margin: 8px 0 0 0; color: var(--ink); }
+  .principle .label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .principle .label-date { font-size: 0.66rem; font-weight: 600; color: var(--ink-faint); text-transform: capitalize; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .principle .source-tag { font-family: var(--font-body, inherit); font-size: 0.72rem; font-style: italic; color: var(--ink-faint); margin: 8px 0 0 0; line-height: 1.4; }
 
   .tdah-info-link {
     display: flex; align-items: center; gap: 12px; width: 100%;
@@ -338,6 +341,86 @@
     font-size: 0.72rem; color: var(--ink-faint); line-height: 1.5; text-align: center;
     padding: 4px 4px 0;
   }
+
+  /* ---------- Autoavaliação · TDAH em adultos ---------- */
+  .sa-disclaimer {
+    flex: none; font-size: 0.74rem; line-height: 1.5; color: var(--ink-soft);
+    background: var(--warn-soft); border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+  }
+  .sa-disclaimer strong { color: var(--warn); }
+
+  .sa-progress-wrap { flex: none; padding: 10px 16px 0; }
+  .sa-progress-label { font-size: 0.72rem; font-weight: 700; color: var(--ink-faint); margin-bottom: 6px; }
+  .sa-progress-track { height: 6px; border-radius: 999px; background: var(--bg-sunken); overflow: hidden; }
+  .sa-progress-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.2s ease; }
+
+  .sa-intro { font-size: 0.84rem; color: var(--ink-soft); line-height: 1.5; margin: 0 0 12px; }
+  .sa-note { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.5; margin: 12px 0 0; }
+  .sa-subhead {
+    font-family: var(--font-display); font-size: 0.92rem; color: var(--ink);
+    margin: 18px 0 8px; padding-top: 8px; border-top: 1px solid var(--border);
+  }
+  .sa-subhead:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .sa-item {
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .sa-item:last-child { border-bottom: none; }
+  .sa-item-q { font-size: 0.84rem; color: var(--ink); line-height: 1.4; margin-bottom: 8px; }
+
+  .sa-freq-opts { display: flex; flex-direction: column; gap: 6px; }
+  .sa-freq-opt {
+    display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--ink-soft);
+    padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    background: var(--bg-elevated);
+  }
+  .sa-freq-opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+  .sa-freq-opt input { flex: none; }
+
+  .sa-yn-opts { display: flex; gap: 8px; }
+  .sa-yn-opt {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-size: 0.82rem; font-weight: 600; color: var(--ink-soft);
+    padding: 9px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;
+    background: var(--bg-elevated);
+  }
+  .sa-yn-opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+  .sa-yn-opt input { flex: none; }
+
+  .sa-check-item {
+    display: flex; align-items: flex-start; gap: 9px; font-size: 0.83rem; color: var(--ink-soft);
+    padding: 8px 2px; cursor: pointer; line-height: 1.4;
+  }
+  .sa-check-item input { flex: none; margin-top: 2px; }
+
+  .sa-source {
+    font-size: 0.71rem; color: var(--ink-faint); font-style: italic; margin-top: 14px;
+  }
+
+  .sa-result-card {
+    border-radius: 12px; padding: 16px; border: 1px solid var(--border); background: var(--bg-sunken);
+  }
+  .sa-result-card h3 { font-family: var(--font-display); font-size: 1rem; margin: 0 0 10px; color: var(--ink); }
+  .sa-result-card p { font-size: 0.84rem; line-height: 1.55; color: var(--ink-soft); margin: 0 0 10px; }
+  .sa-result-card p:last-child { margin-bottom: 0; }
+  .sa-tone-calm { border-color: var(--good); background: var(--good-soft); }
+  .sa-tone-calm h3 { color: var(--good); }
+  .sa-tone-warn { border-color: var(--warn); background: var(--warn-soft); }
+  .sa-tone-warn h3 { color: var(--warn); }
+  .sa-tone-alert { border-color: var(--crit); background: var(--crit-soft); }
+  .sa-tone-alert h3 { color: var(--crit); }
+
+  .sa-summary { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .sa-summary-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    font-size: 0.8rem; color: var(--ink-soft); padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elevated);
+  }
+  .sa-summary-row strong { color: var(--ink); font-weight: 700; }
+
+  .sa-next-steps { margin-top: 14px; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+  .sa-next-steps p { margin: 0 0 8px; }
 
   footer {
     text-align: center; font-size: 0.72rem; color: var(--ink-faint);

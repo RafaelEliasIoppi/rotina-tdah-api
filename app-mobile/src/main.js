@@ -4,6 +4,7 @@ import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook }
 import { initEditor, closeEditor, closePlacesPrivacy, setPlacesOverlayHook } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
 import { initEducation, closeTdahInfo } from "./education.js";
+import { initSelfAssessment, closeSelfAssessment, saOverlay } from "./self-assessment.js";
 import { initGeofencing, setSyncHook as setGeofencingSyncHook, setApiHook as setGeofencingApiHook } from "./geofencing.js";
 import * as PlacesOverlay from "./places-overlay.js";
 import { initPlacesOverlay, closePlacesOverlay, placesOverlay } from "./places-overlay.js";
@@ -28,13 +29,28 @@ import { Api } from "./api.js";
   renderDayTabs();
   renderBlocks();
 
-  // "Princípio do dia": texto muda conforme o dia do mês (31 variações).
-  var principleTextEl = document.getElementById("principleText");
-  if (principleTextEl) principleTextEl.textContent = principleForDate();
+  // "Princípio do dia" / "Exercício do dia": mudam conforme o dia do ano
+  // (124 variações cada). Cada item é {text, source} — a data exibida prova
+  // visualmente que o conteúdo muda todo dia, e a fonte é sempre mostrada
+  // junto ao texto (regra do projeto: nenhum conteúdo clínico sem fonte).
+  var today = new Date();
+  var dateLabel = today.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
 
-  // "Exercício do dia": técnica prática que muda conforme o dia do mês (31 variações).
+  var principle = principleForDate(today);
+  var principleTextEl = document.getElementById("principleText");
+  var principleSourceEl = document.getElementById("principleSource");
+  var principleDateEl = document.getElementById("principleDate");
+  if (principleTextEl) principleTextEl.textContent = principle.text;
+  if (principleSourceEl) principleSourceEl.textContent = "Fonte: " + principle.source;
+  if (principleDateEl) principleDateEl.textContent = dateLabel;
+
+  var exercise = exerciseForDate(today);
   var exerciseTextEl = document.getElementById("exerciseText");
-  if (exerciseTextEl) exerciseTextEl.textContent = exerciseForDate();
+  var exerciseSourceEl = document.getElementById("exerciseSource");
+  var exerciseDateEl = document.getElementById("exerciseDate");
+  if (exerciseTextEl) exerciseTextEl.textContent = exercise.text;
+  if (exerciseSourceEl) exerciseSourceEl.textContent = "Fonte: " + exercise.source;
+  if (exerciseDateEl) exerciseDateEl.textContent = dateLabel;
 
   /* ---------- PWA: manifest + service worker (installability + offline) ---------- */
   var manifest = {
@@ -97,6 +113,9 @@ import { Api } from "./api.js";
   // Modal "Entenda o TDAH".
   initEducation();
 
+  // Modal "Autoavaliação · TDAH em adultos" (questionário de triagem).
+  initSelfAssessment();
+
   // Lembretes por lugar (geofencing) — Fase G2: cadastro/dados; UI de
   // cadastro (busca de endereço, disclosure de privacidade) é a Fase G3.
   initGeofencing();
@@ -117,6 +136,7 @@ import { Api } from "./api.js";
     var placesPrivacyOverlay = document.getElementById("placesPrivacyOverlay");
     if (placesPrivacyOverlay.classList.contains("show")) closePlacesPrivacy();
     else if (placesOverlay.classList.contains("show")) closePlacesOverlay();
+    else if (saOverlay.classList.contains("show")) closeSelfAssessment();
     else if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
     else if (authOverlay.classList.contains("show")) closeAuth();
     else if (editOverlay.classList.contains("show")) closeEditor();
