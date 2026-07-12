@@ -2027,33 +2027,40 @@
     var barkleyAreasWithHits = saState.barkley.filter(function(area) {
       return area.some(Boolean);
     }).length;
+    var meetsDsm5Threshold = desatencaoCount >= 5 || hiperatividadeCount >= 5;
+    var meetsConfirmation = confirmYesCount === 4;
+    var meetsBarkleyPattern = barkleyAreasWithHits >= 3;
     return {
       desatencaoCount,
       hiperatividadeCount,
       confirmYesCount,
       barkleyCount,
       barkleyAreasWithHits,
-      meetsDsm5Threshold: desatencaoCount >= 5 || hiperatividadeCount >= 5,
-      meetsConfirmation: confirmYesCount === 4
+      meetsDsm5Threshold,
+      meetsConfirmation,
+      meetsBarkleyPattern
     };
   }
   function buildFeedback(r) {
+    var P = r.meetsDsm5Threshold;
+    var Q = r.meetsConfirmation;
+    var R = r.meetsBarkleyPattern;
     var title, body, tone;
-    if (!r.meetsDsm5Threshold && r.barkleyCount === 0) {
+    if (!P && r.barkleyCount === 0) {
       tone = "sa-tone-calm";
       title = "Poucos sinais nesse retrato";
       body = [
         "Pelas suas respostas, voc\xEA marcou poucos sintomas frequentes nas duas listas do DSM-5 e poucas afirma\xE7\xF5es nas 5 \xE1reas de Barkley. Isso n\xE3o costuma ser o retrato t\xEDpico do TDAH em adultos.",
         "Se ainda assim algo te incomoda no dia a dia, vale conversar com um profissional sobre o que est\xE1 pesando \u2014 n\xE3o precisa ser TDAH para merecer aten\xE7\xE3o."
       ];
-    } else if (!r.meetsDsm5Threshold && r.barkleyCount > 0) {
+    } else if (!P && r.barkleyCount > 0) {
       tone = "sa-tone-calm";
       title = "Sinais pontuais, abaixo do padr\xE3o t\xEDpico do DSM-5";
       body = [
         'Voc\xEA marcou algumas afirma\xE7\xF5es das 5 \xE1reas de Barkley, mas n\xE3o chegou a 5 sintomas "frequentes" ou "muito frequentes" em nenhuma das listas do DSM-5 (desaten\xE7\xE3o ou hiperatividade/impulsividade) \u2014 que \xE9 o crit\xE9rio citado nas fontes para considerar o quadro compat\xEDvel com TDAH.',
         "Isso sugere que, se h\xE1 dificuldades reais, elas podem ter outra origem ou ser mais leves/pontuais. Mesmo assim, se algo te incomoda, vale conversar com um profissional."
       ];
-    } else if (r.meetsDsm5Threshold && !r.meetsConfirmation) {
+    } else if (P && !Q) {
       tone = "sa-tone-warn";
       title = "Muitos sintomas, mas os crit\xE9rios de confirma\xE7\xE3o n\xE3o fecharam";
       body = [
@@ -2061,7 +2068,7 @@
         "Segundo as fontes, sintomas isolados n\xE3o bastam: eles precisam existir desde antes dos 12 anos, aparecer em mais de um ambiente, causar preju\xEDzo real e persistir por pelo menos 6 meses sem liga\xE7\xE3o com um evento espec\xEDfico. Quando algum desses crit\xE9rios falta, o quadro pode ser outra coisa \u2014 ansiedade, depress\xE3o, estresse, problema de tireoide ou m\xE1 qualidade de sono s\xE3o causas comuns de sintomas parecidos.",
         "Vale conversar com um profissional para investigar a causa real desses sintomas."
       ];
-    } else if (r.meetsDsm5Threshold && r.meetsConfirmation && r.barkleyAreasWithHits < 3) {
+    } else if (P && Q && !R) {
       tone = "sa-tone-warn";
       title = "Quadro parcialmente consistente \u2014 vale investigar melhor";
       body = [

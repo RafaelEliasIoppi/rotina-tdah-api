@@ -328,6 +328,29 @@ function countFrequent(arr) {
   return arr.filter(function (v) { return v !== null && Number(v) >= FREQUENT_MIN; }).length;
 }
 
+// ---------------------------------------------------------------------
+// Modelo lógico do resultado, em proposições booleanas explícitas.
+// Cada faixa de devolutiva (buildFeedback) é a avaliação de uma expressão
+// de álgebra booleana sobre estas 3 proposições atômicas:
+//
+//   P = meetsDsm5Threshold  ⟺ (desatencaoCount ≥ 5) ∨ (hiperatividadeCount ≥ 5)
+//   Q = meetsConfirmation   ⟺ (confirmYesCount = 4)
+//   R = meetsBarkleyPattern ⟺ (barkleyAreasWithHits ≥ 3)
+//
+// As 5 faixas de buildFeedback correspondem às seguintes combinações,
+// que juntas cobrem todo o espaço de 2^3 = 8 valorações possíveis de
+// (P, Q, R) sem sobreposição (partição exaustiva e mutuamente exclusiva):
+//
+//   ¬P ∧ (barkleyCount = 0)        → calm-1  "poucos sinais"
+//   ¬P ∧ (barkleyCount > 0)        → calm-2  "sinais pontuais"
+//   P ∧ ¬Q                         → warn-1  "confirmação não fechou"
+//   P ∧ Q ∧ ¬R                     → warn-2  "parcialmente consistente"
+//   P ∧ Q ∧ R                      → alert   "consistente com TDAH"
+//
+// (Q e R só têm efeito na faixa se P for verdadeiro — refletindo a regra
+// clínica das fontes de que sintomas isolados, sem P, não bastam.)
+// ---------------------------------------------------------------------
+
 function computeResult() {
   var desatencaoCount = countFrequent(saState.desatencao);
   var hiperatividadeCount = countFrequent(saState.hiperatividade);
@@ -339,38 +362,53 @@ function computeResult() {
     return area.some(Boolean);
   }).length;
 
+  // P: critério de frequência do DSM-5 (5+ sintomas "frequentes" numa lista)
+  var meetsDsm5Threshold = (desatencaoCount >= 5) || (hiperatividadeCount >= 5);
+  // Q: as 4 perguntas de confirmação da Parte 2 fecharam "sim"
+  var meetsConfirmation = confirmYesCount === 4;
+  // R: pelo menos 3 das 5 áreas de Barkley têm alguma afirmação marcada
+  var meetsBarkleyPattern = barkleyAreasWithHits >= 3;
+
   return {
     desatencaoCount: desatencaoCount,
     hiperatividadeCount: hiperatividadeCount,
     confirmYesCount: confirmYesCount,
     barkleyCount: barkleyCount,
     barkleyAreasWithHits: barkleyAreasWithHits,
-    meetsDsm5Threshold: desatencaoCount >= 5 || hiperatividadeCount >= 5,
-    meetsConfirmation: confirmYesCount === 4
+    meetsDsm5Threshold: meetsDsm5Threshold,
+    meetsConfirmation: meetsConfirmation,
+    meetsBarkleyPattern: meetsBarkleyPattern
   };
 }
 
 // Devolutivas: múltiplas faixas, fiéis ao "Como interpretar" e "O que fazer
 // com o resultado" do material-fonte. Nenhum limiar numérico novo é
-// inventado além do "5 ou mais" (DSM-5) já citado na fonte.
+// inventado além do "5 ou mais" (DSM-5) e do "3 ou mais áreas" (Barkley,
+// majoritário dentro do range de 5) já citados nas fontes.
 function buildFeedback(r) {
+  var P = r.meetsDsm5Threshold;
+  var Q = r.meetsConfirmation;
+  var R = r.meetsBarkleyPattern;
   var title, body, tone;
 
-  if (!r.meetsDsm5Threshold && r.barkleyCount === 0) {
+  if (!P && r.barkleyCount === 0) {
+    // ¬P ∧ (barkleyCount = 0)
     tone = "sa-tone-calm";
     title = "Poucos sinais nesse retrato";
     body = [
       "Pelas suas respostas, você marcou poucos sintomas frequentes nas duas listas do DSM-5 e poucas afirmações nas 5 áreas de Barkley. Isso não costuma ser o retrato típico do TDAH em adultos.",
       "Se ainda assim algo te incomoda no dia a dia, vale conversar com um profissional sobre o que está pesando — não precisa ser TDAH para merecer atenção."
     ];
-  } else if (!r.meetsDsm5Threshold && r.barkleyCount > 0) {
+  } else if (!P && r.barkleyCount > 0) {
+    // ¬P ∧ (barkleyCount > 0)
     tone = "sa-tone-calm";
     title = "Sinais pontuais, abaixo do padrão típico do DSM-5";
     body = [
       "Você marcou algumas afirmações das 5 áreas de Barkley, mas não chegou a 5 sintomas \"frequentes\" ou \"muito frequentes\" em nenhuma das listas do DSM-5 (desatenção ou hiperatividade/impulsividade) — que é o critério citado nas fontes para considerar o quadro compatível com TDAH.",
       "Isso sugere que, se há dificuldades reais, elas podem ter outra origem ou ser mais leves/pontuais. Mesmo assim, se algo te incomoda, vale conversar com um profissional."
     ];
-  } else if (r.meetsDsm5Threshold && !r.meetsConfirmation) {
+  } else if (P && !Q) {
+    // P ∧ ¬Q
     tone = "sa-tone-warn";
     title = "Muitos sintomas, mas os critérios de confirmação não fecharam";
     body = [
@@ -378,7 +416,8 @@ function buildFeedback(r) {
       "Segundo as fontes, sintomas isolados não bastam: eles precisam existir desde antes dos 12 anos, aparecer em mais de um ambiente, causar prejuízo real e persistir por pelo menos 6 meses sem ligação com um evento específico. Quando algum desses critérios falta, o quadro pode ser outra coisa — ansiedade, depressão, estresse, problema de tireoide ou má qualidade de sono são causas comuns de sintomas parecidos.",
       "Vale conversar com um profissional para investigar a causa real desses sintomas."
     ];
-  } else if (r.meetsDsm5Threshold && r.meetsConfirmation && r.barkleyAreasWithHits < 3) {
+  } else if (P && Q && !R) {
+    // P ∧ Q ∧ ¬R
     tone = "sa-tone-warn";
     title = "Quadro parcialmente consistente — vale investigar melhor";
     body = [
@@ -386,6 +425,7 @@ function buildFeedback(r) {
       "As fontes citam que 89-98% dos adultos com TDAH relatam problemas relevantes nas 5 áreas de Barkley, contra 7-14% da população geral — então quanto mais áreas afetadas, mais o quadro tende a ser consistente com TDAH. Como seu resultado ainda está parcial nessa parte, uma avaliação profissional é o caminho mais seguro para entender o que está acontecendo."
     ];
   } else {
+    // P ∧ Q ∧ R (única combinação restante da partição)
     tone = "sa-tone-alert";
     title = "Quadro consistente com TDAH — avaliação profissional é o próximo passo";
     body = [
