@@ -100,6 +100,7 @@
     border-bottom: 1px solid var(--border);
     padding: max(12px, env(safe-area-inset-top)) 16px 0 16px;
   }
+  .topbar-inner { max-width: 640px; margin: 0 auto; }
   .topbar-row {
     display: flex; align-items: baseline; justify-content: space-between;
     gap: 8px;
@@ -157,6 +158,25 @@
   }
 
   main { max-width: 640px; margin: 0 auto; padding: 16px; }
+
+  /* App foi desenhado para tela de celular (Capacitor). Publicado também
+     como site (Render), então em telas largas de desktop precisa de um
+     tratamento consciente — sem isso, .topbar ficava esticada borda-a-borda
+     enquanto main/modais ficavam centralizados estreitos, uma inconsistência
+     visual clara ("site quebrado"). Acima de 720px: fundo diferenciado nas
+     laterais + moldura sutil em volta do conteúdo, para parecer um cartão
+     central intencional, não uma página mobile mal cortada. */
+  @media (min-width: 720px) {
+    body { background: var(--bg-sunken); }
+    .topbar { background: var(--bg); box-shadow: var(--shadow); }
+    main {
+      background: var(--bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+      padding: 24px;
+    }
+  }
 
   .progress-card {
     background: var(--bg-elevated);
