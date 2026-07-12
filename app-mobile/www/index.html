@@ -137,6 +137,15 @@
     <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   </button>
 
+  <button class="tdah-info-link" id="faqBtn" type="button">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 2-3 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 17h.01" stroke-linecap="round"/></svg></div>
+    <div class="txt">
+      <h3>Perguntas e respostas</h3>
+      <p>30 dúvidas mais comuns sobre TDAH, respondidas com fonte</p>
+    </div>
+    <div class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </button>
+
   <button class="tdah-info-link" id="saBtn" type="button">
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="txt">
@@ -343,6 +352,26 @@
         Conteúdo educacional baseado no Manual Barkley ("TDAH: Diagnóstico e Tratamento", 3ª ed.), na Cartilha
         TDAH (ABP/Amazon Alexa, 2024) e no capítulo D.1 do Tratado IACAPAP. Não substitui avaliação, diagnóstico
         ou acompanhamento com profissional de saúde qualificado.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="faqOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+    <div class="modal-header">
+      <h2 id="faqTitle">Perguntas e respostas</h2>
+      <button class="modal-close" id="faqCloseBtn" type="button" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="search" id="faqSearchInput" class="faq-search" placeholder="Buscar por palavra-chave (ex.: remédio, sono, foco)">
+      <div class="tdah-topics" id="faqTopics"></div>
+      <p class="faq-empty" id="faqEmptyMsg" style="display:none;">Nenhuma pergunta encontrada com esse termo.</p>
+      <div class="tdah-disclaimer">
+        Respostas de psicoeducação com fonte específica citada em cada uma. Não substitui avaliação, diagnóstico ou
+        acompanhamento com profissional de saúde qualificado.
       </div>
     </div>
   </div>

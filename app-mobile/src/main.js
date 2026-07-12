@@ -6,6 +6,7 @@ import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook }
 import { initEditor, closeEditor, closePlacesPrivacy, setPlacesOverlayHook } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
 import { initEducation, closeTdahInfo } from "./education.js";
+import { initFaq, closeFaq, faqOverlay } from "./faq.js";
 import { initSelfAssessment, closeSelfAssessment, saOverlay } from "./self-assessment.js";
 import { initGeofencing, setSyncHook as setGeofencingSyncHook, setApiHook as setGeofencingApiHook } from "./geofencing.js";
 import * as PlacesOverlay from "./places-overlay.js";
@@ -123,6 +124,9 @@ import { Api } from "./api.js";
   // Modal "Entenda o TDAH".
   initEducation();
 
+  // Modal "Perguntas e respostas" (30 FAQ sobre TDAH, com busca).
+  initFaq();
+
   // Modal "Autoavaliação · TDAH em adultos" (questionário de triagem).
   initSelfAssessment();
 
@@ -155,6 +159,7 @@ import { Api } from "./api.js";
     else if (pomodoroOverlay.classList.contains("show")) closePomodoro();
     else if (socialOverlay.classList.contains("show")) closeSocial();
     else if (saOverlay.classList.contains("show")) closeSelfAssessment();
+    else if (faqOverlay.classList.contains("show")) closeFaq();
     else if (tdahInfoOverlay.classList.contains("show")) closeTdahInfo();
     else if (authOverlay.classList.contains("show")) closeAuth();
     else if (editOverlay.classList.contains("show")) closeEditor();

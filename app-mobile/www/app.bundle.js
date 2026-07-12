@@ -2025,6 +2025,202 @@
     });
   }
 
+  // src/faq-data.js
+  var FAQ_ITEMS = [
+    {
+      q: "O que \xE9 TDAH, afinal?",
+      a: '<p>O TDAH (Transtorno de D\xE9ficit de Aten\xE7\xE3o/Hiperatividade) \xE9 definido pela Cartilha ABP como um transtorno da autorregula\xE7\xE3o \u2014 n\xE3o simplesmente "falta de aten\xE7\xE3o" \u2014 que compromete a capacidade da pessoa de controlar deliberadamente pensamentos, emo\xE7\xF5es e comportamentos por for\xE7a de vontade, gerando preju\xEDzos de curto e longo prazo.</p><p>No modelo te\xF3rico central de Barkley, o n\xFAcleo do problema n\xE3o \xE9 a aten\xE7\xE3o em si, mas um d\xE9ficit prim\xE1rio de <strong>inibi\xE7\xE3o comportamental</strong>, que compromete quatro fun\xE7\xF5es executivas \u2014 mem\xF3ria de trabalho n\xE3o-verbal ("olho da mente"), mem\xF3ria de trabalho verbal ("voz da mente"), autocontrole emocional ("cora\xE7\xE3o da mente") e planejamento ("playground da mente") \u2014 gerando o que ele chama de "miopia do tempo": a pessoa sabe o que fazer, mas n\xE3o consegue trazer esse conhecimento para agir no momento certo.</p><p>\xC9 um transtorno do neurodesenvolvimento com forte base gen\xE9tica (herdabilidade de 70-80%), sem biomarcador ou exame de imagem que sozinho confirme o diagn\xF3stico \u2014 este \xE9 sempre cl\xEDnico.</p>',
+      source: 'Cartilha ABP (se\xE7\xE3o 1); Manual Barkley (Cap. 7); "Vencendo o TDAH Adulto" (Passo 2); IACAPAP (se\xE7\xF5es Etiologia e Diagn\xF3stico)'
+    },
+    {
+      q: 'TDAH \xE9 "falta de disciplina" ou pregui\xE7a?',
+      a: '<p>N\xE3o. A Cartilha ABP dedica uma se\xE7\xE3o a desmontar esse mito explicitamente: atribui a dificuldade ao desequil\xEDbrio de dopamina e noradrenalina que afeta a motiva\xE7\xE3o para tarefas de baixo interesse.</p><p>O modelo de Barkley explica: o problema central n\xE3o \xE9 "n\xE3o saber o que fazer" (d\xE9ficit de conhecimento), mas "n\xE3o fazer o que j\xE1 se sabe, no momento em que isso importa" (d\xE9ficit de desempenho). A pessoa tem intelig\xEAncia e conhecimento intactos, mas desconectados do comportamento no momento certo, por falta da maquinaria executiva que traz consequ\xEAncias futuras para o presente.</p><p>Por ser um transtorno neurobiol\xF3gico heredit\xE1rio, tamb\xE9m n\xE3o \xE9 "falta de disciplina dos pais" \u2014 embora o ambiente influencie o manejo dos sintomas.</p>',
+      source: 'Cartilha ABP (se\xE7\xE3o 7, "Mitos desmontados"); "Vencendo o TDAH Adulto" (Passo 2)'
+    },
+    {
+      q: "Quais s\xE3o os sintomas principais do TDAH?",
+      a: '<p>O DSM-5-TR lista 18 sintomas \u2014 9 de desaten\xE7\xE3o (erros por descuido, dificuldade de manter foco, parecer n\xE3o escutar, n\xE3o terminar tarefas, desorganiza\xE7\xE3o, evitar esfor\xE7o mental prolongado, perder objetos, distra\xE7\xE3o f\xE1cil, esquecimento cotidiano) e 9 de hiperatividade-impulsividade (remexer m\xE3os/p\xE9s, levantar-se quando deveria ficar sentado, inquieta\xE7\xE3o motora, "estar com o motor ligado", falar demais, precipita\xE7\xE3o de respostas, dificuldade de esperar a vez, interromper os outros).</p><p>Ao longo da vida, a hiperatividade-impulsividade tende a declinar mais que a desaten\xE7\xE3o, que permanece mais est\xE1vel. Em adultos, Barkley destaca cinco \xE1reas do cotidiano mais afetadas: gest\xE3o de tempo/planejamento, auto-organiza\xE7\xE3o/mem\xF3ria operacional, autodisciplina, automotiva\xE7\xE3o e autoativa\xE7\xE3o/concentra\xE7\xE3o.</p>',
+      source: 'Cartilha ABP (se\xE7\xE3o 1, Quadro 1); IACAPAP (Tabela D.1.1); "Vencendo o TDAH Adulto" (Passo 2)'
+    },
+    {
+      q: "Como \xE9 feito o diagn\xF3stico de TDAH? Existe exame de sangue ou de imagem?",
+      a: '<p>N\xE3o existe exame de sangue, imagem cerebral ou EEG que diagnostique TDAH. O diagn\xF3stico \xE9 <strong>cl\xEDnico</strong>, feito por entrevista que avalia sintomas, contexto e preju\xEDzo funcional.</p><p>Os crit\xE9rios do DSM-5 exigem: pelo menos 6 de 9 sintomas de desaten\xE7\xE3o e/ou hiperatividade (5 de 9 para 17 anos ou mais); in\xEDcio antes dos 12 anos; dura\xE7\xE3o m\xEDnima de 6 meses; presen\xE7a em 2 ou mais ambientes; preju\xEDzo funcional claro; e exclus\xE3o de outras explica\xE7\xF5es. Escalas de avalia\xE7\xE3o ajudam a organizar a coleta de informa\xE7\xE3o, mas n\xE3o substituem o julgamento cl\xEDnico.</p><p>35 a 65% das pessoas com TDAH passam bem em testes computadorizados de aten\xE7\xE3o \u2014 um resultado "normal" nesses testes n\xE3o descarta o diagn\xF3stico.</p>',
+      source: 'IACAPAP (Tabelas D.1.3-D.1.4); Cartilha ABP (se\xE7\xE3o 2); "Vencendo o TDAH Adulto" (Passo 1)'
+    },
+    {
+      q: "TDAH em adultos \xE9 diferente de TDAH em crian\xE7as?",
+      a: '<p>Sim. Na pr\xE9-escola predomina o comportamento "furac\xE3o"; na fase escolar, desorganiza\xE7\xE3o e quebra de regras; na adolesc\xEAncia, planejamento fraco e riscos; na vida adulta, esquecimento de compromissos, falta de antecipa\xE7\xE3o, inquieta\xE7\xE3o subjetiva (n\xE3o mais hiperatividade motora vis\xEDvel), decis\xF5es precipitadas e impaci\xEAncia.</p><p>Os sintomas hiperativos/impulsivos diminuem mais com o desenvolvimento do que os de desaten\xE7\xE3o. O pr\xF3prio ponto de corte diagn\xF3stico muda: pesquisas mostram que em adultos 4 dos 9 sintomas j\xE1 indicam preju\xEDzo at\xEDpico (contra 6 de 9 desenhado para crian\xE7as).</p>',
+      source: 'IACAPAP (Tabela D.1.2); Manual Barkley (Cap. 6); "Vencendo o TDAH Adulto" (Passo 1)'
+    },
+    {
+      q: "Por que tanta gente s\xF3 descobre que tem TDAH depois dos 30, 40 anos?",
+      a: "<p>A hiperatividade motora, mais vis\xEDvel na inf\xE2ncia, diminui com a idade, enquanto a desaten\xE7\xE3o e os d\xE9ficits executivos \u2014 mais discretos e mais f\xE1ceis de compensar em ambientes estruturados \u2014 permanecem, tornando o quadro menos \xF3bvio.</p><p>\xC9 comum que os sintomas de um adulto s\xF3 sejam percebidos depois que um filho \xE9 diagnosticado, dada a herdabilidade alta (75-90%). Al\xE9m disso, at\xE9 poucas d\xE9cadas atr\xE1s o TDAH era visto como condi\xE7\xE3o exclusivamente infantil \u2014 uma vis\xE3o hoje descartada, mas que ainda atrasa diagn\xF3sticos.</p><p>Exig\xEAncias crescentes de autogest\xE3o (faculdade, emprego, finan\xE7as, parentalidade) exp\xF5em d\xE9ficits antes compensados por estrutura externa dos pais/escola.</p>",
+      source: 'IACAPAP (se\xE7\xF5es "Apresenta\xE7\xE3o Cl\xEDnica" e "Curso e Progn\xF3stico"); Cartilha ABP (se\xE7\xF5es 4 e 6); "Vencendo o TDAH Adulto" (Passo 2)'
+    },
+    {
+      q: "TDAH \xE9 gen\xE9tico? Passa de pai/m\xE3e para filho?",
+      a: '<p>Sim \u2014 \xE9 um dos transtornos psiqui\xE1tricos com maior carga gen\xE9tica conhecida. Herdabilidade entre 70% e 90% (estudos de g\xEAmeos), com parentes de primeiro grau tendo risco 5 a 10 vezes maior. N\xE3o h\xE1 "gene \xFAnico do TDAH": m\xFAltiplos genes de efeito pequeno, cada um contribuindo um pouco.</p><p>Se um dos pais tem TDAH, 40 a 57% dos filhos biol\xF3gicos tamb\xE9m ter\xE3o o transtorno \u2014 risco cerca de 8 vezes maior.</p><p>Fatores ambientais (chumbo, tabagismo materno, prematuridade) t\xEAm influ\xEAncia m\xEDnima comparada \xE0 gen\xE9tica \u2014 a associa\xE7\xE3o entre tabagismo materno e TDAH, por exemplo, desaparece ao ajustar para hist\xF3rico familiar de TDAH.</p>',
+      source: 'IACAPAP (se\xE7\xE3o "Etiologia"); Cartilha ABP (se\xE7\xE3o 4); "Vencendo o TDAH Adulto" (Passo 2)'
+    },
+    {
+      q: 'Existem "tipos" de TDAH (subtipos)?',
+      a: '<p>Sim, o DSM-5 reconhece tr\xEAs apresenta\xE7\xF5es: predominantemente desatenta, predominantemente hiperativa-impulsiva, e combinada. Mas esses subtipos n\xE3o s\xE3o muito est\xE1veis ao longo do tempo \u2014 uma crian\xE7a pode migrar de um para outro conforme a idade avan\xE7a.</p><p>O tipo combinado representa cerca de 65% ou mais dos casos cl\xEDnicos. O predominantemente hiperativo costuma ser um est\xE1gio inicial que evolui para combinado em 3 a 5 anos (at\xE9 90% dos casos). No predominantemente desatento, 30-50% pode, na verdade, ter algo distinto chamado "tempo cognitivo lento" \u2014 ainda pouco compreendido e n\xE3o reconhecido como diagn\xF3stico formal.</p>',
+      source: 'Cartilha ABP (se\xE7\xF5es 1 e 3); IACAPAP (se\xE7\xE3o "Apresenta\xE7\xE3o Cl\xEDnica"); "Vencendo o TDAH Adulto" (Passo 1)'
+    },
+    {
+      q: "Por que pessoas com TDAH esquecem tanto as coisas?",
+      a: '<p>N\xE3o \xE9 um problema de for\xE7a de vontade nem de mem\xF3ria de longo prazo \u2014 \xE9 um d\xE9ficit nas fun\xE7\xF5es executivas ligadas \xE0 mem\xF3ria de trabalho. A mem\xF3ria de trabalho n\xE3o-verbal ("olho da mente") e verbal ("voz da mente") ret\xEAm informa\xE7\xF5es por tempo insuficiente para serem usadas no momento certo.</p><p>Barkley chama isso de "miopia do tempo": a pessoa tem o conhecimento intacto, mas desconectado do desempenho quando importa. Por isso a estrat\xE9gia recomendada n\xE3o \xE9 "tentar lembrar mais", e sim <strong>externalizar</strong> a informa\xE7\xE3o \u2014 cadernos de bolso, lembretes visuais no ambiente, alarmes e listas.</p>',
+      source: '"Vencendo o TDAH Adulto" (Passo 2 e Passo 4, Regra 4); Manual Barkley (Cap. 3)'
+    },
+    {
+      q: "TDAH e ansiedade andam juntos? Como diferenciar um do outro?",
+      a: "<p>Sim, a comorbidade \xE9 frequente: 25-35% em amostras cl\xEDnicas segundo o Manual Barkley, chegando a 17-52% em adultos. Quanto mais tempo o TDAH passa sem tratamento, maior a chance de desenvolver ansiedade reativa ao hist\xF3rico de fracasso \u2014 al\xE9m de haver risco gen\xE9tico parcialmente compartilhado.</p><p>A diferencia\xE7\xE3o est\xE1 na natureza da desaten\xE7\xE3o: no TDAH, a distra\xE7\xE3o vem de desvio impulsivo por est\xEDmulos externos ou t\xE9dio da tarefa. Na ansiedade, vem de preocupa\xE7\xE3o/rumina\xE7\xE3o \u2014 pensamentos intrusivos internos \u2014 e costuma estar presente em todas as situa\xE7\xF5es, n\xE3o s\xF3 em tarefas chatas. TDAH geralmente precede e \xE9 cr\xF4nico; ansiedade costuma ser mais epis\xF3dica ou reativa a gatilhos.</p>",
+      source: 'Manual Barkley (Cap. 4 e Cap. 10, caso "Vanessa"); "Vencendo o TDAH Adulto" (Passo 5); IACAPAP (se\xE7\xE3o "Diagn\xF3stico Diferencial")'
+    },
+    {
+      q: "TDAH pode causar depress\xE3o?",
+      a: "<p>Existe associa\xE7\xE3o forte, mas n\xE3o uma rela\xE7\xE3o de causa direta simples. A comorbidade m\xE9dia com Depress\xE3o Maior \xE9 de 25-30%, e o risco de depress\xE3o em adultos com TDAH \xE9 mais de 3 vezes maior que na popula\xE7\xE3o geral. Crian\xE7as com TDAH t\xEAm 5 vezes mais chance de depress\xE3o.</p><p>A explica\xE7\xE3o mais plaus\xEDvel combina dois mecanismos: hist\xF3rico repetido de fracasso, rejei\xE7\xE3o social e autoestima rebaixada (consequ\xEAncia funcional do TDAH n\xE3o tratado) e risco gen\xE9tico parcialmente compartilhado \u2014 n\xE3o uma causalidade \xFAnica.</p>",
+      source: 'Manual Barkley (Cap. 4); "Vencendo o TDAH Adulto" (Passo 5); IACAPAP (se\xE7\xE3o "Comorbidades")'
+    },
+    {
+      q: 'O que \xE9 "hiperfoco" e por que acontece?',
+      a: '<p>As obras-fonte do projeto n\xE3o usam o termo "hiperfoco" diretamente, mas o fen\xF4meno \xE9 documentado: crian\xE7as com TDAH conseguem manter foco por longos per\xEDodos em atividades de alto interesse, mesmo com grande dificuldade em tarefas de baixo interesse.</p><p>Isso se conecta a um modelo sobre dificuldade de regular o n\xEDvel de engajamento quando a recompensa n\xE3o \xE9 imediata. Quando a tarefa \xE9 intensamente estimulante, o sistema de recompensa fica plenamente ativado e a aten\xE7\xE3o pode ficar dif\xEDcil de "desligar" \u2014 o inverso do problema usual de iniciar tarefas chatas.</p><p><em>Nota: esta \xE9 uma extrapola\xE7\xE3o razo\xE1vel a partir do que as fontes documentam sobre varia\xE7\xE3o de aten\xE7\xE3o conforme motiva\xE7\xE3o, n\xE3o uma cita\xE7\xE3o direta de um conceito chamado "hiperfoco".</em></p>',
+      source: 'IACAPAP (se\xE7\xE3o "Apresenta\xE7\xE3o Cl\xEDnica" e modelo de Sonuga-Barke, se\xE7\xE3o "Dados Neuropsicol\xF3gicos")'
+    },
+    {
+      q: "Por que \xE9 t\xE3o dif\xEDcil come\xE7ar tarefas chatas/repetitivas com TDAH?",
+      a: '<p>\xC9 um problema documentado de persist\xEAncia do esfor\xE7o reduzida em condi\xE7\xF5es de baixo ou nenhum refor\xE7o imediato \u2014 n\xE3o "insensibilidade" ao refor\xE7o, mas dificuldade genu\xEDna de manter esfor\xE7o sem recompensa cont\xEDnua e pr\xF3xima no tempo.</p><p>Uma das fun\xE7\xF5es executivas mais ligadas a isso \xE9 o "cora\xE7\xE3o da mente" (autocontrole emocional): a mesma fragilidade que causa explos\xF5es emocionais dificulta gerar entusiasmo interno sem recompensa imediata. A estrat\xE9gia pr\xE1tica recomendada \xE9 antecipar deliberadamente a emo\xE7\xE3o de sucesso e fragmentar a tarefa em blocos pequenos com recompensas a cada etapa.</p>',
+      source: 'Manual Barkley (Cap. 3); IACAPAP (modelo de Sonuga-Barke); "Vencendo o TDAH Adulto" (Passo 2, Passo 4 Regras 5 e 6)'
+    },
+    {
+      q: "TDAH afeta o sono?",
+      a: "<p>Sim, mas de forma complexa. H\xE1 mais dificuldades subjetivas relatadas pelos pais (dificuldade para adormecer em at\xE9 56% das crian\xE7as com TDAH vs. 23% em controles), mas sem altera\xE7\xF5es objetivas claras em exames de sono \u2014 os problemas de sono podem ser mais atribu\xEDveis a comorbidades (ansiedade, depress\xE3o) do que ao TDAH isoladamente.</p><p>O sono deve sempre ser avaliado \xE0 parte, porque pode ser causa, consequ\xEAncia ou comorbidade do TDAH \u2014 sono ruim n\xE3o tratado pode, por si s\xF3, produzir sintomas que mimetizam ou agravam o quadro.</p>",
+      source: 'Manual Barkley (Cap. 3, item "Sono"); IACAPAP (se\xE7\xF5es "Comorbidades" e "Diagn\xF3stico Diferencial")'
+    },
+    {
+      q: "Existe rela\xE7\xE3o entre TDAH e alergias/coceira/condi\xE7\xF5es at\xF3picas?",
+      a: '<p>As cinco obras-fonte do projeto n\xE3o cobrem esse tema de forma substantiva \u2014 s\xF3 uma men\xE7\xE3o gen\xE9rica a "alergias" como comorbidade a rastrear no exame pedi\xE1trico, e uma frase breve do IACAPAP sobre "condi\xE7\xF5es at\xF3picas" sem detalhamento.</p><p><em>O restante desta resposta n\xE3o vem das fontes do projeto \u2014 \xE9 conhecimento cient\xEDfico geral, complementar e n\xE3o verificado pela base local.</em> A literatura mais ampla investiga: neuroinflama\xE7\xE3o e ativa\xE7\xE3o imune compartilhada (citocinas afetando circuitos dopamin\xE9rgicos); sono prejudicado por coceira/desconforto at\xF3pico como mediador indireto; fatores de risco pr\xE9-natais compartilhados; e hip\xF3teses preliminares sobre o eixo intestino-pele-c\xE9rebro. Nada disso estabelece causalidade \u2014 \xE9 correla\xE7\xE3o em debate ativo na pesquisa.</p>',
+      source: 'Manual Barkley (Cap. 8, men\xE7\xE3o gen\xE9rica); IACAPAP (se\xE7\xE3o "Comorbidades", men\xE7\xE3o breve) \u2014 restante \xE9 conhecimento geral fora das fontes do projeto'
+    },
+    {
+      q: "TDAH afeta relacionamentos e vida amorosa?",
+      a: '<p>Sim, de forma substancial. Adultos com TDAH relatam relacionamentos de moderados a ruins com frequ\xEAncia 4 a 5 vezes maior, e qualidade conjugal mais que duas vezes pior que a popula\xE7\xE3o geral.</p><p>Tr\xEAs fun\xE7\xF5es executivas pesam mais: regula\xE7\xE3o emocional fraca (explos\xF5es desgastam o v\xEDnculo), autoconsci\xEAncia limitada (dificuldade de perceber em tempo real o efeito do pr\xF3prio comportamento) e leitura de "roteiros sociais". Isso gera m\xE1 interpreta\xE7\xE3o sistem\xE1tica: distra\xE7\xE3o \xE9 lida como desinteresse, impulsividade como grosseria \u2014 quando s\xE3o d\xE9ficits executivos, n\xE3o inten\xE7\xE3o.</p><p>50-70% das crian\xE7as com TDAH j\xE1 n\xE3o t\xEAm amigos \xEDntimos entre a 2\xAA/3\xAA s\xE9rie. Tratamento medicamentoso e aplica\xE7\xE3o ativa das 8 Regras nas intera\xE7\xF5es \xEDntimas tendem a melhorar a qualidade do relacionamento.</p>',
+      source: '"Vencendo o TDAH Adulto" (Passo 5, se\xE7\xE3o "Relacionamentos")'
+    },
+    {
+      q: "O tratamento do TDAH \xE9 s\xF3 rem\xE9dio?",
+      a: "<p>N\xE3o. O tratamento \xE9 descrito como necessariamente multimodal, combinando medica\xE7\xE3o com terapia comportamental (crian\xE7as) ou TCC (adultos) \u2014 a combina\xE7\xE3o produz os melhores resultados. Em crian\xE7as pequenas leve/moderado, come\xE7a-se por psicoeduca\xE7\xE3o e treinamento parental antes de considerar medica\xE7\xE3o.</p><p>O estudo MTA mostrou vantagem estat\xEDstica da medica\xE7\xE3o sobre o tratamento comportamental isolado nos sintomas centrais, mas o tratamento combinado leva vantagem em desfechos secund\xE1rios (habilidades sociais, satisfa\xE7\xE3o dos pais) e permite doses menores de rem\xE9dio. Em adultos, a medica\xE7\xE3o tem papel mais central, mas terapia complementar pode ajudar com relacionamentos e h\xE1bitos acumulados.</p>",
+      source: 'Cartilha ABP (se\xE7\xE3o 9); IACAPAP (Tabela D.1.8); Manual Barkley (Cap. 20); "Vencendo o TDAH Adulto" (Passo 3)'
+    },
+    {
+      q: "Como funciona o metilfenidato (Ritalina/Concerta) no c\xE9rebro?",
+      a: '<p>O metilfenidato bloqueia a recapta\xE7\xE3o pr\xE9-sin\xE1ptica de dopamina e noradrenalina, aumentando a disponibilidade desses neurotransmissores nas regi\xF5es executivas do c\xE9rebro. A dopamina est\xE1 ligada a planejamento e processamento de recompensa; a noradrenalina modula excita\xE7\xE3o e aten\xE7\xE3o \u2014 fun\xE7\xF5es tipicamente deficit\xE1rias no TDAH.</p><p>A Ritalina de libera\xE7\xE3o imediata age em 20-60 minutos, com dura\xE7\xE3o de 3-6h; o Concerta usa libera\xE7\xE3o prolongada ao longo do dia, com dura\xE7\xE3o de 10-14h. O medicamento corrige o desequil\xEDbrio, n\xE3o apenas "mascara" os sintomas.</p>',
+      source: 'Manual Barkley (Cap. 17); IACAPAP (se\xE7\xE3o "Neurobiologia" e Tabela D.1.5); "Vencendo o TDAH Adulto" (Passo 3)'
+    },
+    {
+      q: "Rem\xE9dio para TDAH vicia?",
+      a: "<p>Usado de forma correta e prescrita, n\xE3o. Mais de 16 estudos longitudinais n\xE3o encontraram associa\xE7\xE3o entre uso oral prescrito de estimulantes e maior risco de abuso de subst\xE2ncias posterior \u2014 a via oral libera dopamina de forma gradual, bem diferente do abuso por via intranasal/intravenosa (picos r\xE1pidos), que \xE9 o mecanismo do v\xEDcio.</p><p>Uma metan\xE1lise mostrou risco de abuso de subst\xE2ncias reduzido em quase 2 vezes em quem foi tratado com estimulante na inf\xE2ncia, comparado a quem n\xE3o foi tratado. Isso n\xE3o elimina o risco de uso indevido do medicamento em si (desvio, venda) \u2014 fam\xEDlias com hist\xF3rico de abuso de subst\xE2ncias devem conversar com o m\xE9dico sobre formula\xE7\xF5es de longa a\xE7\xE3o, com menor potencial de abuso.</p>",
+      source: '"Vencendo o TDAH Adulto" (Passo 3); Manual Barkley (Cap. 17 e 22); Cartilha ABP (se\xE7\xE3o 7, "Mitos desmontados")'
+    },
+    {
+      q: "Quais os efeitos colaterais mais comuns da medica\xE7\xE3o?",
+      a: "<p>Para estimulantes: ins\xF4nia, perda de apetite, perda de peso, dores de cabe\xE7a, n\xE1usea, ansiedade, irritabilidade e tiques motores \u2014 geralmente leves, dose-dependentes e transit\xF3rios, manej\xE1veis por ajuste de dose. Estimulantes podem reduzir a altura adulta final em at\xE9 4cm, efeito revers\xEDvel ap\xF3s suspens\xE3o, por isso \xE9 feito monitoramento peri\xF3dico de peso/altura.</p><p>Para atomoxetina (n\xE3o estimulante): n\xE1usea, boca seca, tontura, sonol\xEAncia, redu\xE7\xE3o da libido, com risco raro de dano hep\xE1tico. Grandes estudos n\xE3o mostraram associa\xE7\xE3o relevante entre estimulantes e morte s\xFAbita card\xEDaca. Qualquer efeito persistente deve ser reportado ao m\xE9dico prescritor.</p>",
+      source: 'Manual Barkley (Cap. 17 e 18); IACAPAP (Tabelas D.1.7 e D.1.8); "Vencendo o TDAH Adulto" (Passo 3)'
+    },
+    {
+      q: "D\xE1 para tratar TDAH sem rem\xE9dio?",
+      a: "<p>Depende da gravidade e da idade. Treinamento comportamental parental \xE9 primeira linha para crian\xE7as menores com sintomas leves, mas seu benef\xEDcio mais consistente est\xE1 na qualidade da parentalidade e em comorbidades, n\xE3o necessariamente nos sintomas centrais do TDAH.</p><p>O estudo MTA mostrou que o tratamento comportamental isolado foi estatisticamente inferior \xE0 medica\xE7\xE3o nos sintomas centrais. Em adultos, n\xE3o h\xE1 evid\xEAncia robusta de que terapia sozinha (sem medica\xE7\xE3o) seja eficaz para o n\xFAcleo dos sintomas, embora ajude a lidar com consequ\xEAncias acumuladas. A decis\xE3o de tratar com ou sem rem\xE9dio \xE9 sempre uma conversa a ter com o m\xE9dico respons\xE1vel.</p>",
+      source: 'IACAPAP (Tabela D.1.8); Manual Barkley (Caps. 12, 13, 14, 15 e 20); "Vencendo o TDAH Adulto" (Passo 3)'
+    },
+    {
+      q: "Terapia ajuda no TDAH? Que tipo de terapia \xE9 indicada?",
+      a: "<p>Sim, mas com papel diferente da medica\xE7\xE3o \u2014 n\xE3o ataca diretamente os sintomas centrais, e sim as consequ\xEAncias e habilidades ao redor deles. Para crian\xE7as: treinamento dos pais em manejo comportamental, aconselhamento a professores e treino de habilidades sociais.</p><p>Para adultos, a Terapia Cognitivo-Comportamental (TCC) \xE9 a modalidade com melhor suporte, com ganhos em organiza\xE7\xE3o, gest\xE3o do tempo e regula\xE7\xE3o emocional. Terapia breve tamb\xE9m \xE9 recomendada especificamente para processar as rea\xE7\xF5es emocionais ao diagn\xF3stico (nega\xE7\xE3o, al\xEDvio, tristeza, raiva pelo tempo perdido) \u2014 rea\xE7\xF5es descritas como normais e passageiras.</p>",
+      source: 'Cartilha ABP (se\xE7\xE3o 9); Manual Barkley (Caps. 12-16); IACAPAP (Tabela D.1.8); "Vencendo o TDAH Adulto" (Passo 2 e Passo 4)'
+    },
+    {
+      q: 'Existe "cura" para o TDAH?',
+      a: '<p>N\xE3o. Nenhuma das fontes usa o termo "cura" \u2014 todas tratam o TDAH como condi\xE7\xE3o neurobiol\xF3gica de base gen\xE9tica (herdabilidade de 70-90%) que se maneja, n\xE3o se cura.</p><p>Aos 25 anos, 15% dos casos de inf\xE2ncia ainda preenchem todos os crit\xE9rios diagn\xF3sticos completos, at\xE9 65% t\xEAm sintomas residuais com algum preju\xEDzo, e 20% n\xE3o apresentam mais sintomas nem preju\xEDzo \u2014 remiss\xE3o completa acontece numa minoria, e mesmo assim n\xE3o \xE9 revers\xE3o da condi\xE7\xE3o de base, \xE9 compensa\xE7\xE3o/matura\xE7\xE3o.</p><p>Barkley usa a analogia da rampa para cadeira de rodas: buscar adapta\xE7\xF5es (medica\xE7\xE3o, rotinas externalizadas) n\xE3o \xE9 "cura" nem desculpa, \xE9 o equivalente funcional de uma rampa \u2014 o trabalho de "subir" ainda \xE9 da pessoa, mas com as ferramentas certas se torna administr\xE1vel.</p>',
+      source: 'IACAPAP (se\xE7\xF5es "Etiologia" e "Curso e Progn\xF3stico"); Cartilha ABP (se\xE7\xF5es 4 e 7); "Vencendo o TDAH Adulto" (Passo 2)'
+    },
+    {
+      q: "Por quanto tempo precisa tomar rem\xE9dio para TDAH?",
+      a: '<p>N\xE3o h\xE1 prazo fixo definido \u2014 n\xE3o existem diretrizes baseadas em evid\xEAncia sobre quando parar. A boa pr\xE1tica \xE9 reavalia\xE7\xE3o peri\xF3dica (anual, por exemplo) da necessidade de continuar; muitos pacientes se beneficiam de continuar at\xE9 a idade adulta, j\xE1 que o TDAH costuma ter curso cr\xF4nico.</p><p>Para adultos, o uso cont\xEDnuo (7 dias por semana, o ano todo, incluindo fins de semana e f\xE9rias) costuma ser recomendado, j\xE1 que os preju\xEDzos afetam todas as \xE1reas da vida, n\xE3o s\xF3 trabalho/estudo. Em crian\xE7as, a pr\xE1tica de "f\xE9rias da medica\xE7\xE3o" nos fins de semana \xE9 debatida, sem benef\xEDcio claro comprovado sobre altura final. A decis\xE3o de suspender \xE9 sempre feita com o m\xE9dico respons\xE1vel.</p>',
+      source: 'IACAPAP (se\xE7\xE3o "Quest\xF5es Cl\xEDnicas Especiais"); "Vencendo o TDAH Adulto" (Passo 3); Manual Barkley (Cap. 17)'
+    },
+    {
+      q: "Por que rotina e listas ajudam tanto quem tem TDAH?",
+      a: '<p>O d\xE9ficit nas fun\xE7\xF5es executivas (mem\xF3ria de trabalho n\xE3o-verbal e verbal) dificulta manter regras, prazos e planos "vivos" na cabe\xE7a \u2014 n\xE3o por falta de saber o que fazer, mas porque a informa\xE7\xE3o n\xE3o fica dispon\xEDvel no momento de agir.</p><p>A solu\xE7\xE3o \xE9 a <strong>externaliza\xE7\xE3o</strong>: tirar a informa\xE7\xE3o de dentro da mente e coloc\xE1-la fisicamente no ambiente, no ponto exato onde ser\xE1 usada \u2014 listas, alarmes, cadernos de bolso. Rotina reduz ainda a quantidade de decis\xF5es a cada momento, porque o comportamento passa a ser guiado por h\xE1bito/contexto em vez de depender da autorregula\xE7\xE3o interna, que \xE9 o recurso mais escasso.</p>',
+      source: 'Manual Barkley (Cap. 7); "Vencendo o TDAH Adulto" (Passo 4, Regra 4)'
+    },
+    {
+      q: "Pessoas com TDAH podem ter sucesso profissional?",
+      a: "<p>Sim, plenamente. O ponto central n\xE3o \xE9 capacidade, e sim adequa\xE7\xE3o entre o tipo de trabalho/ambiente e o perfil de funcionamento executivo. Certos tipos de carreira tendem a ser mais compat\xEDveis (estrutura clara, retorno imediato, variedade, urg\xEAncia que dispensa planejamento longo), mas isso s\xE3o tend\xEAncias, n\xE3o regras \u2014 qualquer carreira pode funcionar com o suporte certo.</p><p>Suportes eficazes incluem: supervisor solid\xE1rio, ambiente f\xEDsico adaptado (escrit\xF3rio privado em vez de open space), hor\xE1rios fixos para checar e-mail, mentor para check-ins curtos e medica\xE7\xE3o bem ajustada. N\xE3o h\xE1 rela\xE7\xE3o entre TDAH e menor intelig\xEAncia.</p>",
+      source: '"Vencendo o TDAH Adulto" (Passo 5, se\xE7\xE3o "Trabalho")'
+    },
+    {
+      q: 'TDAH \xE9 "modinha"/est\xE1 sendo diagnosticado demais hoje em dia?',
+      a: '<p>A preval\xEAncia de TDAH n\xE3o aumentou nas \xFAltimas d\xE9cadas nem varia significativamente entre culturas ou \xE9pocas \u2014 o que mudou foi o maior reconhecimento profissional e social, levando mais pessoas a buscar avalia\xE7\xE3o. Relatos cl\xEDnicos compat\xEDveis existem desde 1775, o que derruba a ideia de "transtorno das telas".</p><p>Isso n\xE3o significa aus\xEAncia de risco de sobre-diagn\xF3stico individual: a popularidade do TDAH adulto trouxe mitos sem base cient\xEDfica e press\xE3o social por diagn\xF3stico. Um estudo citado mostrou a taxa de confirma\xE7\xE3o diagn\xF3stica caindo de 85% para 50% dos encaminhados ao longo do tempo, atribu\xEDda a maior rigor na avalia\xE7\xE3o \u2014 n\xE3o a menos casos reais.</p>',
+      source: 'IACAPAP (se\xE7\xE3o "Epidemiologia"); Cartilha ABP (se\xE7\xE3o "Mitos desmontados"); Manual Barkley (Cap. 11)'
+    },
+    {
+      q: "Como lidar com procrastina\xE7\xE3o cr\xF4nica no TDAH?",
+      a: '<p>A procrastina\xE7\xE3o \xE9 consequ\xEAncia direta da "miopia temporal": tarefas com prazo distante n\xE3o geram urg\xEAncia real at\xE9 estarem quase vencidas. A estrat\xE9gia espec\xEDfica de Barkley \xE9 a Regra 6 \u2014 "Decomponha o futuro": fragmentar o projeto em blocos pequenos (30-60 minutos), tornar-se respons\xE1vel perante algu\xE9m que cobra cada mini-etapa, e recompensar-se imediatamente a cada cota conclu\xEDda.</p><p>Complementarmente, visualizar ativamente a emo\xE7\xE3o de sucesso ao concluir (n\xE3o o medo do fracasso) funciona como combust\xEDvel motivacional, junto com lembretes f\xEDsicos no ambiente para reduzir a depend\xEAncia de "lembrar" sozinho de retomar o trabalho.</p>',
+      source: '"Vencendo o TDAH Adulto" (Passo 4, Regras 5 e 6; conceito de miopia temporal no Passo 2); Manual Barkley (Cap. 7)'
+    },
+    {
+      q: "TDAH tem rela\xE7\xE3o com intelig\xEAncia (\xE9 sinal de menos intelig\xEAncia)?",
+      a: '<p>N\xE3o h\xE1 liga\xE7\xE3o direta. O TDAH ocorre em todo o espectro de QI. Existe uma pequena redu\xE7\xE3o m\xE9dia de QI em crian\xE7as com TDAH (cerca de 7-10 pontos), mas em adultos avaliados clinicamente esse efeito praticamente desaparece \u2014 QI m\xE9dio pr\xF3ximo ou acima da m\xE9dia geral. O QI explica menos de 14% da vari\xE2ncia no desempenho acad\xEAmico de adolescentes com TDAH.</p><p>O mito de "menos intelig\xEAncia" vem do baixo desempenho escolar gerado pelo transtorno, mal interpretado como "burrice" \u2014 quando \xE9 um problema de desempenho (n\xE3o fazer o que j\xE1 se sabe no momento certo), n\xE3o de capacidade. O mito oposto ("TDAH \xE9 sinal de mais criatividade/intelig\xEAncia") tamb\xE9m n\xE3o tem base cient\xEDfica.</p>',
+      source: 'Cartilha ABP (se\xE7\xE3o "Mitos desmontados"); Manual Barkley (Cap. 11, Cap. 2/3); IACAPAP (metan\xE1lise de Frazier et al., 2004)'
+    },
+    {
+      q: "Como uma pessoa com TDAH pode se organizar melhor no trabalho/estudos?",
+      a: "<p>O n\xFAcleo pr\xE1tico s\xE3o as 8 Regras de autogest\xE3o: externalizar lembretes (caderno de bolso sempre \xE0 m\xE3o, cartazes nos pontos de decis\xE3o), fragmentar tarefas grandes em blocos de 30-60 minutos com presta\xE7\xE3o de contas e recompensa por etapa, externalizar a resolu\xE7\xE3o de problemas (post-its, quadros, listas f\xEDsicas em vez de segurar tudo na mente), e antecipar emocionalmente o resultado.</p><p>No estudo: t\xE9cnica de leitura SQ4R, gravar aulas, alternar mat\xE9rias dif\xEDceis com leves, exerc\xEDcio aer\xF3bico antes de provas (ganho de concentra\xE7\xE3o dura 45-60 minutos). No trabalho: espa\xE7o f\xEDsico privado, hor\xE1rios fixos para e-mail, notifica\xE7\xF5es silenciadas em blocos de foco, notas ativas em reuni\xF5es, e negociar explicitamente expectativas de prazo e supervis\xE3o ao escolher um cargo.</p>",
+      source: '"Vencendo o TDAH Adulto" (Passo 4, Regras 4, 5, 6 e 7; Passo 5, se\xE7\xF5es "Educa\xE7\xE3o" e "Trabalho")'
+    }
+  ];
+
+  // src/faq.js
+  var faqOverlay = document.getElementById("faqOverlay");
+  var faqBtn = document.getElementById("faqBtn");
+  var faqCloseBtn = document.getElementById("faqCloseBtn");
+  var faqTopics = document.getElementById("faqTopics");
+  var faqSearchInput = document.getElementById("faqSearchInput");
+  var faqEmptyMsg = document.getElementById("faqEmptyMsg");
+  function renderFaqList(items) {
+    faqTopics.innerHTML = items.map(function(item, i) {
+      return '<details class="tdah-topic" data-faq-index="' + i + '"><summary>' + item.q + '<span class="plus">+</span></summary><div class="tdah-body">' + item.a + '<div class="tdah-source">Fonte: ' + item.source + "</div></div></details>";
+    }).join("");
+    faqEmptyMsg.style.display = items.length ? "none" : "";
+  }
+  function normalize(s) {
+    return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  }
+  function filterFaq(term) {
+    var t = normalize(term);
+    if (!t) return FAQ_ITEMS;
+    return FAQ_ITEMS.filter(function(item) {
+      return normalize(item.q).indexOf(t) !== -1 || normalize(item.a).indexOf(t) !== -1;
+    });
+  }
+  function openFaq() {
+    faqOverlay.classList.add("show");
+    faqSearchInput.value = "";
+    renderFaqList(FAQ_ITEMS);
+  }
+  function closeFaq() {
+    faqOverlay.classList.remove("show");
+  }
+  function initFaq() {
+    faqBtn.addEventListener("click", openFaq);
+    faqCloseBtn.addEventListener("click", closeFaq);
+    faqOverlay.addEventListener("click", function(ev) {
+      if (ev.target === faqOverlay) closeFaq();
+    });
+    faqSearchInput.addEventListener("input", function() {
+      renderFaqList(filterFaq(faqSearchInput.value));
+    });
+  }
+
   // src/self-assessment.js
   var FREQ_OPTIONS = [
     { value: "0", label: "Nunca" },
@@ -3401,6 +3597,7 @@
     initEditor();
     initAuth();
     initEducation();
+    initFaq();
     initSelfAssessment();
     initPomodoro();
     initSocial();
@@ -3417,6 +3614,7 @@
       else if (pomodoroOverlay.classList.contains("show")) closePomodoro();
       else if (socialOverlay.classList.contains("show")) closeSocial();
       else if (saOverlay.classList.contains("show")) closeSelfAssessment();
+      else if (faqOverlay.classList.contains("show")) closeFaq();
       else if (tdahInfoOverlay2.classList.contains("show")) closeTdahInfo();
       else if (authOverlay2.classList.contains("show")) closeAuth();
       else if (editOverlay2.classList.contains("show")) closeEditor();
