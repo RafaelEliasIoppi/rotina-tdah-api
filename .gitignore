@@ -18,3 +18,4 @@ app-mobile/android/*.keystore
 server/certs/
 app-mobile/test-results/
 app-mobile/playwright-report/
+.vscode/
