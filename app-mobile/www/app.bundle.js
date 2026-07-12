@@ -15,6 +15,7 @@
       SUBSCRIPTION: "rotina_tdah_sub_v1",
       OUTBOX: "rotina_tdah_outbox_v1",
       MIGRATED: "rotina_tdah_migrated_v1",
+      DEDUPE_FIX_APPLIED: "rotina_tdah_dedupe_fix_v1",
       PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
       PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1",
       SELF_ASSESSMENT_PROGRESS: "rotina_tdah_self_assessment_progress_v1"
@@ -107,6 +108,18 @@
       },
       setMigratedUserId: function(uid) {
         writeRaw(KEYS.MIGRATED, String(uid));
+      },
+      // Correção one-time (2026-07-12): dispositivos que já rodaram a migração
+      // normal antes da correção de duplicação (ver bug_migration_nao_aplicada_
+      // producao / migration 0006_dedupe_tasks.sql) ficaram com tarefas 2x
+      // salvas localmente, e a migração normal não roda de novo. Esta chave
+      // separada força um único re-pull do servidor (já limpo) por dispositivo,
+      // sem afetar o fluxo normal de sync depois disso.
+      getDedupeFixApplied: function() {
+        return readRaw(KEYS.DEDUPE_FIX_APPLIED, null) === "1";
+      },
+      setDedupeFixApplied: function() {
+        writeRaw(KEYS.DEDUPE_FIX_APPLIED, "1");
       },
       getPlacesDisclosureSeen: function() {
         return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1";
@@ -3401,12 +3414,16 @@
     }
     function adoptServerData(pull) {
       var newTasks = {};
+      var seen = {};
       DAYS.forEach(function(d) {
         newTasks[d.key] = [];
       });
       (pull.tasks || []).forEach(function(st) {
         var dayKey = NUM_TO_WD[st.weekday];
         if (!dayKey) return;
+        var sig = dayKey + "|" + st.time + "|" + st.label;
+        if (seen[sig]) return;
+        seen[sig] = true;
         if (!newTasks[dayKey]) newTasks[dayKey] = [];
         newTasks[dayKey].push({
           id: st.id,
@@ -3447,9 +3464,23 @@
         }
       }
     }
+    function runDedupeFixIfNeeded() {
+      if (!Api.isLoggedIn() || AppStorage.getDedupeFixApplied()) return Promise.resolve();
+      return Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function(pull) {
+        if (pull && pull.tasks && pull.tasks.length > 0) {
+          adoptServerData(pull);
+          setCurrentDay(todayKeyBR());
+          renderDayTabs();
+          renderBlocks();
+        }
+        AppStorage.setDedupeFixApplied();
+      }).catch(function() {
+      });
+    }
     function runMigration() {
       if (!Api.isLoggedIn() || migrationDone()) {
         updateStatus();
+        runDedupeFixIfNeeded();
         return;
       }
       Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function(pull) {

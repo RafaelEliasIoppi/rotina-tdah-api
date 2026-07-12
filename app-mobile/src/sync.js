@@ -410,10 +410,31 @@ var Sync = (function () {
     if (isNative) { try { rescheduleAllNativeAlarms(); } catch (e) {} }
   }
 
+  // Correção one-time (2026-07-12): dispositivos que já concluíram a migração
+  // normal antes da correção de duplicação de tarefas (ver bug documentado —
+  // migration 0006_dedupe_tasks.sql) podem ter tarefas 2x salvas localmente.
+  // migrationDone() bloquearia um novo pull nesse caso; esta checagem
+  // separada força exatamente UM re-pull do servidor (já limpo) por
+  // dispositivo, sem reabrir o fluxo normal de sync depois disso.
+  function runDedupeFixIfNeeded() {
+    if (!Api.isLoggedIn() || AppStorage.getDedupeFixApplied()) return Promise.resolve();
+    return Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function (pull) {
+      if (pull && pull.tasks && pull.tasks.length > 0) {
+        adoptServerData(pull);
+        setCurrentDay(todayKeyBR());
+        renderDayTabs();
+        renderBlocks();
+      }
+      AppStorage.setDedupeFixApplied();
+    }).catch(function () {
+      // Falha de rede: tenta de novo no próximo boot (chave só é marcada em caso de sucesso).
+    });
+  }
+
   // Executa a migração one-time. Resiliente: qualquer falha de rede aborta sem
   // corromper o estado local, e tentará de novo no próximo login/flush.
   function runMigration() {
-    if (!Api.isLoggedIn() || migrationDone()) { updateStatus(); return; }
+    if (!Api.isLoggedIn() || migrationDone()) { updateStatus(); runDedupeFixIfNeeded(); return; }
 
     Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function (pull) {
       var remoteHasTasks = pull && pull.tasks && pull.tasks.length > 0;
