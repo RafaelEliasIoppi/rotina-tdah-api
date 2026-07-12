@@ -47,6 +47,12 @@ export async function replaceTasks(routineId, tasks) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    // Serializa chamadas concorrentes na MESMA rotina (ex.: duas sessões
+    // logadas na mesma conta disparando a migração one-time ao mesmo tempo):
+    // a segunda transação bloqueia aqui até a primeira commitar/abortar, em
+    // vez de ambas verem a tabela vazia e inserirem tudo em duplicidade.
+    // Ver migration 0006_dedupe_tasks.sql para o incidente que motivou isso.
+    await client.query('SELECT id FROM routines WHERE id = $1 FOR UPDATE', [routineId]);
     await client.query('DELETE FROM tasks WHERE routine_id = $1', [routineId]);
 
     const inserted = [];

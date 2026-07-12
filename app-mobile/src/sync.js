@@ -359,12 +359,19 @@ var Sync = (function () {
   // Substitui o estado local pelos dados baixados do servidor (usado quando a
   // conta remota já tem rotina). Só é chamado APÓS um pull bem-sucedido.
   function adoptServerData(pull) {
-    // Rotina/tasks -> tasksByDay
+    // Rotina/tasks -> tasksByDay. Dedup defensiva por (weekday, time, label):
+    // mesmo com a constraint única no banco (migration 0006), o cliente não
+    // deve confiar cegamente — se algum dado antigo/duplicado ainda chegar
+    // por qualquer via, a UI nunca deve mostrar horários repetidos.
     var newTasks = {};
+    var seen = {};
     DAYS.forEach(function (d) { newTasks[d.key] = []; });
     (pull.tasks || []).forEach(function (st) {
       var dayKey = NUM_TO_WD[st.weekday];
       if (!dayKey) return;
+      var sig = dayKey + "|" + st.time + "|" + st.label;
+      if (seen[sig]) return;
+      seen[sig] = true;
       if (!newTasks[dayKey]) newTasks[dayKey] = [];
       newTasks[dayKey].push({
         id: st.id, time: st.time, label: st.label,
