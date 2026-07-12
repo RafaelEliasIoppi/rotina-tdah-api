@@ -45,6 +45,7 @@ COMO O APP AJUDA NO DIA A DIA
 
 • Rotina diária organizada por horários, com tarefas que você pode marcar como concluídas
 • Lembretes para não perder o timing das atividades importantes
+• Lembretes por lugar: seja avisado ao chegar ou sair de um local que você mesmo cadastrar (ex.: casa, farmácia, trabalho) — útil para tarefas que dependem de onde você está, não só da hora
 • Progresso visual (anel de percentual e streak) para acompanhar sua constância sem cobrança excessiva
 • Funciona 100% offline — não é obrigatório criar conta para usar
 • Login opcional (e-mail/senha ou Google) para quem quiser sincronizar entre celular e outros dispositivos

@@ -105,11 +105,58 @@ export function renderPrivacyPolicyHtml() {
       cartão de crédito</strong> — o pagamento é processado inteiramente pelo Stripe,
       nosso processador de pagamentos.
     </li>
+    <li>
+      <strong>Localização (apenas se você ativar "Lembretes por Lugar"):</strong> se você
+      optar por essa função opcional, os locais que você mesmo cadastra (nome, coordenadas
+      e raio — por exemplo "Casa" ou "Farmácia") ficam salvos na sua conta para sincronizar
+      entre seus aparelhos. Veja a seção 2.1 abaixo para os detalhes completos sobre como
+      essa função funciona.
+    </li>
   </ul>
   <p>
-    Não coletamos dados de localização, contatos, câmera, microfone, nem qualquer dado
-    além do necessário para as funcionalidades descritas acima.
+    Não coletamos dados de contatos, câmera ou microfone, nem qualquer dado além do
+    necessário para as funcionalidades descritas acima.
   </p>
+
+  <h2>2.1 Lembretes por Lugar (localização)</h2>
+  <p>
+    O app oferece, de forma totalmente opcional, a função "Lembretes por Lugar": em vez de
+    (ou além de) um horário, você pode escolher que um lembrete apareça quando você
+    <strong>chegar</strong> ou <strong>sair</strong> de um lugar que você mesmo cadastrar —
+    por exemplo, ser lembrado de levar o remédio ao sair de casa, ou de retirar uma receita
+    ao chegar na farmácia.
+  </p>
+  <ul>
+    <li>
+      <strong>É opt-in:</strong> essa função nunca é ativada automaticamente. A localização
+      do seu aparelho só é usada se você decidir ativamente usar "Lembrar por lugar" em um
+      lembrete, e o Android sempre pede sua permissão explícita antes disso. Antes mesmo
+      desse pedido de permissão, o app mostra uma tela explicando o que a função faz.
+    </li>
+    <li>
+      <strong>Sem histórico de localização:</strong> o app não guarda "por onde você
+      passou". Ele apenas compara sua posição atual com os locais que você cadastrou, no
+      momento em que você chega ou sai de um deles, e descarta essa comparação em seguida.
+      Não existe, em nenhum lugar (nem no aparelho, nem no nosso servidor), um registro do
+      seu histórico de deslocamento.
+    </li>
+    <li>
+      <strong>Os locais cadastrados ficam só na sua conta:</strong> nome, coordenadas e
+      raio dos locais que você cadastra são sincronizados com nosso servidor apenas para
+      que você possa acessá-los em outro aparelho seu — do mesmo jeito que sua rotina de
+      tarefas já sincroniza. Eles <strong>nunca são compartilhados com outros usuários,
+      terceiros, ou usados para qualquer forma de monitoramento por outras pessoas</strong>
+      — por exemplo, pais ou responsáveis não têm, e nunca terão, acesso à sua localização
+      através deste app. Essa função existe exclusivamente para o seu próprio
+      autogerenciamento.
+    </li>
+    <li>
+      <strong>Você tem controle total:</strong> você pode remover um local cadastrado a
+      qualquer momento, o que desativa automaticamente o lembrete associado a ele. Você
+      também pode revogar a permissão de localização a qualquer momento nas configurações
+      do Android, o que desativa a função sem afetar o resto do app.
+    </li>
+  </ul>
 
   <h2>3. Para que usamos seus dados</h2>
   <ul>
