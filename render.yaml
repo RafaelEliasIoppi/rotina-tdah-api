@@ -7,7 +7,10 @@
 #   2. O Render detecta este arquivo automaticamente e propõe o serviço abaixo.
 #   3. Preencha manualmente (no painel, aba Environment) as variáveis marcadas
 #      com `sync: false` — nenhum valor sensível fica neste arquivo.
-#   4. Após o primeiro deploy, rode `npm run migrate` no Shell do serviço.
+#   4. (OBSOLETO desde 2026-07-12 — migrations agora rodam automaticamente no
+#      boot do servidor, ver server/src/index.js. O passo manual foi removido
+#      porque depender de alguém lembrar já causou tabelas ausentes em
+#      produção sem ninguém perceber por dias.)
 #
 # Ver server/README.md, seção "Deploy no Render", para o passo a passo completo
 # e a origem de cada valor de env var.

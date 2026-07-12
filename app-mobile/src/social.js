@@ -65,7 +65,12 @@ function handleAcceptInvite() {
 
 function renderPartnerStatus(data) {
   if (!data) {
-    _Api.fetch("/social/partner", { method: "GET" }).then(renderPartnerStatus).catch(function () {
+    _Api.fetch("/social/partner", { method: "GET" }).then(renderPartnerStatus).catch(function (err) {
+      // Erro real de servidor/rede não é o mesmo que "usuário sem parceiro" —
+      // tratar os dois igual escondeu um bug de produção (tabelas ausentes)
+      // atrás de uma tela que parecia normal. Só cai no estado "sem parceiro"
+      // quando o backend responde algo utilizável; erro de fato mostra toast.
+      showToast(err.message || "Não foi possível carregar seu parceiro agora.");
       renderNoPartner();
     });
     return;

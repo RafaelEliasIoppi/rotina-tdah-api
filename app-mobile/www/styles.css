@@ -527,7 +527,12 @@
     background: var(--ink); color: var(--bg);
     padding: 10px 16px; border-radius: 10px; font-size: 0.82rem;
     opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 50; max-width: 90vw; text-align: center;
+    /* Precisa ficar ACIMA de .modal-overlay (z-index: 60): erros disparados por
+       showToast() dentro de um modal aberto (ex.: falha ao gerar convite no
+       Parceiro de responsabilização) ficavam invisíveis atrás do modal,
+       parecendo "o botão não faz nada" quando na verdade o erro aparecia,
+       só oculto. Bug real encontrado em 2026-07-12. */
+    z-index: 70; max-width: 90vw; text-align: center;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 

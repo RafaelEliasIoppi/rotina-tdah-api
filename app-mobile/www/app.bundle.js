@@ -673,7 +673,8 @@
   }
   function renderPartnerStatus(data) {
     if (!data) {
-      _Api.fetch("/social/partner", { method: "GET" }).then(renderPartnerStatus).catch(function() {
+      _Api.fetch("/social/partner", { method: "GET" }).then(renderPartnerStatus).catch(function(err) {
+        showToast(err.message || "N\xE3o foi poss\xEDvel carregar seu parceiro agora.");
         renderNoPartner();
       });
       return;
