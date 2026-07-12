@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Sem fundo — usado no adaptive icon (foreground), que já tem fundo
+       separado via ic_launcher_background. Desenho escalado para a área
+       segura central (~66% do canvas), já que o Android recorta as bordas
+       conforme o formato de máscara do fabricante (círculo, squircle, etc). -->
+  <g transform="translate(96 96) scale(0.66) translate(-96 -96)">
+    <path
+      d="M 96 46
+         A 50 50 0 1 1 60.2 137.8"
+      fill="none"
+      stroke="#ffffff"
+      stroke-width="15"
+      stroke-linecap="round"
+    />
+    <circle cx="83" cy="146" r="14" fill="#ffffff"/>
+  </g>
+</svg>

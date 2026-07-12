@@ -46,7 +46,7 @@ import { Api } from "./api.js";
     theme_color: "#4338ca",
     icons: [{
       src: "data:image/svg+xml," + encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="%234338ca"/><path d="M56 100l24 24 56-56" stroke="%23ffffff" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="38" fill="%234338ca"/><path d="M 96 46 A 50 50 0 1 1 60.2 137.8" fill="none" stroke="%23ffffff" stroke-width="15" stroke-linecap="round"/><circle cx="83" cy="146" r="14" fill="%23ffffff"/></svg>'
       ),
       sizes: "192x192",
       type: "image/svg+xml"

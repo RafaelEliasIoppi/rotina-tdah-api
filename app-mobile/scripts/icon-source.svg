@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Fundo: quadrado arredondado na cor de destaque do app -->
+  <rect width="192" height="192" rx="38" fill="#4338ca"/>
+
+  <!-- Anel quase fechado (arco), com abertura na parte inferior-direita -->
+  <path
+    d="M 96 46
+       A 50 50 0 1 1 60.2 137.8"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="15"
+    stroke-linecap="round"
+  />
+
+  <!-- Ponto de encaixe, posicionado na abertura do anel -->
+  <circle cx="83" cy="146" r="14" fill="#ffffff"/>
+</svg>
