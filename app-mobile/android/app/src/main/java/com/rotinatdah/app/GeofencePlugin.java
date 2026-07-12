@@ -3,6 +3,7 @@ package com.rotinatdah.app;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
@@ -27,7 +28,7 @@ import java.util.List;
  * Plugin nativo Capacitor para "Lembretes por Lugar" (geofencing).
  *
  * Expoe ao JS:
- *  - addGeofence({id, lat, lng, radius, trigger})
+ *  - addGeofence({id, lat, lng, radius, trigger, label, taskLabel})
  *  - removeGeofence({id})
  *  - requestPermissions()  (fluxo em duas etapas: FINE, depois BACKGROUND)
  *  - checkPermissions()
@@ -46,6 +47,14 @@ import java.util.List;
 public class GeofencePlugin extends Plugin {
 
     public static final String ACTION_GEOFENCE_EVENT = "com.rotinatdah.app.ACTION_GEOFENCE_EVENT";
+
+    // Mesmo arquivo de SharedPreferences usado pelo GeofenceBroadcastReceiver,
+    // para persistir o nome do local/tarefa associados a cada geofence e a
+    // notificacao poder ser especifica ("Chegando na Farmacia: retirar receita")
+    // em vez do texto generico.
+    private static final String PREFS_NAME = "geofence_prefs";
+    private static final String PREF_LABEL_PREFIX = "geofence_label_";
+    private static final String PREF_TASK_PREFIX = "geofence_task_";
 
     private GeofencingClient geofencingClient;
 
@@ -72,11 +81,21 @@ public class GeofencePlugin extends Plugin {
         Double lng = call.getDouble("lng");
         Double radius = call.getDouble("radius");
         String trigger = call.getString("trigger", "enter");
+        String label = call.getString("label");
+        String taskLabel = call.getString("taskLabel");
 
         if (id == null || lat == null || lng == null || radius == null) {
             call.reject("Parametros obrigatorios ausentes: id, lat, lng, radius");
             return;
         }
+
+        // Persiste o nome do local/tarefa para o BroadcastReceiver montar uma
+        // notificacao especifica (ele nao tem acesso ao bridge JS/tasks.js).
+        SharedPreferences prefs = getContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        if (label != null) editor.putString(PREF_LABEL_PREFIX + id, label);
+        if (taskLabel != null) editor.putString(PREF_TASK_PREFIX + id, taskLabel);
+        editor.apply();
 
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -132,7 +151,11 @@ public class GeofencePlugin extends Plugin {
         List<String> ids = new ArrayList<>();
         ids.add(id);
         geofencingClient.removeGeofences(ids)
-            .addOnSuccessListener(unused -> call.resolve())
+            .addOnSuccessListener(unused -> {
+                SharedPreferences prefs = getContext().getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE);
+                prefs.edit().remove(PREF_LABEL_PREFIX + id).remove(PREF_TASK_PREFIX + id).apply();
+                call.resolve();
+            })
             .addOnFailureListener(e -> call.reject("Falha ao remover geofence: " + e.getMessage(), e));
     }
 

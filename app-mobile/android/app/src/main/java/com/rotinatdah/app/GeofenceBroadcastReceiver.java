@@ -32,6 +32,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private static final String DEFAULT_NOTIFICATION_CHANNEL_ID = "default";
     private static final String PREFS_NAME = "geofence_prefs";
     private static final String PREF_KEY_PREFIX = "geofence_last_fired_";
+    private static final String PREF_LABEL_PREFIX = "geofence_label_";
+    private static final String PREF_TASK_PREFIX = "geofence_task_";
     private static final long RATE_LIMIT_MS = 3 * 60 * 60 * 1000L; // 3 horas
 
     @Override
@@ -88,10 +90,23 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     private void showNotification(Context context, String geofenceId, boolean isEnter) {
         ensureNotificationChannel(context);
 
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String label = prefs.getString(PREF_LABEL_PREFIX + geofenceId, null);
+        String taskLabel = prefs.getString(PREF_TASK_PREFIX + geofenceId, null);
+
         String title = "Rotina TDAH";
-        String body = isEnter
-            ? "Voce chegou em um local com lembrete."
-            : "Voce saiu de um local com lembrete.";
+        String body;
+        if (label != null && taskLabel != null) {
+            body = (isEnter ? "Chegando em " : "Saindo de ") + label + ": " + taskLabel;
+        } else if (label != null) {
+            body = isEnter
+                ? "Voce chegou em " + label + "."
+                : "Voce saiu de " + label + ".";
+        } else {
+            body = isEnter
+                ? "Voce chegou em um local com lembrete."
+                : "Voce saiu de um local com lembrete.";
+        }
 
         Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         PendingIntent contentIntent = null;

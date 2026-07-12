@@ -464,6 +464,9 @@
   function bellIcon(filled) {
     return '<svg viewBox="0 0 24 24" fill="' + (filled ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2"><path d="M12 3a5 5 0 00-5 5v3.3c0 .5-.2 1-.5 1.4L5 15h14l-1.5-2.3c-.3-.4-.5-.9-.5-1.4V8a5 5 0 00-5-5z" stroke-linejoin="round"/><path d="M9.5 18a2.5 2.5 0 005 0" stroke-linecap="round"/></svg>';
   }
+  function pinIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.1 7-11.5A7 7 0 005 9.5C5 14.9 12 21 12 21z" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.3"/></svg>';
+  }
   function renderBlocks() {
     var currentDay2 = getCurrentDay();
     var tasks = buildTasks(currentDay2);
@@ -493,7 +496,9 @@
         card.tabIndex = 0;
         var detailHtml = t.detail ? '<div class="task-detail">' + escapeHtml(t.detail) + "</div>" : "";
         var ruleHtml = t.rule ? '<span class="task-rule">' + escapeHtml(t.rule) + "</span>" : "";
-        card.innerHTML = '<div class="check">' + checkIcon() + '</div><div class="task-body"><div class="task-top"><span class="task-time">' + escapeHtml(t.time) + '</span><span class="task-label">' + escapeHtml(t.label) + "</span></div>" + detailHtml + ruleHtml + '</div><button class="alarm-btn' + (alarms2[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms2[alarmKey]) + "</button>";
+        var timeHtml = t.time ? '<span class="task-time">' + escapeHtml(t.time) + "</span>" : "";
+        var locationHtml = t.location ? '<span class="task-time task-place" title="Lembrete por local: ' + escapeHtml(t.location.label || "") + '">' + pinIcon() + escapeHtml(t.location.label || "Local") + "</span>" : "";
+        card.innerHTML = '<div class="check">' + checkIcon() + '</div><div class="task-body"><div class="task-top">' + timeHtml + locationHtml + '<span class="task-label">' + escapeHtml(t.label) + "</span></div>" + detailHtml + ruleHtml + '</div><button class="alarm-btn' + (alarms2[alarmKey] ? " armed" : "") + '" type="button" aria-label="Lembrete" data-alarm="' + escapeHtml(alarmKey) + '" data-time="' + escapeHtml(t.time) + '" data-label="' + escapeHtml(t.label) + '">' + bellIcon(!!alarms2[alarmKey]) + "</button>";
         card.addEventListener("click", function(ev) {
           if (ev.target.closest(".alarm-btn")) return;
           toggleTask(t.id);
@@ -1258,6 +1263,16 @@
     });
   }
 
+  // src/geofencing.js
+  var _Sync4 = null;
+  function setSyncHook4(syncModule) {
+    _Sync4 = syncModule;
+  }
+  var isNative2 = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var Geofence = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Geofence;
+  function initGeofencing() {
+  }
+
   // src/sync.js
   var Sync = (function() {
     var WD_TO_NUM = { seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6, dom: 7 };
@@ -1692,6 +1707,7 @@
     setSyncHook(Sync);
     setSyncHook3(Sync);
     setSyncHook2(Sync);
+    setSyncHook4(Sync);
     renderDayTabs();
     renderBlocks();
     var manifest = {
@@ -1747,6 +1763,7 @@
     initEditor();
     initAuth();
     initEducation();
+    initGeofencing();
     document.addEventListener("keydown", function(ev) {
       if (ev.key !== "Escape") return;
       var tdahInfoOverlay2 = document.getElementById("tdahInfoOverlay");

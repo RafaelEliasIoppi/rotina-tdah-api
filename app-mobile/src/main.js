@@ -4,6 +4,7 @@ import { initNotifications, showToast, setSyncHook as setNotificationsSyncHook }
 import { initEditor, closeEditor } from "./editor.js";
 import { initAuth, closeAuth } from "./auth.js";
 import { initEducation, closeTdahInfo } from "./education.js";
+import { initGeofencing, setSyncHook as setGeofencingSyncHook } from "./geofencing.js";
 import { Sync } from "./sync.js";
 
 (function () {
@@ -14,6 +15,7 @@ import { Sync } from "./sync.js";
   setTasksSyncHook(Sync);
   setRenderSyncHook(Sync);
   setNotificationsSyncHook(Sync);
+  setGeofencingSyncHook(Sync);
 
   /* ---------- Init ---------- */
   renderDayTabs();
@@ -79,6 +81,10 @@ import { Sync } from "./sync.js";
 
   // Modal "Entenda o TDAH".
   initEducation();
+
+  // Lembretes por lugar (geofencing) — Fase G2: cadastro/dados; UI de
+  // cadastro (busca de endereço, disclosure de privacidade) é a Fase G3.
+  initGeofencing();
 
   // Esc fecha o modal aberto (mesma checagem central do arquivo único
   // original: tdahInfo > auth > editor, por cima do handler de auth+editor
