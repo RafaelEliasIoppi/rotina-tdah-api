@@ -2,6 +2,7 @@ import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
 } from '@whiskeysockets/baileys';
+import qrcode from 'qrcode-terminal';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync, mkdirSync } from 'fs';
@@ -22,10 +23,13 @@ export async function createWhatsAppClient({ targetJid }) {
 
   function onConnectionUpdate({ connection, lastDisconnect, qr }) {
     if (qr) {
-      console.log('\n╔═══════════════════════════════════════════════╗');
-      console.log('║  ESCANEIE O QR CODE ACIMA COM O WHATSAPP     ║');
-      console.log('║  WhatsApp > ⋮ > Dispositivos conectados     ║');
-      console.log('╚═══════════════════════════════════════════════╝\n');
+      qrcode.generate(qr, { small: true });
+      console.log(
+        '\n[whatsapp] Escaneie o QR code acima com o WhatsApp',
+      );
+      console.log(
+        '[whatsapp] WhatsApp > ⋮ > Dispositivos conectados > Conectar dispositivo\n',
+      );
     }
 
     if (connection === 'open') {
@@ -58,7 +62,6 @@ export async function createWhatsAppClient({ targetJid }) {
     ensureStateDir();
     currentSock = makeWASocket({
       auth: state,
-      printQRInTerminal: true,
       syncFullHistory: false,
       markOnlineOnConnect: false,
     });
