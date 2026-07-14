@@ -6,11 +6,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const STATE_DIR = join(__dirname, '..', 'state');
 const NOTIFIED_FILE = join(STATE_DIR, 'notified.json');
 
+// Intl.DateTimeFormat só aceita 'long'/'short'/'narrow' para weekday — não
+// 'numeric' (isso lança RangeError). Pegamos o nome curto em inglês (estável,
+// não depende de locale) e convertemos pro número 1=segunda..7=domingo, igual
+// ao resto do projeto (ver reminders.schema.js).
+const WEEKDAY_MAP = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+
 function getSaoPauloNow() {
   const now = new Date();
-  const formatter = new Intl.DateTimeFormat('pt-BR', {
+  const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: 'America/Sao_Paulo',
-    weekday: 'numeric',
+    weekday: 'short',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -22,10 +28,14 @@ function getSaoPauloNow() {
   let minute = '00';
 
   for (const p of parts) {
-    if (p.type === 'weekday') weekday = parseInt(p.value, 10);
+    if (p.type === 'weekday') weekday = WEEKDAY_MAP[p.value] ?? 0;
     if (p.type === 'hour') hour = p.value.padStart(2, '0');
     if (p.type === 'minute') minute = p.value.padStart(2, '0');
   }
+
+  // Alguns runtimes ICU retornam "24" (com hour12:false) para meia-noite
+  // em vez de "00" — normaliza pra não quebrar a comparação de horário.
+  if (hour === '24') hour = '00';
 
   const time = `${hour}:${minute}`;
   return { weekday, time, now };
