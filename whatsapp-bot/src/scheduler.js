@@ -84,7 +84,7 @@ function cleanNotified() {
 export function createScheduler(remindersSync, sendReminder) {
   let tickInterval = null;
 
-  function tick() {
+  async function tick() {
     const { weekday, time } = getSaoPauloNow();
     const today = getDateKey();
     const reminders = remindersSync.getReminders();
@@ -106,8 +106,9 @@ export function createScheduler(remindersSync, sendReminder) {
 
       const label = reminder.label || `Tarefa`;
       try {
-        sendReminder(label, reminder.time);
+        await sendReminder(label, reminder.time);
         notified[key] = true;
+        saveNotified(notified);
         console.log(
           `[scheduler] Lembrete disparado: "${label}" às ${reminder.time}`,
         );
@@ -117,8 +118,6 @@ export function createScheduler(remindersSync, sendReminder) {
         );
       }
     }
-
-    saveNotified(notified);
   }
 
   function start(tickIntervalMs = 30 * 1000) {
