@@ -13,6 +13,7 @@ var AppStorage = (function () {
     OUTBOX: "rotina_tdah_outbox_v1",
     MIGRATED: "rotina_tdah_migrated_v1",
     DEDUPE_FIX_APPLIED: "rotina_tdah_dedupe_fix_v1",
+    REMINDER_ID_FIX_APPLIED: "rotina_tdah_reminder_id_fix_v1",
     PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
     PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1",
     SELF_ASSESSMENT_PROGRESS: "rotina_tdah_self_assessment_progress_v1"
@@ -87,6 +88,17 @@ var AppStorage = (function () {
     // sem afetar o fluxo normal de sync depois disso.
     getDedupeFixApplied: function () { return readRaw(KEYS.DEDUPE_FIX_APPLIED, null) === "1"; },
     setDedupeFixApplied: function () { writeRaw(KEYS.DEDUPE_FIX_APPLIED, "1"); },
+
+    // Correção one-time (2026-07-14): buildIdMap/reconcileIds em sync.js
+    // colapsavam o id local de tarefas-template (ex.: "acordar", clonada em
+    // todo dia útil) num único uuid do servidor, porque o mapa era indexado
+    // só por id, sem o weekday. Dispositivos que já editaram a rotina antes
+    // da correção ficaram com o mesmo task_id "compartilhado" entre dias
+    // diferentes — e como reminders tem UNIQUE(user_id, task_id), ativar o
+    // lembrete de um dia sobrescrevia o de outro dia no servidor. Esta chave
+    // força um único re-pull (já com o id-map corrigido) por dispositivo.
+    getReminderIdFixApplied: function () { return readRaw(KEYS.REMINDER_ID_FIX_APPLIED, null) === "1"; },
+    setReminderIdFixApplied: function () { writeRaw(KEYS.REMINDER_ID_FIX_APPLIED, "1"); },
 
     getPlacesDisclosureSeen: function () { return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1"; },
     setPlacesDisclosureSeen: function () { writeRaw(KEYS.PLACES_DISCLOSURE_SEEN, "1"); },

@@ -197,8 +197,25 @@ var Sync = (function () {
     return weekday + "|" + time + "|" + label + "|" + (block || "");
   }
 
+  // Ids locais (ex.: "acordar") se repetem em vários dias da semana — o mesmo
+  // template é clonado por dia (ver defaultTasksByDay em tasks.js). Por isso o
+  // idMap é sempre indexado por "id|weekday", nunca por id sozinho, senão o
+  // mapeamento da segunda-feira sobrescreve o da terça-feira e por diante.
+  function idMapKey(id, weekday) { return id + "|" + weekday; }
+
+  // Descobre o weekday (1-7) correspondente a uma chave de `state`: datas reais
+  // ("2026-07-11") ou pseudo-dias de template ("template-seg").
+  function weekdayForStateKey(dateKey) {
+    if (dateKey.indexOf("template-") === 0) {
+      return WD_TO_NUM[dateKey.slice("template-".length)];
+    }
+    var d = new Date(dateKey + "T00:00:00");
+    var jsDay = d.getDay();
+    return isNaN(jsDay) ? null : (jsDay === 0 ? 7 : jsDay);
+  }
+
   // Aplica o mapeamento de ids antigos->novos em tasksByDay, state e alarms.
-  // Exemplo: "acordar" -> uuid  =>  state["2026-07-11"]["acordar"] vira
+  // Exemplo: "acordar" (seg) -> uuid  =>  state["2026-07-11"]["acordar"] vira
   // state["2026-07-11"][uuid]; alarms["seg:acordar"] vira alarms["seg:uuid"].
   function reconcileIds(idMap) {
     var changed = false;
@@ -207,16 +224,20 @@ var Sync = (function () {
     var alarms = getAlarmsObj();
     // 1) tasksByDay
     Object.keys(tasksByDay).forEach(function (dayKey) {
+      var wd = WD_TO_NUM[dayKey];
       (tasksByDay[dayKey] || []).forEach(function (t) {
-        if (idMap[t.id] && idMap[t.id] !== t.id) { t.id = idMap[t.id]; changed = true; }
+        var newId = idMap[idMapKey(t.id, wd)];
+        if (newId && newId !== t.id) { t.id = newId; changed = true; }
       });
     });
     // 2) state (progresso por data) — reindexar chaves de taskId.
     Object.keys(state).forEach(function (dateKey) {
       var ds = state[dateKey];
       if (!ds || typeof ds !== "object") return;
+      var wd = weekdayForStateKey(dateKey);
+      if (!wd) return;
       Object.keys(ds).forEach(function (oldTaskId) {
-        var newId = idMap[oldTaskId];
+        var newId = idMap[idMapKey(oldTaskId, wd)];
         if (newId && newId !== oldTaskId) {
           ds[newId] = ds[oldTaskId];
           delete ds[oldTaskId];
@@ -230,7 +251,8 @@ var Sync = (function () {
       if (idx < 0) return;
       var dayKey = alarmKey.slice(0, idx);
       var oldTaskId = alarmKey.slice(idx + 1);
-      var newId = idMap[oldTaskId];
+      var wd = WD_TO_NUM[dayKey];
+      var newId = idMap[idMapKey(oldTaskId, wd)];
       if (newId && newId !== oldTaskId) {
         var newKey = dayKey + ":" + newId;
         alarms[newKey] = alarms[alarmKey];
@@ -248,6 +270,8 @@ var Sync = (function () {
 
   // Constrói o idMap a partir das tasks locais enviadas e das tasks retornadas
   // pelo servidor (com uuid). Casa por assinatura; empata por ordem (sortOrder).
+  // Chave do mapa é "id|weekday" (ver idMapKey) para não colidir entre dias
+  // que compartilham o mesmo id de template (ex.: "acordar" em todo dia útil).
   function buildIdMap(sentPayload, serverTasks) {
     var idMap = {};
     // Agrupa tasks do servidor por assinatura -> fila de uuids disponíveis.
@@ -265,7 +289,7 @@ var Sync = (function () {
       var queue = bySig[sig];
       if (queue && queue.length) {
         var st = queue.shift();
-        if (st && st.id) idMap[local.id] = st.id;
+        if (st && st.id) idMap[idMapKey(local.id, local.weekday)] = st.id;
       }
     });
     return idMap;
@@ -431,10 +455,36 @@ var Sync = (function () {
     });
   }
 
+  // Correção one-time (2026-07-14): re-pull forçado para dispositivos que já
+  // sofreram o colapso de id descrito em getReminderIdFixApplied (storage.js).
+  // Readota os dados do servidor, que já vêm com um id distinto por (dia,
+  // tarefa-template) — corrige tasksByDay local. Reminders que já tinham sido
+  // sobrescritos (weekday perdido) no servidor não são recuperáveis aqui; o
+  // usuário precisa reativar o lembrete daquele dia depois desta correção.
+  function runReminderIdFixIfNeeded() {
+    if (!Api.isLoggedIn() || AppStorage.getReminderIdFixApplied()) return Promise.resolve();
+    return Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function (pull) {
+      if (pull && pull.tasks && pull.tasks.length > 0) {
+        adoptServerData(pull);
+        setCurrentDay(todayKeyBR());
+        renderDayTabs();
+        renderBlocks();
+        showToast("Correção aplicada: confira se seus lembretes por dia da semana ainda estão certos.");
+      }
+      AppStorage.setReminderIdFixApplied();
+    }).catch(function () {
+      // Falha de rede: tenta de novo no próximo boot (chave só é marcada em caso de sucesso).
+    });
+  }
+
   // Executa a migração one-time. Resiliente: qualquer falha de rede aborta sem
   // corromper o estado local, e tentará de novo no próximo login/flush.
   function runMigration() {
-    if (!Api.isLoggedIn() || migrationDone()) { updateStatus(); runDedupeFixIfNeeded(); return; }
+    if (!Api.isLoggedIn() || migrationDone()) {
+      updateStatus();
+      runDedupeFixIfNeeded().then(runReminderIdFixIfNeeded);
+      return;
+    }
 
     Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function (pull) {
       var remoteHasTasks = pull && pull.tasks && pull.tasks.length > 0;

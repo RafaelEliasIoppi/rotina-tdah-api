@@ -16,6 +16,7 @@
       OUTBOX: "rotina_tdah_outbox_v1",
       MIGRATED: "rotina_tdah_migrated_v1",
       DEDUPE_FIX_APPLIED: "rotina_tdah_dedupe_fix_v1",
+      REMINDER_ID_FIX_APPLIED: "rotina_tdah_reminder_id_fix_v1",
       PLACES_DISCLOSURE_SEEN: "rotina_tdah_places_disclosure_seen_v1",
       PLACE_FEATURE_DISCOVERY_SEEN: "rotina_tdah_place_feature_discovery_seen_v1",
       SELF_ASSESSMENT_PROGRESS: "rotina_tdah_self_assessment_progress_v1"
@@ -120,6 +121,20 @@
       },
       setDedupeFixApplied: function() {
         writeRaw(KEYS.DEDUPE_FIX_APPLIED, "1");
+      },
+      // Correção one-time (2026-07-14): buildIdMap/reconcileIds em sync.js
+      // colapsavam o id local de tarefas-template (ex.: "acordar", clonada em
+      // todo dia útil) num único uuid do servidor, porque o mapa era indexado
+      // só por id, sem o weekday. Dispositivos que já editaram a rotina antes
+      // da correção ficaram com o mesmo task_id "compartilhado" entre dias
+      // diferentes — e como reminders tem UNIQUE(user_id, task_id), ativar o
+      // lembrete de um dia sobrescrevia o de outro dia no servidor. Esta chave
+      // força um único re-pull (já com o id-map corrigido) por dispositivo.
+      getReminderIdFixApplied: function() {
+        return readRaw(KEYS.REMINDER_ID_FIX_APPLIED, null) === "1";
+      },
+      setReminderIdFixApplied: function() {
+        writeRaw(KEYS.REMINDER_ID_FIX_APPLIED, "1");
       },
       getPlacesDisclosureSeen: function() {
         return readRaw(KEYS.PLACES_DISCLOSURE_SEEN, null) === "1";
@@ -3333,15 +3348,28 @@
     function taskSig(weekday, time, label, block) {
       return weekday + "|" + time + "|" + label + "|" + (block || "");
     }
+    function idMapKey(id, weekday) {
+      return id + "|" + weekday;
+    }
+    function weekdayForStateKey(dateKey) {
+      if (dateKey.indexOf("template-") === 0) {
+        return WD_TO_NUM[dateKey.slice("template-".length)];
+      }
+      var d = /* @__PURE__ */ new Date(dateKey + "T00:00:00");
+      var jsDay = d.getDay();
+      return isNaN(jsDay) ? null : jsDay === 0 ? 7 : jsDay;
+    }
     function reconcileIds(idMap) {
       var changed = false;
       var tasksByDay2 = getTasksByDay();
       var state2 = getStateObj();
       var alarms2 = getAlarmsObj();
       Object.keys(tasksByDay2).forEach(function(dayKey) {
+        var wd = WD_TO_NUM[dayKey];
         (tasksByDay2[dayKey] || []).forEach(function(t) {
-          if (idMap[t.id] && idMap[t.id] !== t.id) {
-            t.id = idMap[t.id];
+          var newId = idMap[idMapKey(t.id, wd)];
+          if (newId && newId !== t.id) {
+            t.id = newId;
             changed = true;
           }
         });
@@ -3349,8 +3377,10 @@
       Object.keys(state2).forEach(function(dateKey) {
         var ds = state2[dateKey];
         if (!ds || typeof ds !== "object") return;
+        var wd = weekdayForStateKey(dateKey);
+        if (!wd) return;
         Object.keys(ds).forEach(function(oldTaskId) {
-          var newId = idMap[oldTaskId];
+          var newId = idMap[idMapKey(oldTaskId, wd)];
           if (newId && newId !== oldTaskId) {
             ds[newId] = ds[oldTaskId];
             delete ds[oldTaskId];
@@ -3363,7 +3393,8 @@
         if (idx < 0) return;
         var dayKey = alarmKey.slice(0, idx);
         var oldTaskId = alarmKey.slice(idx + 1);
-        var newId = idMap[oldTaskId];
+        var wd = WD_TO_NUM[dayKey];
+        var newId = idMap[idMapKey(oldTaskId, wd)];
         if (newId && newId !== oldTaskId) {
           var newKey = dayKey + ":" + newId;
           alarms2[newKey] = alarms2[alarmKey];
@@ -3396,7 +3427,7 @@
         var queue = bySig[sig];
         if (queue && queue.length) {
           var st = queue.shift();
-          if (st && st.id) idMap[local.id] = st.id;
+          if (st && st.id) idMap[idMapKey(local.id, local.weekday)] = st.id;
         }
       });
       return idMap;
@@ -3545,10 +3576,24 @@
       }).catch(function() {
       });
     }
+    function runReminderIdFixIfNeeded() {
+      if (!Api.isLoggedIn() || AppStorage.getReminderIdFixApplied()) return Promise.resolve();
+      return Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function(pull) {
+        if (pull && pull.tasks && pull.tasks.length > 0) {
+          adoptServerData(pull);
+          setCurrentDay(todayKeyBR());
+          renderDayTabs();
+          renderBlocks();
+          showToast("Corre\xE7\xE3o aplicada: confira se seus lembretes por dia da semana ainda est\xE3o certos.");
+        }
+        AppStorage.setReminderIdFixApplied();
+      }).catch(function() {
+      });
+    }
     function runMigration() {
       if (!Api.isLoggedIn() || migrationDone()) {
         updateStatus();
-        runDedupeFixIfNeeded();
+        runDedupeFixIfNeeded().then(runReminderIdFixIfNeeded);
         return;
       }
       Api.fetch("/sync/pull", { method: "POST", body: {} }).then(function(pull) {
