@@ -4,7 +4,6 @@ import {
 } from "./tasks.js";
 import { renderDayTabs, renderBlocks } from "./render.js";
 
-// Hook para o módulo Sync (mesmo padrão de tasks.js/render.js).
 var _Sync = null;
 function setSyncHook(syncModule) {
   _Sync = syncModule;
@@ -13,6 +12,8 @@ function setSyncHook(syncModule) {
 var clockEl = document.getElementById("clock");
 var toastEl = document.getElementById("toast");
 
+var NOTIFICATION_CHANNEL = "rotina-tdah-alerts";
+
 /* ---------- Clock ---------- */
 function tickClock() {
   var now = new Date();
@@ -20,7 +21,6 @@ function tickClock() {
   var mm = String(now.getMinutes()).padStart(2, "0");
   clockEl.textContent = hh + ":" + mm;
 
-  // Detect day rollover
   var iso = isoDate();
   if (iso !== getCurrentDateISO()) {
     setCurrentDateISO(iso);
@@ -34,7 +34,7 @@ function tickClock() {
 /* ---------- Notifications / Alarms ---------- */
 var notifyBanner = document.getElementById("notifyBanner");
 var notifyBtn = document.getElementById("notifyBtn");
-var firedToday = {}; // avoid repeat fires within same minute window (web fallback only)
+var firedToday = {};
 
 var isNative = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 var LocalNotifications = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
@@ -93,14 +93,20 @@ function scheduleNativeAlarm(key, time, label) {
       id: alarmNativeId(key),
       title: "Rotina TDAH — " + time,
       body: label,
-      schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true },
-      sound: null
+      smallIcon: "ic_notification",
+      iconColor: "#4338ca",
+      channelId: NOTIFICATION_CHANNEL,
+      schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true }
     }]
-  }).catch(function () {});
+  }).catch(function (err) {
+    console.error("scheduleNativeAlarm falhou para", key, err);
+  });
 }
 function cancelNativeAlarm(key) {
   if (!LocalNotifications) return;
-  LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function () {});
+  LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function (err) {
+    console.error("cancelNativeAlarm falhou para", key, err);
+  });
 }
 function rescheduleAllNativeAlarms() {
   if (!LocalNotifications) return;
@@ -186,6 +192,16 @@ function initNotifications() {
     LocalNotifications.checkPermissions().then(function (res) {
       if (res.display === "granted") rescheduleAllNativeAlarms();
     });
+    LocalNotifications.addListener("localNotificationReceived", function (n) {
+      if (n && n.length) {
+        showToast("⏰ " + (n[0].title || n[0].body || "Lembrete"));
+      }
+    }).catch(function () {});
+    LocalNotifications.addListener("localNotificationActionPerformed", function (n) {
+      if (n && n.notification) {
+        showToast("⏰ " + (n.notification.title || n.notification.body || "Lembrete"));
+      }
+    }).catch(function () {});
   }
 }
 

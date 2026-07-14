@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String DEFAULT_NOTIFICATION_CHANNEL_ID = "default";
+    private static final String NOTIFICATION_CHANNEL_ID = "rotina-tdah-alerts";
     private static final String PREFS_NAME = "geofence_prefs";
     private static final String PREF_KEY_PREFIX = "geofence_last_fired_";
     private static final String PREF_LABEL_PREFIX = "geofence_label_";
@@ -119,12 +119,13 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             contentIntent = PendingIntent.getActivity(context, geofenceId.hashCode(), launchIntent, flags);
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, DEFAULT_NOTIFICATION_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(body)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setAutoCancel(true);
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_ALL);
 
         if (contentIntent != null) {
             builder.setContentIntent(contentIntent);
@@ -152,15 +153,17 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) return;
 
-        NotificationChannel existing = notificationManager.getNotificationChannel(DEFAULT_NOTIFICATION_CHANNEL_ID);
+        NotificationChannel existing = notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID);
         if (existing != null) return;
 
         NotificationChannel channel = new NotificationChannel(
-            DEFAULT_NOTIFICATION_CHANNEL_ID,
-            "Default",
-            NotificationManager.IMPORTANCE_DEFAULT
+            NOTIFICATION_CHANNEL_ID,
+            "Lembretes da Rotina",
+            NotificationManager.IMPORTANCE_HIGH
         );
-        channel.setDescription("Default");
+        channel.setDescription("Lembretes de horários e tarefas da rotina diária");
+        channel.enableVibration(true);
+        channel.setShowBadge(true);
         notificationManager.createNotificationChannel(channel);
     }
 }

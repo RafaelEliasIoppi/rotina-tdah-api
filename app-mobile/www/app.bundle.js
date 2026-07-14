@@ -308,6 +308,7 @@
   }
   var clockEl = document.getElementById("clock");
   var toastEl = document.getElementById("toast");
+  var NOTIFICATION_CHANNEL = "rotina-tdah-alerts";
   function tickClock() {
     var now = /* @__PURE__ */ new Date();
     var hh = String(now.getHours()).padStart(2, "0");
@@ -380,15 +381,19 @@
         id: alarmNativeId(key),
         title: "Rotina TDAH \u2014 " + time,
         body: label,
-        schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true },
-        sound: null
+        smallIcon: "ic_notification",
+        iconColor: "#4338ca",
+        channelId: NOTIFICATION_CHANNEL,
+        schedule: { on: { weekday: WEEKDAY_NUM[dayKey], hour: hh, minute: mm }, allowWhileIdle: true }
       }]
-    }).catch(function() {
+    }).catch(function(err) {
+      console.error("scheduleNativeAlarm falhou para", key, err);
     });
   }
   function cancelNativeAlarm(key) {
     if (!LocalNotifications) return;
-    LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function() {
+    LocalNotifications.cancel({ notifications: [{ id: alarmNativeId(key) }] }).catch(function(err) {
+      console.error("cancelNativeAlarm falhou para", key, err);
     });
   }
   function rescheduleAllNativeAlarms() {
@@ -477,6 +482,18 @@
     if (isNative && LocalNotifications) {
       LocalNotifications.checkPermissions().then(function(res) {
         if (res.display === "granted") rescheduleAllNativeAlarms();
+      });
+      LocalNotifications.addListener("localNotificationReceived", function(n) {
+        if (n && n.length) {
+          showToast("\u23F0 " + (n[0].title || n[0].body || "Lembrete"));
+        }
+      }).catch(function() {
+      });
+      LocalNotifications.addListener("localNotificationActionPerformed", function(n) {
+        if (n && n.notification) {
+          showToast("\u23F0 " + (n.notification.title || n.notification.body || "Lembrete"));
+        }
+      }).catch(function() {
       });
     }
   }
