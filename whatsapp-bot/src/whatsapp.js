@@ -1,6 +1,7 @@
 import makeWASocket, {
   useMultiFileAuthState,
   DisconnectReason,
+  fetchLatestBaileysVersion,
 } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import { join, dirname } from 'path';
@@ -58,10 +59,14 @@ export async function createWhatsAppClient({ targetJid }) {
     }
   }
 
+  const { version } = await fetchLatestBaileysVersion();
+  console.log('[whatsapp] Versão do WhatsApp:', version.join('.'));
+
   function createSocket() {
     ensureStateDir();
     currentSock = makeWASocket({
       auth: state,
+      version,
       syncFullHistory: false,
       markOnlineOnConnect: false,
     });
