@@ -63,3 +63,12 @@ O único passo que **exige interação manual humana** (não dá pra automatizar
 - Teste manual: cadastrar um lembrete de teste no app pra daqui a poucos minutos, rodar o bot localmente, confirmar que a mensagem chega no WhatsApp no horário certo (e só uma vez).
 - Testar cenário de restart no meio do dia: matar o processo depois de um lembrete já ter disparado, subir de novo, confirmar que **não** reenvia o mesmo lembrete (dedupe funcionando via `state/notified.json`).
 - Testar expiração do access token (esperar 15+ min com o bot rodando) e confirmar que o refresh automático funciona sem exigir novo login manual.
+
+## Status / atualizações
+
+- **Implementação inicial concluída** (`bb8114a`): scaffold completo de `whatsapp-bot/` — `apiClient.js`, `remindersSync.js`, `scheduler.js`, `whatsapp.js`, `index.js` — seguindo a arquitetura acima.
+- **`6597893`**: `printQRInTerminal` (opção nativa do Baileys para mostrar o QR no terminal) ficou obsoleta na versão usada; trocado por dependência explícita `qrcode-terminal`.
+- **`e6d4b8c`**: conexão falhava com erro 405 do WhatsApp; corrigido usando `fetchLatestBaileysVersion()` em vez de fixar uma versão de protocolo desatualizada.
+- **`a2b9eed`**: bot rodando ao vivo na VM Oracle (via SSH) derrubava o processo com `RangeError` poucos segundos após conectar, antes de dar tempo de escanear o QR — causa era `Intl.DateTimeFormat({ weekday: 'numeric' })`, opção inválida (só aceita `'long'/'short'/'narrow'`). Corrigido pegando o nome curto do dia em inglês (estável, independe de locale) e mapeando para 1-7, no mesmo padrão do resto do projeto. Também normaliza `hour === '24'` que alguns runtimes ICU retornam à meia-noite com `hour12: false`.
+- **`8a5afc9`**: `sendReminder()` era chamado sem `await` no scheduler, então falhas de envio viravam promise solta e não eram capturadas pelo `catch` — o lembrete era marcado como disparado mesmo sem confirmação real de envio. Corrigido aguardando o envio antes de marcar como notificado.
+- Bot já validado rodando ao vivo na VM Oracle via SSH (não só localmente).
