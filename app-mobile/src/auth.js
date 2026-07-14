@@ -4,7 +4,8 @@ import { closeEditor } from "./editor.js";
 
 /* ---------- Auth UI (Fase 5): topbar chip + modal login/cadastro ---------- */
 var GOOGLE_CLIENT_ID = null;
-var GOOGLE_ANDROID_CLIENT_ID = null;
+// ID do cliente Android nativo (fallback direto para o APK, sobrescrito pelo servidor quando online)
+var GOOGLE_ANDROID_CLIENT_ID = "465342501296-kl6kavg2hjcqpq1fas5jftso4ofjlsmb.apps.googleusercontent.com";
 var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
 var socialLoginInitPromise = null;
 var isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
@@ -14,10 +15,11 @@ var isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && wi
 // (erro disallowed_useragent), por isso usamos o SDK nativo aqui.
 function ensureSocialLoginInit() {
   if (!SocialLogin) return Promise.reject(new Error("SocialLogin indisponivel"));
-  if (!GOOGLE_CLIENT_ID) return Promise.reject(new Error("Google Client ID nao configurado"));
+  var androidId = GOOGLE_ANDROID_CLIENT_ID || GOOGLE_CLIENT_ID;
+  if (!androidId) return Promise.reject(new Error("Google Client ID nao configurado"));
   if (!socialLoginInitPromise) {
     socialLoginInitPromise = SocialLogin.initialize({
-      google: { webClientId: GOOGLE_CLIENT_ID }
+      google: { webClientId: androidId }
     });
   }
   return socialLoginInitPromise;
@@ -208,7 +210,8 @@ function doGoogleLogin(onDone) {
     if (onDone) onDone(false);
     return;
   }
-  if (!GOOGLE_CLIENT_ID) {
+  var androidId = GOOGLE_ANDROID_CLIENT_ID || GOOGLE_CLIENT_ID;
+  if (!androidId) {
     showToast("Google Client ID nao configurado.");
     if (onDone) onDone(false);
     return;
@@ -350,6 +353,13 @@ function initAuth() {
 
   authGoogleBtn.addEventListener("click", function () { doGoogleLogin(); });
 
+  // Busca config do servidor (GOOGLE_CLIENT_ID, etc.) — sobrescreve o fallback
+  // hardcoded se o servidor estiver online.
+  fetch(API_BASE + "/config").then(function (r) { return r.json(); }).then(function (cfg) {
+    if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
+    if (cfg && cfg.googleAndroidClientId) GOOGLE_ANDROID_CLIENT_ID = cfg.googleAndroidClientId;
+  }).catch(function () { /* servidor offline, usa fallback hardcoded */ });
+
   applySplashSessionState();
 
   // A splash NUNCA deve travar o acesso ao app: se o login Google falhar por
@@ -362,16 +372,13 @@ function initAuth() {
       dismissSplash();
       return;
     }
+    // Se o config ainda não carregou (timeout/offline), tenta login mesmo
+    // assim — a validação interna de GOOGLE_CLIENT_ID mostrará o erro amigável.
     doGoogleLogin(function () {
       // Sucesso ou falha: sempre libera a entrada no app.
       dismissSplash();
     });
   });
-
-  // Busca config do servidor (GOOGLE_CLIENT_ID, etc.)
-  fetch(API_BASE + "/config").then(function (r) { return r.json(); }).then(function (cfg) {
-    if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
-  }).catch(function () { /* servidor offline, Google login nao disponivel */ });
 
   Api.onChange(renderSessionChip);
   renderSessionChip();

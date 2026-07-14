@@ -56,12 +56,9 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:21.3.0"
 }
 
-// Renomeia o APK de saída para RotinaTDAH.apk (em vez do padrão app-release.apk)
-// — nome pedido explicitamente pelo usuário para facilitar compartilhamento.
 android.applicationVariants.all { variant ->
     variant.outputs.all { output ->
-        def suffix = variant.name == "release" ? "" : "-${variant.name}"
-        outputFileName = "RotinaTDAH${suffix}.apk"
+        outputFileName = "rotina_tdah.apk"
     }
 }
 

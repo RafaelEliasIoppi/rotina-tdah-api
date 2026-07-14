@@ -1758,15 +1758,17 @@
 
   // src/auth.js
   var GOOGLE_CLIENT_ID = null;
+  var GOOGLE_ANDROID_CLIENT_ID = "465342501296-kl6kavg2hjcqpq1fas5jftso4ofjlsmb.apps.googleusercontent.com";
   var SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
   var socialLoginInitPromise = null;
   var isNativeApp = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   function ensureSocialLoginInit() {
     if (!SocialLogin) return Promise.reject(new Error("SocialLogin indisponivel"));
-    if (!GOOGLE_CLIENT_ID) return Promise.reject(new Error("Google Client ID nao configurado"));
+    var androidId = GOOGLE_ANDROID_CLIENT_ID || GOOGLE_CLIENT_ID;
+    if (!androidId) return Promise.reject(new Error("Google Client ID nao configurado"));
     if (!socialLoginInitPromise) {
       socialLoginInitPromise = SocialLogin.initialize({
-        google: { webClientId: GOOGLE_CLIENT_ID }
+        google: { webClientId: androidId }
       });
     }
     return socialLoginInitPromise;
@@ -1943,7 +1945,8 @@
       if (onDone) onDone(false);
       return;
     }
-    if (!GOOGLE_CLIENT_ID) {
+    var androidId = GOOGLE_ANDROID_CLIENT_ID || GOOGLE_CLIENT_ID;
+    if (!androidId) {
       showToast("Google Client ID nao configurado.");
       if (onDone) onDone(false);
       return;
@@ -2078,6 +2081,13 @@
     authGoogleBtn.addEventListener("click", function() {
       doGoogleLogin();
     });
+    fetch(API_BASE + "/config").then(function(r) {
+      return r.json();
+    }).then(function(cfg) {
+      if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
+      if (cfg && cfg.googleAndroidClientId) GOOGLE_ANDROID_CLIENT_ID = cfg.googleAndroidClientId;
+    }).catch(function() {
+    });
     applySplashSessionState();
     splashSkipBtn.addEventListener("click", dismissSplash);
     splashGoogleBtn.addEventListener("click", function() {
@@ -2088,12 +2098,6 @@
       doGoogleLogin(function() {
         dismissSplash();
       });
-    });
-    fetch(API_BASE + "/config").then(function(r) {
-      return r.json();
-    }).then(function(cfg) {
-      if (cfg && cfg.googleClientId) GOOGLE_CLIENT_ID = cfg.googleClientId;
-    }).catch(function() {
     });
     Api.onChange(renderSessionChip);
     renderSessionChip();
@@ -3553,6 +3557,9 @@
         var dayKey = NUM_TO_WD[r.weekday];
         if (!dayKey) return;
         newAlarms[dayKey + ":" + r.taskId] = { time: r.time, label: r.label };
+      });
+      Object.keys(getAlarmsObj()).forEach(function(k) {
+        if (!newAlarms[k]) newAlarms[k] = getAlarmsObj()[k];
       });
       setAlarmsObj(newAlarms);
       saveAlarms(newAlarms);

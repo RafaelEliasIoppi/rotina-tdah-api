@@ -420,13 +420,18 @@ var Sync = (function () {
     setStateObj(newState);
     saveState(newState);
 
-    // Reminders -> alarms.
+    // Reminders -> alarms. Faz merge com os alarms locais para preservar
+    // lembretes que ainda não foram enviados ao servidor (ex.: modo offline).
     var newAlarms = {};
     (pull.reminders || []).forEach(function (r) {
       if (r.enabled === false) return;
       var dayKey = NUM_TO_WD[r.weekday];
       if (!dayKey) return;
       newAlarms[dayKey + ":" + r.taskId] = { time: r.time, label: r.label };
+    });
+    // Preserva alarms locais que não existem no servidor (ainda não sincronizados).
+    Object.keys(getAlarmsObj()).forEach(function (k) {
+      if (!newAlarms[k]) newAlarms[k] = getAlarmsObj()[k];
     });
     setAlarmsObj(newAlarms);
     saveAlarms(newAlarms);
