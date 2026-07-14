@@ -960,3 +960,22 @@
     text-align: center; font-family: var(--font-body); font-size: 0.68rem; line-height: 1.5;
     color: var(--ink-faint); margin-top: 16px;
   }
+
+  /* A splash (boas-vindas) não recebeu o mesmo tratamento de desktop do
+     .topbar/main (ver breakpoint acima): em telas largas com altura comum
+     de laptop (768-900px), o conteúdo (arte + texto + 3 cards + botões)
+     ultrapassava a altura da viewport e o botão "Continuar sem conta"
+     ficava cortado na primeira visualização, sem indício de que a área
+     rola — lido como "site quebrado". Aqui comprimimos o espaçamento
+     vertical (não o texto) para caber sem scroll nas alturas mais comuns.
+     Mobile (a experiência principal, via APK) fica idêntico a antes. */
+  @media (min-width: 720px) {
+    .splash-inner { padding-top: 10px; padding-bottom: 16px; }
+    .splash-art { margin: 0 0 8px; }
+    .splash-art svg { width: 64px; height: 64px; }
+    .splash-title { margin-bottom: 8px; }
+    .splash-lede { margin-bottom: 10px; }
+    .splash-cards { gap: 6px; margin-bottom: 10px; }
+    .splash-card { padding: 8px 12px; }
+    .splash-footnote { margin-top: 8px; }
+  }
