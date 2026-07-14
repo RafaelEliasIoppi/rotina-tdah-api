@@ -1,0 +1,17 @@
+{
+  "name": "rotina-tdah-whatsapp-bot",
+  "version": "1.0.0",
+  "description": "Bot de avisos por WhatsApp para rotina TDAH",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.16",
+    "dotenv": "^16.4.5"
+  }
+}
